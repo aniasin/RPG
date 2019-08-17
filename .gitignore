@@ -1,10 +1,8 @@
 # Visual Studio 2015 user specific files
 .vs/
 
-*umap
 Content/StarterContent/*
 Content/Geometry/*
-Content/Mannequin/*
 Content/ThirdPerson/*
 
 # Visual Studio 2015 database file
