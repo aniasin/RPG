@@ -96,11 +96,16 @@ void AHSCharacter::BeginPlay()
 	Super::BeginPlay();
 	if (AbilitySystemComponent)
 	{
+		//Initialize Abilities
 		if (HasAuthority() && Ability1)
 		{
 			AbilitySystemComponent->GiveAbility(FGameplayAbilitySpec(Ability1.GetDefaultObject(), 1, 0));
 		}
 		AbilitySystemComponent->InitAbilityActorInfo(this, this);
+	}
+	//Initialize Attributes
+	if (AbilitySystemComponent && AttrDataTable) {
+		const UAttributeSet* Attrs = AbilitySystemComponent->InitStats(UPlayerAttributesSet::StaticClass(), AttrDataTable);
 	}
 }
 

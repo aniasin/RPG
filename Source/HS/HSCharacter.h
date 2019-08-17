@@ -55,6 +55,8 @@ protected:
 	virtual void PossessedBy(AController* NewController)override;
 
 	/** Our ability system */
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = Abilities)
+	class UDataTable* AttrDataTable;
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Abilities, meta = (AllowPrivateAccess = "true"))
 	class UHS_AbilitySystemComponent* AbilitySystemComponent;
 
