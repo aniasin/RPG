@@ -35,6 +35,9 @@ class AHSCharacter : public ACharacter, public IAbilitySystemInterface
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera, meta = (AllowPrivateAccess = "true"))
 	class UCameraComponent* FollowCamera;
 
+	//Ability when using potion
+	void UsePotion(float EffectAmount, bool bIsOverTime, float Duration);
+
 public:
 	AHSCharacter();
 
@@ -49,6 +52,12 @@ public:
 	/** Base look up/down rate, in deg/sec. Other scaling may affect final rate. */
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category=Camera)
 	float BaseLookUpRate;
+
+	UFUNCTION(BlueprintNativeEvent, Category = Collision)
+		void OnOverlapBegin(UPrimitiveComponent* Comp, AActor* OtherActor, UPrimitiveComponent* OtherComp,
+			int32 OtherBodyIndex, bool bFromSweep, const FHitResult& HitResult);
+
+	virtual void PostInitializeComponents()override;
 
 protected:
 	virtual void BeginPlay()override;

@@ -11,6 +11,7 @@
 #include "AbilitySystemGlobals.h"
 #include "Abilities/HS_AbilitySystemComponent.h"
 #include "Abilities/PlayerAttributesSet.h"
+#include "Items/Potion.h"
 
 //////////////////////////////////////////////////////////////////////////
 // AHSCharacter
@@ -90,6 +91,24 @@ void AHSCharacter::SetupPlayerInputComponent(class UInputComponent* PlayerInputC
 	AbilitySystemComponent->BindAbilityActivationToInputComponent(PlayerInputComponent, FGameplayAbilityInputBinds("ConfirmInput", "CancelInput", "AbilityInput"));
 }
 
+inline UGameplayEffect* ConstructGameplayEffect(FString name)
+{
+	return NewObject<UGameplayEffect>(GetTransientPackage(), FName(*name));
+}
+
+inline FGameplayModifierInfo& AddModifier(
+	UGameplayEffect* Effect, UProperty* Property,
+	EGameplayModOp::Type Op,
+	const FGameplayEffectModifierMagnitude& Magnitude)
+{
+	int32 index = Effect->Modifiers.Num();
+	Effect->Modifiers.SetNum(index + 1);
+	FGameplayModifierInfo& Info = Effect->Modifiers[index];
+	Info.ModifierMagnitude = Magnitude;
+	Info.ModifierOp = Op;
+	Info.Attribute.SetUProperty(Property);
+	return Info;
+}
 
 void AHSCharacter::BeginPlay()
 {
@@ -171,3 +190,59 @@ void AHSCharacter::MoveRight(float Value)
 		AddMovementInput(Direction, Value);
 	}
 }
+
+void AHSCharacter::OnOverlapBegin_Implementation(UPrimitiveComponent* Comp, AActor* OtherActor,
+	UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& HitResult)
+{
+	APotion* IsPotion = Cast<APotion>(OtherActor);
+	if (IsPotion)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("Colliding with %s"), *(OtherActor->GetName()))
+		//Get Potion properties and use
+		float EffectAmount = IsPotion->GetEffectAmount();
+		bool bIsOverTime = IsPotion->GetIsOvertime();
+		float Duration = IsPotion->GetDuration();
+		UsePotion(EffectAmount, bIsOverTime, Duration);
+		IsPotion->Destroy();
+	}
+}
+
+void AHSCharacter::PostInitializeComponents()
+{
+	Super::PostInitializeComponents();
+	if (RootComponent)
+	{
+		GetCapsuleComponent()->OnComponentBeginOverlap.AddDynamic(this, &AHSCharacter::OnOverlapBegin);
+	}
+}
+
+void AHSCharacter::UsePotion(float EffectAmount, bool bIsOverTime, float Duration)
+{
+	// Construct & retrieve UProperty to affect
+	UGameplayEffect* RecoverHP = ConstructGameplayEffect("RecoverHP");
+
+	// Compile-time checked retrieval of Hp UPROPERTY()
+	// from our UGameUnitAttributeSet class (listed in
+	// UGameUnitAttributeSet.h)
+	UProperty* hpProperty = FindFieldChecked<UProperty>(
+		UPlayerAttributesSet::StaticClass(),
+		GET_MEMBER_NAME_CHECKED(UPlayerAttributesSet, Health));
+
+	// Command the addition of +5 HP to the hpProperty
+	AddModifier(RecoverHP, hpProperty, EGameplayModOp::Additive, FScalableFloat(EffectAmount));
+	// .. for a fixed-duration if checked
+	if (bIsOverTime)
+	{
+		RecoverHP->DurationPolicy = EGameplayEffectDurationType::HasDuration;
+		RecoverHP->DurationMagnitude = FScalableFloat(Duration);
+	}
+
+	// .. with 100% chance of success ..
+	RecoverHP->ChanceToApplyToTarget = 1.f;
+
+	// .. with recurrency (Period) of 1 seconds
+	RecoverHP->Period = 1.0f;
+	FActiveGameplayEffectHandle recoverHpEffectHandle =	AbilitySystemComponent->ApplyGameplayEffectToTarget(
+		RecoverHP, AbilitySystemComponent, 1.f);
+}
+
