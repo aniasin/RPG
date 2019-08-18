@@ -1,3 +1,4 @@
 Content\ThirdPersonCPP\Abilities\* filter=lfs diff=lfs merge=lfs -text
 Content\ThirdPersonCPP\Blueprints\* filter=lfs diff=lfs merge=lfs -text
+Content\Maps\Map_01.umap filter=lfs diff=lfs merge=lfs -text
 
