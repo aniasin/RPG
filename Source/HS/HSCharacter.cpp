@@ -1,7 +1,6 @@
 // Copyright 1998-2019 Epic Games, Inc. All Rights Reserved.
 
 #include "HSCharacter.h"
-#include "HeadMountedDisplayFunctionLibrary.h"
 #include "Camera/CameraComponent.h"
 #include "Components/CapsuleComponent.h"
 #include "Components/InputComponent.h"
@@ -12,6 +11,7 @@
 #include "Abilities/HS_AbilitySystemComponent.h"
 #include "Abilities/PlayerAttributesSet.h"
 #include "Items/Potion.h"
+#include "Classes/Components/SceneComponent.h"
 
 //////////////////////////////////////////////////////////////////////////
 // AHSCharacter
@@ -70,6 +70,9 @@ void AHSCharacter::SetupPlayerInputComponent(class UInputComponent* PlayerInputC
 	PlayerInputComponent->BindAction("Jump", IE_Pressed, this, &ACharacter::Jump);
 	PlayerInputComponent->BindAction("Jump", IE_Released, this, &ACharacter::StopJumping);
 
+	//Items on belt
+	PlayerInputComponent->BindAction("Belt_01", IE_Pressed, this, &AHSCharacter::UsePotion);
+
 	PlayerInputComponent->BindAxis("MoveForward", this, &AHSCharacter::MoveForward);
 	PlayerInputComponent->BindAxis("MoveRight", this, &AHSCharacter::MoveRight);
 
@@ -80,13 +83,6 @@ void AHSCharacter::SetupPlayerInputComponent(class UInputComponent* PlayerInputC
 	PlayerInputComponent->BindAxis("TurnRate", this, &AHSCharacter::TurnAtRate);
 	PlayerInputComponent->BindAxis("LookUp", this, &APawn::AddControllerPitchInput);
 	PlayerInputComponent->BindAxis("LookUpRate", this, &AHSCharacter::LookUpAtRate);
-
-	// handle touch devices
-	PlayerInputComponent->BindTouch(IE_Pressed, this, &AHSCharacter::TouchStarted);
-	PlayerInputComponent->BindTouch(IE_Released, this, &AHSCharacter::TouchStopped);
-
-	// VR headset functionality
-	PlayerInputComponent->BindAction("ResetVR", IE_Pressed, this, &AHSCharacter::OnResetVR);
 
 	AbilitySystemComponent->BindAbilityActivationToInputComponent(PlayerInputComponent, FGameplayAbilityInputBinds("ConfirmInput", "CancelInput", "AbilityInput"));
 }
@@ -133,21 +129,6 @@ void AHSCharacter::PossessedBy(AController* NewController)
 	Super::PossessedBy(NewController);
 
 	AbilitySystemComponent->RefreshAbilityActorInfo();
-}
-
-void AHSCharacter::OnResetVR()
-{
-	UHeadMountedDisplayFunctionLibrary::ResetOrientationAndPosition();
-}
-
-void AHSCharacter::TouchStarted(ETouchIndex::Type FingerIndex, FVector Location)
-{
-		Jump();
-}
-
-void AHSCharacter::TouchStopped(ETouchIndex::Type FingerIndex, FVector Location)
-{
-		StopJumping();
 }
 
 void AHSCharacter::TurnAtRate(float Rate)
@@ -197,13 +178,11 @@ void AHSCharacter::OnOverlapBegin_Implementation(UPrimitiveComponent* Comp, AAct
 	APotion* IsPotion = Cast<APotion>(OtherActor);
 	if (IsPotion)
 	{
-		UE_LOG(LogTemp, Warning, TEXT("Colliding with %s"), *(OtherActor->GetName()))
-		//Get Potion properties and use
-		float EffectAmount = IsPotion->GetEffectAmount();
-		bool bIsOverTime = IsPotion->GetIsOvertime();
-		float Duration = IsPotion->GetDuration();
-		UsePotion(EffectAmount, bIsOverTime, Duration);
-		IsPotion->Destroy();
+		//Get Potion and attach to belt
+		IsPotion->SetActorEnableCollision(false);
+		IsPotion->AttachToComponent(this->GetMesh(),FAttachmentTransformRules::SnapToTargetNotIncludingScale, TEXT("Potion_01"));
+		//Add Potion to EquipedPotions Array
+		EquipedPotions.Add(IsPotion);
 	}
 }
 
@@ -216,33 +195,50 @@ void AHSCharacter::PostInitializeComponents()
 	}
 }
 
-void AHSCharacter::UsePotion(float EffectAmount, bool bIsOverTime, float Duration)
+void AHSCharacter::UsePotion()
 {
-	// Construct & retrieve UProperty to affect
-	UGameplayEffect* RecoverHP = ConstructGameplayEffect("RecoverHP");
-
-	// Compile-time checked retrieval of Hp UPROPERTY()
-	// from our UGameUnitAttributeSet class (listed in
-	// UGameUnitAttributeSet.h)
-	UProperty* hpProperty = FindFieldChecked<UProperty>(
-		UPlayerAttributesSet::StaticClass(),
-		GET_MEMBER_NAME_CHECKED(UPlayerAttributesSet, Health));
-
-	// Command the addition of +5 HP to the hpProperty
-	AddModifier(RecoverHP, hpProperty, EGameplayModOp::Additive, FScalableFloat(EffectAmount));
-	// .. for a fixed-duration if checked
-	if (bIsOverTime)
+	//Check EquipedPotions if there is to use
+	if (EquipedPotions.Num() > 0)
 	{
-		RecoverHP->DurationPolicy = EGameplayEffectDurationType::HasDuration;
-		RecoverHP->DurationMagnitude = FScalableFloat(Duration);
+		APotion* Potion = EquipedPotions[0];
+		if (Potion->GetIsEmptyPotion())
+		{
+			UE_LOG(LogTemp, Warning, TEXT("Potion is EMPTY!"))
+				return;
+		}
+		// Get Potion Properties
+		float EffectAmount = Potion->GetEffectAmount();
+		bool bIsOvertime = Potion->GetIsOvertime();
+		float Duration = Potion->GetDuration();
+		// Construct & retrieve UProperty to affect
+		UGameplayEffect* RecoverHP = ConstructGameplayEffect("RecoverHP");
+
+		// Compile-time checked retrieval of Hp UPROPERTY()
+		// from our UGameUnitAttributeSet class (listed in
+		// UGameUnitAttributeSet.h)
+		UProperty* hpProperty = FindFieldChecked<UProperty>(
+			UPlayerAttributesSet::StaticClass(),
+			GET_MEMBER_NAME_CHECKED(UPlayerAttributesSet, Health));
+
+		// Command the addition of +5 HP to the hpProperty
+		AddModifier(RecoverHP, hpProperty, EGameplayModOp::Additive, FScalableFloat(EffectAmount));
+		// .. for a fixed-duration if checked
+		if (bIsOvertime)
+		{
+			RecoverHP->DurationPolicy = EGameplayEffectDurationType::HasDuration;
+			RecoverHP->DurationMagnitude = FScalableFloat(Duration);
+		}
+
+		// .. with 100% chance of success ..
+		RecoverHP->ChanceToApplyToTarget = 1.f;
+
+		// .. with recurrency (Period) of 1 seconds
+		RecoverHP->Period = 1.0f;
+		FActiveGameplayEffectHandle recoverHpEffectHandle = AbilitySystemComponent->ApplyGameplayEffectToTarget(
+			RecoverHP, AbilitySystemComponent, 1.f);
+
+		//Then Destroy potion and remove from Array
+		Potion->SetIsEmptyPotion();
 	}
-
-	// .. with 100% chance of success ..
-	RecoverHP->ChanceToApplyToTarget = 1.f;
-
-	// .. with recurrency (Period) of 1 seconds
-	RecoverHP->Period = 1.0f;
-	FActiveGameplayEffectHandle recoverHpEffectHandle =	AbilitySystemComponent->ApplyGameplayEffectToTarget(
-		RecoverHP, AbilitySystemComponent, 1.f);
 }
 

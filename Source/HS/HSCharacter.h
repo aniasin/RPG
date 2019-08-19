@@ -35,8 +35,11 @@ class AHSCharacter : public ACharacter, public IAbilitySystemInterface
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera, meta = (AllowPrivateAccess = "true"))
 	class UCameraComponent* FollowCamera;
 
+	UPROPERTY()
+		TArray <class APotion*> EquipedPotions;
+
 	//Ability when using potion
-	void UsePotion(float EffectAmount, bool bIsOverTime, float Duration);
+	void UsePotion();
 
 public:
 	AHSCharacter();
@@ -72,9 +75,6 @@ protected:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Abilities)
 	TSubclassOf<class UGameplayAbility> Ability1;
 
-	/** Resets HMD orientation in VR. */
-	void OnResetVR();
-
 	/** Called for forwards/backward input */
 	void MoveForward(float Value);
 
@@ -92,12 +92,6 @@ protected:
 	 * @param Rate	This is a normalized rate, i.e. 1.0 means 100% of desired turn rate
 	 */
 	void LookUpAtRate(float Rate);
-
-	/** Handler for when a touch input begins. */
-	void TouchStarted(ETouchIndex::Type FingerIndex, FVector Location);
-
-	/** Handler for when a touch input stops. */
-	void TouchStopped(ETouchIndex::Type FingerIndex, FVector Location);
 
 protected:
 	// APawn interface

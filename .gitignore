@@ -4,6 +4,7 @@
 Content/StarterContent/*
 Content/Geometry/*
 Content/ThirdPerson/*
+Content/PolygonCity/*
 
 # Visual Studio 2015 database file
 *.VC.db

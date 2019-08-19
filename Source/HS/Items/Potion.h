@@ -18,6 +18,8 @@ public:
 	float GetEffectAmount();
 	bool GetIsOvertime();
 	float GetDuration();
+	bool GetIsEmptyPotion();
+	void SetIsEmptyPotion();
 
 protected:
 	// Called when the game starts or when spawned
@@ -31,6 +33,8 @@ protected:
 	bool bEffectOverTime;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Effect)
 	float Duration;;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Effect)
+		bool bIsEmpty;
 
 public:	
 	// Called every frame
