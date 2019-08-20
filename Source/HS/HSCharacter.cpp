@@ -12,6 +12,8 @@
 #include "Abilities/PlayerAttributesSet.h"
 #include "Items/Potion.h"
 #include "Classes/Components/SceneComponent.h"
+#include "Classes/GameFramework/Controller.h"
+#include "HSPlayerController.h"
 
 //////////////////////////////////////////////////////////////////////////
 // AHSCharacter
@@ -19,7 +21,6 @@
 AHSCharacter::AHSCharacter()
 {
 	// Set size for collision capsule
-
 	GetCapsuleComponent()->InitCapsuleSize(42.f, 96.0f);
 
 	// set our turn rates for input
@@ -143,9 +144,9 @@ void AHSCharacter::PostInitializeComponents()
 void AHSCharacter::PossessedBy(AController* NewController)
 {
 	Super::PossessedBy(NewController);
-
 	AbilitySystemComponent->RefreshAbilityActorInfo();
 }
+
 //////////////////////////////
 // MOVEMENTS ----------------
 void AHSCharacter::TurnAtRate(float Rate)
@@ -188,31 +189,36 @@ void AHSCharacter::MoveRight(float Value)
 		AddMovementInput(Direction, Value);
 	}
 }
+
 ////////////////////////////////
 // INTERACTIONS -----------------
-void AHSCharacter::Interaction()
-{
-	if (bInteract)
-	{
-		Takeobject(CurrentFocusedObject);
-	}
-}
-
+//Setup
 void AHSCharacter::OnOverlapBegin_Implementation(UPrimitiveComponent* Comp, AActor* OtherActor,
 	UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& HitResult)
 {
-	UE_LOG(LogTemp, Warning, TEXT("BEGIN OVERLAP!")) //TODO add widget for player awareness
+	auto PlayerController = Cast<AHSPlayerController>(GetWorld()->GetFirstPlayerController());
+	PlayerController->ToggleInteractionWidget();
 	CurrentFocusedObject = OtherActor;
-	bInteract = true;
+	bHasActorToUse = true; //There is something to interact with
 }
 
 void AHSCharacter::OnOverlapEnd_Implementation(UPrimitiveComponent* Comp, AActor* OtherActor, 
 	UPrimitiveComponent* OtherComp, int32 OtherBodyIndex)
 {
-	UE_LOG(LogTemp, Warning, TEXT("END OVERLAP!"))
+	auto PlayerController = Cast<AHSPlayerController>(GetWorld()->GetFirstPlayerController());
+	PlayerController->ToggleInteractionWidget();
 	if (OtherActor == CurrentFocusedObject) 
 	{
-		bInteract = false;
+		bHasActorToUse = false; //There is nothing to interact with
+	}
+}
+
+void AHSCharacter::Interaction()
+{
+	//If there is something to use and player hit "Interaction" input
+	if (bHasActorToUse)
+	{
+		Takeobject(CurrentFocusedObject);
 	}
 }
 
@@ -224,7 +230,7 @@ void AHSCharacter::Takeobject(AActor* OtherActor)
 		// Get current Equipped potions count
 		int32 PotionCount = EquippedPotions.Num();
 		// if potions count is 5, belt is full
-		if (PotionCount > 4) { return; }
+		if (PotionCount > 4) { return; } //TODO offer opportunity to replace current equipped potions
 
 		//Get Potion and attach to belt at the correct socket
 		const FString Socket = FString::Printf(TEXT("Potion_%d"), PotionCount);
@@ -240,7 +246,7 @@ void AHSCharacter::UsePotion()
 	//Check Equipped Potions if there is to use
 	if (EquippedPotions.Num() > 0)
 	{
-		APotion* Potion = EquippedPotions[0];
+		APotion* Potion = EquippedPotions[0]; //TODO Map 1-5, so player can choose which to use.
 
 		// Get Potion Properties
 		float EffectAmount = Potion->GetEffectAmount();

@@ -65,7 +65,7 @@ public:
 
 
 	void Interaction();
-	bool bInteract;
+	bool bHasActorToUse;
 
 	AActor* CurrentFocusedObject;
 	void Takeobject(AActor* OtherActor);
