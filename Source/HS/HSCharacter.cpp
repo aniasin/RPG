@@ -19,6 +19,7 @@
 AHSCharacter::AHSCharacter()
 {
 	// Set size for collision capsule
+
 	GetCapsuleComponent()->InitCapsuleSize(42.f, 96.0f);
 
 	// set our turn rates for input
@@ -72,6 +73,9 @@ void AHSCharacter::SetupPlayerInputComponent(class UInputComponent* PlayerInputC
 
 	//Items on belt
 	PlayerInputComponent->BindAction("Belt_01", IE_Pressed, this, &AHSCharacter::UsePotion);
+	//Interaction toggle
+	PlayerInputComponent->BindAction("Interaction", IE_Pressed, this, &AHSCharacter::Interaction);
+	//PlayerInputComponent->BindAction("Interaction", IE_Released, this, &AHSCharacter::ToggleInteraction);
 
 	PlayerInputComponent->BindAxis("MoveForward", this, &AHSCharacter::MoveForward);
 	PlayerInputComponent->BindAxis("MoveRight", this, &AHSCharacter::MoveRight);
@@ -105,10 +109,12 @@ inline FGameplayModifierInfo& AddModifier(
 	Info.Attribute.SetUProperty(Property);
 	return Info;
 }
-
+/////////////////////////////
+// BEGINPLAY ---------------
 void AHSCharacter::BeginPlay()
 {
 	Super::BeginPlay();
+
 	if (AbilitySystemComponent)
 	{
 		//Initialize Abilities
@@ -124,13 +130,24 @@ void AHSCharacter::BeginPlay()
 	}
 }
 
+void AHSCharacter::PostInitializeComponents()
+{
+	Super::PostInitializeComponents();
+	if (RootComponent)
+	{
+		GetCapsuleComponent()->OnComponentBeginOverlap.AddDynamic(this, &AHSCharacter::OnOverlapBegin);
+		GetCapsuleComponent()->OnComponentEndOverlap.AddDynamic(this, &AHSCharacter::OnOverlapEnd);
+	}
+}
+
 void AHSCharacter::PossessedBy(AController* NewController)
 {
 	Super::PossessedBy(NewController);
 
 	AbilitySystemComponent->RefreshAbilityActorInfo();
 }
-
+//////////////////////////////
+// MOVEMENTS ----------------
 void AHSCharacter::TurnAtRate(float Rate)
 {
 	// calculate delta for this frame from the rate information
@@ -171,41 +188,60 @@ void AHSCharacter::MoveRight(float Value)
 		AddMovementInput(Direction, Value);
 	}
 }
+////////////////////////////////
+// INTERACTIONS -----------------
+void AHSCharacter::Interaction()
+{
+	if (bInteract)
+	{
+		Takeobject(CurrentFocusedObject);
+	}
+}
 
 void AHSCharacter::OnOverlapBegin_Implementation(UPrimitiveComponent* Comp, AActor* OtherActor,
 	UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& HitResult)
 {
-	APotion* IsPotion = Cast<APotion>(OtherActor);
-	if (IsPotion)
+	UE_LOG(LogTemp, Warning, TEXT("BEGIN OVERLAP!")) //TODO add widget for player awareness
+	CurrentFocusedObject = OtherActor;
+	bInteract = true;
+}
+
+void AHSCharacter::OnOverlapEnd_Implementation(UPrimitiveComponent* Comp, AActor* OtherActor, 
+	UPrimitiveComponent* OtherComp, int32 OtherBodyIndex)
+{
+	UE_LOG(LogTemp, Warning, TEXT("END OVERLAP!"))
+	if (OtherActor == CurrentFocusedObject) 
 	{
-		//Get Potion and attach to belt
-		IsPotion->SetActorEnableCollision(false);
-		IsPotion->AttachToComponent(this->GetMesh(),FAttachmentTransformRules::SnapToTargetNotIncludingScale, TEXT("Potion_01"));
-		//Add Potion to EquipedPotions Array
-		EquipedPotions.Add(IsPotion);
+		bInteract = false;
 	}
 }
 
-void AHSCharacter::PostInitializeComponents()
+void AHSCharacter::Takeobject(AActor* OtherActor)
 {
-	Super::PostInitializeComponents();
-	if (RootComponent)
+	APotion* IsPotion = Cast<APotion>(OtherActor);
+	if (IsPotion)
 	{
-		GetCapsuleComponent()->OnComponentBeginOverlap.AddDynamic(this, &AHSCharacter::OnOverlapBegin);
+		// Get current Equipped potions count
+		int32 PotionCount = EquippedPotions.Num();
+		// if potions count is 5, belt is full
+		if (PotionCount > 4) { return; }
+
+		//Get Potion and attach to belt at the correct socket
+		const FString Socket = FString::Printf(TEXT("Potion_%d"), PotionCount);
+		IsPotion->SetActorEnableCollision(false);
+		IsPotion->AttachToComponent(this->GetMesh(), FAttachmentTransformRules::SnapToTargetNotIncludingScale, (TEXT("%s"), *Socket));
+		//Add Potion to EquipedPotions Array
+		EquippedPotions.Add(IsPotion);
 	}
 }
 
 void AHSCharacter::UsePotion()
 {
-	//Check EquipedPotions if there is to use
-	if (EquipedPotions.Num() > 0)
+	//Check Equipped Potions if there is to use
+	if (EquippedPotions.Num() > 0)
 	{
-		APotion* Potion = EquipedPotions[0];
-		if (Potion->GetIsEmptyPotion())
-		{
-			UE_LOG(LogTemp, Warning, TEXT("Potion is EMPTY!"))
-				return;
-		}
+		APotion* Potion = EquippedPotions[0];
+
 		// Get Potion Properties
 		float EffectAmount = Potion->GetEffectAmount();
 		bool bIsOvertime = Potion->GetIsOvertime();
@@ -238,7 +274,8 @@ void AHSCharacter::UsePotion()
 			RecoverHP, AbilitySystemComponent, 1.f);
 
 		//Then Destroy potion and remove from Array
-		Potion->SetIsEmptyPotion();
+		Potion->Destroy();
+		EquippedPotions.RemoveAt(0);
 	}
 }
 

@@ -14,9 +14,6 @@ float APotion::GetEffectAmount(){return Amount;}
 bool APotion::GetIsOvertime(){return bEffectOverTime;}
 float APotion::GetDuration(){return Duration;}
 
-bool APotion::GetIsEmptyPotion() { return bIsEmpty; }
-void APotion::SetIsEmptyPotion() {bIsEmpty = true;}
-
 // Called when the game starts or when spawned
 void APotion::BeginPlay()
 {

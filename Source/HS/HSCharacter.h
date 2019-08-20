@@ -36,7 +36,7 @@ class AHSCharacter : public ACharacter, public IAbilitySystemInterface
 	class UCameraComponent* FollowCamera;
 
 	UPROPERTY()
-		TArray <class APotion*> EquipedPotions;
+		TArray <class APotion*> EquippedPotions;
 
 	//Ability when using potion
 	void UsePotion();
@@ -59,6 +59,16 @@ public:
 	UFUNCTION(BlueprintNativeEvent, Category = Collision)
 		void OnOverlapBegin(UPrimitiveComponent* Comp, AActor* OtherActor, UPrimitiveComponent* OtherComp,
 			int32 OtherBodyIndex, bool bFromSweep, const FHitResult& HitResult);
+	UFUNCTION(BlueprintNativeEvent, Category = Collision)
+		void OnOverlapEnd(UPrimitiveComponent* Comp, AActor* OtherActor, UPrimitiveComponent* OtherComp,
+			int32 OtherBodyIndex);
+
+
+	void Interaction();
+	bool bInteract;
+
+	AActor* CurrentFocusedObject;
+	void Takeobject(AActor* OtherActor);
 
 	virtual void PostInitializeComponents()override;
 

@@ -18,8 +18,6 @@ public:
 	float GetEffectAmount();
 	bool GetIsOvertime();
 	float GetDuration();
-	bool GetIsEmptyPotion();
-	void SetIsEmptyPotion();
 
 protected:
 	// Called when the game starts or when spawned
