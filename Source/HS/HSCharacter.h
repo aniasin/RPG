@@ -22,6 +22,13 @@ enum class AbilityInput : uint8
 		//Because abilities are granted by input ID, which is an int, you may use enum elements to describe the ID anyway however, because enums are fancily dressed up ints.
 };
 
+UENUM(BlueprintType)
+enum class EStatus : uint8
+{
+	InPeace UMETA(DisplayName = "In Peace"),
+	InCombat UMETA(DisplayName = "In Combat")
+};
+
 UCLASS(config=Game)
 class AHSCharacter : public ACharacter, public IAbilitySystemInterface
 {
@@ -38,11 +45,32 @@ class AHSCharacter : public ACharacter, public IAbilitySystemInterface
 	UPROPERTY()
 		TArray <class APotion*> EquippedPotions;
 
+	virtual void Jump()override;
+
 	//Ability when using potion
 	void UsePotion();
 
+	void SwitchCombat();
+
+	UFUNCTION()
+	void ResetDash();
+	void Dash();
+
+	// Manage Timer for Dash
+	FTimerHandle DashTimer;
+	FTimerDelegate TimerDelegate;
+
+
 public:
 	AHSCharacter();
+
+	// Player Status ie: Combat, peace, ect.
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Status)
+		EStatus Status;
+
+	// For AnimBP
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Status)
+	bool bWantDash;
 
 	// Implement IAbilitySystemInterface
 	UAbilitySystemComponent* GetAbilitySystemComponent() const override;

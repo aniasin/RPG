@@ -77,6 +77,7 @@ void AHSCharacter::SetupPlayerInputComponent(class UInputComponent* PlayerInputC
 	//Interaction toggle
 	PlayerInputComponent->BindAction("Interaction", IE_Pressed, this, &AHSCharacter::Interaction);
 	//PlayerInputComponent->BindAction("Interaction", IE_Released, this, &AHSCharacter::ToggleInteraction);
+	PlayerInputComponent->BindAction("SwitchCombat", IE_Pressed, this, &AHSCharacter::SwitchCombat);
 
 	PlayerInputComponent->BindAxis("MoveForward", this, &AHSCharacter::MoveForward);
 	PlayerInputComponent->BindAxis("MoveRight", this, &AHSCharacter::MoveRight);
@@ -241,6 +242,19 @@ void AHSCharacter::Takeobject(AActor* OtherActor)
 	}
 }
 
+void AHSCharacter::Jump()
+{
+	if (Status == EStatus::InPeace)
+	{
+		Super::Jump();
+	}
+	else if (bWantDash == false)
+	{
+		bWantDash = true;
+		Dash(); //TODO Has to be an Ability, if collide an actor stun or make it fall
+	}
+}
+
 void AHSCharacter::UsePotion()
 {
 	//Check Equipped Potions if there is to use
@@ -284,4 +298,31 @@ void AHSCharacter::UsePotion()
 		EquippedPotions.RemoveAt(0);
 	}
 }
+
+void AHSCharacter::SwitchCombat()
+{
+	if (Status == EStatus::InPeace)
+	{
+		Status = EStatus::InCombat;
+		bUseControllerRotationYaw = true;
+	}
+	else
+	{
+		Status = EStatus::InPeace;
+		bUseControllerRotationYaw = false;
+	}
+}
+
+void AHSCharacter::Dash()
+{
+	GetWorld()->GetTimerManager().SetTimer(DashTimer, this, &AHSCharacter::ResetDash, .5f, false);
+}
+
+void AHSCharacter::ResetDash()
+{
+	GetWorld()->GetTimerManager().ClearTimer(DashTimer);
+	bWantDash = false;
+}
+
+
 
