@@ -9,6 +9,8 @@ Drop those directories from Thirdperson Template in Content/
 + Movement: WASD
 + Ability1: Numpad 1 (only printString)
 + See PlayerStats: Numpad +
++ Left Alt: Switch Combat/Peace
++ Space: jump(Peace) or Dash (Combat)
 
 ### Features
 + Ability System
