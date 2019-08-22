@@ -13,5 +13,7 @@ UCLASS()
 class HS_API UHS_AbilitySystemComponent : public UAbilitySystemComponent
 {
 	GENERATED_BODY()
+
+	
 	
 };

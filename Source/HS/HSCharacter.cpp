@@ -72,6 +72,8 @@ void AHSCharacter::SetupPlayerInputComponent(class UInputComponent* PlayerInputC
 	PlayerInputComponent->BindAction("Jump", IE_Pressed, this, &ACharacter::Jump);
 	PlayerInputComponent->BindAction("Jump", IE_Released, this, &ACharacter::StopJumping);
 
+	PlayerInputComponent->BindAction("Attack", IE_Pressed, this, &AHSCharacter::MeleeAttack);
+
 	//Items on belt
 	PlayerInputComponent->BindAction("Belt_01", IE_Pressed, this, &AHSCharacter::UsePotion);
 	//Interaction toggle
@@ -90,7 +92,7 @@ void AHSCharacter::SetupPlayerInputComponent(class UInputComponent* PlayerInputC
 	PlayerInputComponent->BindAxis("LookUp", this, &APawn::AddControllerPitchInput);
 	PlayerInputComponent->BindAxis("LookUpRate", this, &AHSCharacter::LookUpAtRate);
 
-	AbilitySystemComponent->BindAbilityActivationToInputComponent(PlayerInputComponent, FGameplayAbilityInputBinds("ConfirmInput", "CancelInput", "AbilityInput"));
+	//AbilitySystemComponent->BindAbilityActivationToInputComponent(PlayerInputComponent, FGameplayAbilityInputBinds("ConfirmInput", "CancelInput", "AbilityInput"));
 }
 
 inline UGameplayEffect* ConstructGameplayEffect(FString name)
@@ -117,19 +119,7 @@ void AHSCharacter::BeginPlay()
 {
 	Super::BeginPlay();
 
-	if (AbilitySystemComponent)
-	{
-		//Initialize Abilities
-		if (HasAuthority() && Ability1)
-		{
-			AbilitySystemComponent->GiveAbility(FGameplayAbilitySpec(Ability1.GetDefaultObject(), 1, 0));
-		}
-		AbilitySystemComponent->InitAbilityActorInfo(this, this);
-	}
-	//Initialize Attributes
-	if (AbilitySystemComponent && AttrDataTable) {
-		const UAttributeSet* Attrs = AbilitySystemComponent->InitStats(UPlayerAttributesSet::StaticClass(), AttrDataTable);
-	}
+	AquireAbility(Abilities);
 }
 
 void AHSCharacter::PostInitializeComponents()
@@ -148,8 +138,44 @@ void AHSCharacter::PossessedBy(AController* NewController)
 	AbilitySystemComponent->RefreshAbilityActorInfo();
 }
 
+//Abilities
+void AHSCharacter::AquireAbility(TArray <TSubclassOf<UGameplayAbility>>AbilitiesToAdd)
+{
+	if (AbilitySystemComponent && Abilities.Num() > 0)
+	{
+		//Initialize Abilities
+		if (HasAuthority())
+		{
+			for (int32 i=0; i < Abilities.Num(); i++)
+			{
+				auto AbilityToAquire = Abilities[i];
+				AbilitySystemComponent->GiveAbility(FGameplayAbilitySpec(AbilityToAquire.GetDefaultObject(), 1, i));
+				AbilitySystemComponent->InitAbilityActorInfo(this, this);
+			}
+		}
+		//Initialize Attributes
+		if (AbilitySystemComponent && AttrDataTable)
+		{
+			const UAttributeSet* Attrs = AbilitySystemComponent->InitStats(UPlayerAttributesSet::StaticClass(), AttrDataTable);
+		}
+	}
+}
+
 //////////////////////////////
 // MOVEMENTS ----------------
+void AHSCharacter::Jump()
+{
+	//Cannot jump while engaged in combat
+	if (Status == EStatus::InPeace)
+	{
+		Super::Jump();
+	}
+	else
+	{
+		AbilitySystemComponent->TryActivateAbilityByClass(Abilities[1]);
+	}
+}
+
 void AHSCharacter::TurnAtRate(float Rate)
 {
 	// calculate delta for this frame from the rate information
@@ -189,6 +215,13 @@ void AHSCharacter::MoveRight(float Value)
 		// add movement in that direction
 		AddMovementInput(Direction, Value);
 	}
+}
+
+//////////////////////////////////////
+// COMBAT
+void AHSCharacter::MeleeAttack()
+{
+	AbilitySystemComponent->TryActivateAbilityByClass(Abilities[0]);
 }
 
 ////////////////////////////////
@@ -239,19 +272,6 @@ void AHSCharacter::Takeobject(AActor* OtherActor)
 		IsPotion->AttachToComponent(this->GetMesh(), FAttachmentTransformRules::SnapToTargetNotIncludingScale, (TEXT("%s"), *Socket));
 		//Add Potion to EquipedPotions Array
 		EquippedPotions.Add(IsPotion);
-	}
-}
-
-void AHSCharacter::Jump()
-{
-	if (Status == EStatus::InPeace)
-	{
-		Super::Jump();
-	}
-	else if (bWantDash == false)
-	{
-		bWantDash = true;
-		Dash(); //TODO Has to be an Ability, if collide an actor stun or make it fall
 	}
 }
 
@@ -312,17 +332,3 @@ void AHSCharacter::SwitchCombat()
 		bUseControllerRotationYaw = false;
 	}
 }
-
-void AHSCharacter::Dash()
-{
-	GetWorld()->GetTimerManager().SetTimer(DashTimer, this, &AHSCharacter::ResetDash, .5f, false);
-}
-
-void AHSCharacter::ResetDash()
-{
-	GetWorld()->GetTimerManager().ClearTimer(DashTimer);
-	bWantDash = false;
-}
-
-
-
