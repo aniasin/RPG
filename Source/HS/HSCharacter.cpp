@@ -231,16 +231,22 @@ void AHSCharacter::OnOverlapBegin_Implementation(UPrimitiveComponent* Comp, AAct
 	UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& HitResult)
 {
 	auto PlayerController = Cast<AHSPlayerController>(GetWorld()->GetFirstPlayerController());
-	PlayerController->ToggleInteractionWidget();
-	CurrentFocusedObject = OtherActor;
-	bHasActorToUse = true; //There is something to interact with
+	if (OtherActor->ActorHasTag(TEXT("Interactable")))
+	{
+		PlayerController->ToggleInteractionWidget();
+		CurrentFocusedObject = OtherActor;
+		bHasActorToUse = true; //There is something to interact with
+	}
 }
 
 void AHSCharacter::OnOverlapEnd_Implementation(UPrimitiveComponent* Comp, AActor* OtherActor, 
 	UPrimitiveComponent* OtherComp, int32 OtherBodyIndex)
 {
 	auto PlayerController = Cast<AHSPlayerController>(GetWorld()->GetFirstPlayerController());
-	PlayerController->ToggleInteractionWidget();
+	if (OtherActor->ActorHasTag(TEXT("Interactable")))
+	{
+		PlayerController->ToggleInteractionWidget();
+	}
 	if (OtherActor == CurrentFocusedObject) 
 	{
 		bHasActorToUse = false; //There is nothing to interact with

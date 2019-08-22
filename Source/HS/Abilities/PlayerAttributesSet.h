@@ -24,4 +24,10 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Attributes)
 	FGameplayAttributeData  DefenseMultiplier;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Attributes)
+	FGameplayAttributeData  AttackSpeed;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Attributes)
+	FGameplayAttributeData  Stamina;
+
 };
