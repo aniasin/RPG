@@ -52,6 +52,7 @@ AHSCharacter::AHSCharacter()
 	// Create ability system component, and set it to be explicitly replicated
 	AbilitySystemComponent = CreateDefaultSubobject<UHS_AbilitySystemComponent>(TEXT("AbilitySystemComponent"));
 	AbilitySystemComponent->SetIsReplicated(true);
+	AttributesComponent = CreateDefaultSubobject<UPlayerAttributesSet>(TEXT("AttributesComponent"));
 
 	// Note: The skeletal mesh and anim blueprint references on the Mesh component (inherited from Character) 
 	// are set in the derived blueprint asset named MyCharacter (to avoid direct content references in C++)
@@ -63,8 +64,7 @@ UAbilitySystemComponent* AHSCharacter::GetAbilitySystemComponent() const
 }
 
 //////////////////////////////////////////////////////////////////////////
-// Input
-
+// INPUT
 void AHSCharacter::SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent)
 {
 	// Set up gameplay key bindings
@@ -120,6 +120,8 @@ void AHSCharacter::BeginPlay()
 	Super::BeginPlay();
 
 	AquireAbility(Abilities);
+	//Subscribe to OnHealthChanged delegate from AttributeSet
+	AttributesComponent->OnHealthChanged.AddDynamic(this, &AHSCharacter::OnHealthChanged);
 }
 
 void AHSCharacter::PostInitializeComponents()
@@ -138,7 +140,8 @@ void AHSCharacter::PossessedBy(AController* NewController)
 	AbilitySystemComponent->RefreshAbilityActorInfo();
 }
 
-//Abilities
+///////////////////////////////////
+// ABILITIES
 void AHSCharacter::AquireAbility(TArray <TSubclassOf<UGameplayAbility>>AbilitiesToAdd)
 {
 	if (AbilitySystemComponent && Abilities.Num() > 0)
@@ -160,6 +163,15 @@ void AHSCharacter::AquireAbility(TArray <TSubclassOf<UGameplayAbility>>Abilities
 		}
 	}
 }
+
+/////////////////////////
+//ATTRIBUTES
+void AHSCharacter::OnHealthChanged(float Health, float MaxHealth)
+{
+	K2_OnHealthChanged(Health, MaxHealth);
+}
+
+
 
 //////////////////////////////
 // MOVEMENTS ----------------

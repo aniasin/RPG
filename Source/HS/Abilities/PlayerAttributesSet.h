@@ -6,6 +6,7 @@
 #include "AttributeSet.h"
 #include "PlayerAttributesSet.generated.h"
 
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnHealthChangedDel, float, Health, float, MaxHealth);
 /**
  * 
  */
@@ -15,8 +16,13 @@ class HS_API UPlayerAttributesSet : public UAttributeSet
 	GENERATED_BODY()
 
 public:
+	UPlayerAttributesSet();
+
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Attributes)
 	FGameplayAttributeData  Health;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Attributes)
+		FGameplayAttributeData MaxHealth;
 	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Attributes)
 	FGameplayAttributeData  AttackMultiplier;
@@ -29,5 +35,8 @@ public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Attributes)
 	FGameplayAttributeData  Stamina;
+
+	void PostGameplayEffectExecute(const struct FGameplayEffectModCallbackData& Data)override;
+	FOnHealthChangedDel OnHealthChanged;
 
 };

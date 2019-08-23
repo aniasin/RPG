@@ -63,6 +63,11 @@ public:
 	// Implement IAbilitySystemInterface
 	UAbilitySystemComponent* GetAbilitySystemComponent() const override;
 
+	UFUNCTION()
+	void OnHealthChanged(float Health, float MaxHealth);
+	UFUNCTION(BlueprintImplementableEvent, Category = CharacterStats, meta = (DisplayName = "OnHealthChanged"))
+	void K2_OnHealthChanged(float Health, float MaxHealth);
+
 	// Initialize Abilities and Attributes
 	UFUNCTION(BlueprintCallable, Category = Abilities)
 		void AquireAbility(TArray <TSubclassOf<UGameplayAbility>>AbilitiesToAdd);
@@ -97,8 +102,12 @@ protected:
 	/** Our ability system */
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = Abilities)
 	class UDataTable* AttrDataTable;
+
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Abilities, meta = (AllowPrivateAccess = "true"))
 	class UHS_AbilitySystemComponent* AbilitySystemComponent;
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Abilities, meta = (AllowPrivateAccess = "true"))
+	class UPlayerAttributesSet* AttributesComponent;
+
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Abilities)
 	TArray <class TSubclassOf<UGameplayAbility>> Abilities;
 
