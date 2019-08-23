@@ -16,8 +16,7 @@
 #include "HSPlayerController.h"
 
 //////////////////////////////////////////////////////////////////////////
-// AHSCharacter
-
+// CONSTRUCTOR ----------------------------------------------------
 AHSCharacter::AHSCharacter()
 {
 	// Set size for collision capsule
@@ -63,7 +62,7 @@ UAbilitySystemComponent* AHSCharacter::GetAbilitySystemComponent() const
 }
 
 //////////////////////////////////////////////////////////////////////////
-// INPUT
+// INPUT --------------------------------------------------------------
 void AHSCharacter::SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent)
 {
 	// Set up gameplay key bindings
@@ -140,7 +139,7 @@ void AHSCharacter::PossessedBy(AController* NewController)
 }
 
 ///////////////////////////////////
-// ABILITIES
+// ABILITIES --------------------
 void AHSCharacter::AquireAbility(TArray <TSubclassOf<UGameplayAbility>>AbilitiesToAdd)
 {
 	if (AbilitySystemComponent && Abilities.Num() > 0)
@@ -163,8 +162,8 @@ void AHSCharacter::AquireAbility(TArray <TSubclassOf<UGameplayAbility>>Abilities
 	}
 }
 
-/////////////////////////
-//ATTRIBUTES
+/////////////////////////////
+//ATTRIBUTES -----------------
 void AHSCharacter::OnHealthChanged(float Health, float MaxHealth)
 {
 	if (Health <= .0f && !bIsDead)
@@ -181,14 +180,17 @@ void AHSCharacter::OnHealthChanged(float Health, float MaxHealth)
 // MOVEMENTS ----------------
 void AHSCharacter::Jump()
 {
-	//Cannot jump while engaged in combat
+	//Cannot jump while engaged in combat..
 	if (Status == EStatus::InPeace)
 	{
 		Super::Jump();
 	}
 	else
 	{
+		//.. but Dash
 		AbilitySystemComponent->TryActivateAbilityByClass(Abilities[1]);
+		FVector Direction = GetActorForwardVector(); //TODO change direction depending on input(right, left, front or back)
+		this->LaunchCharacter((Direction * 5000.f), false, false);//TODO perhaps could be variable (depending on skill)
 	}
 }
 
@@ -234,9 +236,24 @@ void AHSCharacter::MoveRight(float Value)
 }
 
 //////////////////////////////////////
-// COMBAT
+// COMBAT ---------------------------
+void AHSCharacter::SwitchCombat()
+{
+	if (Status == EStatus::InPeace)
+	{
+		Status = EStatus::InCombat;
+		bUseControllerRotationYaw = true;
+	}
+	else
+	{
+		Status = EStatus::InPeace;
+		bUseControllerRotationYaw = false;
+	}
+}
+
 void AHSCharacter::MeleeAttack()
 {
+	//Basic Melee attack
 	AbilitySystemComponent->TryActivateAbilityByClass(Abilities[0]);
 }
 
@@ -281,7 +298,7 @@ void AHSCharacter::Interaction()
 void AHSCharacter::Takeobject(AActor* OtherActor)
 {
 	APotion* IsPotion = Cast<APotion>(OtherActor);
-	if (IsPotion)
+	if (IsPotion)//TODO Make enum?
 	{
 		// Get current Equipped potions count
 		int32 PotionCount = EquippedPotions.Num();
@@ -299,15 +316,17 @@ void AHSCharacter::Takeobject(AActor* OtherActor)
 
 void AHSCharacter::UsePotion()
 {
+	//TODO Prevent usage if at max health
 	//Check Equipped Potions if there is to use
 	if (EquippedPotions.Num() > 0)
 	{
 		APotion* Potion = EquippedPotions[0]; //TODO Map 1-5, so player can choose which to use.
-
+		
 		// Get Potion Properties
 		float EffectAmount = Potion->GetEffectAmount();
 		bool bIsOvertime = Potion->GetIsOvertime();
 		float Duration = Potion->GetDuration();
+
 		// Construct & retrieve UProperty to affect
 		UGameplayEffect* RecoverHP = ConstructGameplayEffect("RecoverHP");
 
@@ -335,22 +354,9 @@ void AHSCharacter::UsePotion()
 		FActiveGameplayEffectHandle recoverHpEffectHandle = AbilitySystemComponent->ApplyGameplayEffectToTarget(
 			RecoverHP, AbilitySystemComponent, 1.f);
 
+
 		//Then Destroy potion and remove from Array
 		Potion->Destroy();
 		EquippedPotions.RemoveAt(0);
-	}
-}
-
-void AHSCharacter::SwitchCombat()
-{
-	if (Status == EStatus::InPeace)
-	{
-		Status = EStatus::InCombat;
-		bUseControllerRotationYaw = true;
-	}
-	else
-	{
-		Status = EStatus::InPeace;
-		bUseControllerRotationYaw = false;
 	}
 }

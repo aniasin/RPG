@@ -10,7 +10,8 @@ UCLASS()
 class HS_API APotion : public AActor
 {
 	GENERATED_BODY()
-	
+
+
 public:	
 	// Sets default values for this actor's properties
 	APotion();
@@ -18,6 +19,9 @@ public:
 	float GetEffectAmount();
 	bool GetIsOvertime();
 	float GetDuration();
+
+	UPROPERTY()
+	class UCapsuleComponent* CapsuleComponent;
 
 protected:
 	// Called when the game starts or when spawned
@@ -28,7 +32,7 @@ protected:
 	float Amount;
 	//Effect has duration?
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Effect)
-	bool bEffectOverTime;
+	bool bIsOverTime;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Effect)
 	float Duration;;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Effect)

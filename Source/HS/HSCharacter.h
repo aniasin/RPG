@@ -53,6 +53,7 @@ class AHSCharacter : public ACharacter, public IAbilitySystemInterface
 
 	void SwitchCombat();
 
+////////////////////////////////////////
 public:
 	AHSCharacter();
 	
@@ -63,6 +64,7 @@ public:
 	// Implement IAbilitySystemInterface
 	UAbilitySystemComponent* GetAbilitySystemComponent() const override;
 
+	// Health
 	UFUNCTION()
 	void OnHealthChanged(float Health, float MaxHealth);
 	UFUNCTION(BlueprintImplementableEvent, Category = CharacterStats, meta = (DisplayName = "OnHealthChanged"))
@@ -72,15 +74,17 @@ public:
 
 	// Initialize Abilities and Attributes
 	UFUNCTION(BlueprintCallable, Category = Abilities)
-		void AquireAbility(TArray <TSubclassOf<UGameplayAbility>>AbilitiesToAdd);
+	void AquireAbility(TArray <TSubclassOf<UGameplayAbility>>AbilitiesToAdd);
+
+	virtual void PostInitializeComponents()override;
 
 	//Interactions
 	UFUNCTION(BlueprintNativeEvent, Category = Collision)
-		void OnOverlapBegin(UPrimitiveComponent* Comp, AActor* OtherActor, UPrimitiveComponent* OtherComp,
-			int32 OtherBodyIndex, bool bFromSweep, const FHitResult& HitResult);
+	void OnOverlapBegin(UPrimitiveComponent* Comp, AActor* OtherActor, UPrimitiveComponent* OtherComp,
+		int32 OtherBodyIndex, bool bFromSweep, const FHitResult& HitResult);
 	UFUNCTION(BlueprintNativeEvent, Category = Collision)
-		void OnOverlapEnd(UPrimitiveComponent* Comp, AActor* OtherActor, UPrimitiveComponent* OtherComp,
-			int32 OtherBodyIndex);
+	void OnOverlapEnd(UPrimitiveComponent* Comp, AActor* OtherActor, UPrimitiveComponent* OtherComp,
+		int32 OtherBodyIndex);
 
 	void Interaction();
 	bool bHasActorToUse;
@@ -88,15 +92,18 @@ public:
 	AActor* CurrentFocusedObject;
 	void Takeobject(AActor* OtherActor);
 
-	/** Base turn rate, in deg/sec. Other scaling may affect final turn rate. */
+	// Movement
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera)
 	float BaseTurnRate;
-	/** Base look up/down rate, in deg/sec. Other scaling may affect final rate. */
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera)
 	float BaseLookUpRate;
 
-	virtual void PostInitializeComponents()override;
+	/** Returns CameraBoom subobject **/
+	FORCEINLINE class USpringArmComponent* GetCameraBoom() const { return CameraBoom; }
+	/** Returns FollowCamera subobject **/
+	FORCEINLINE class UCameraComponent* GetFollowCamera() const { return FollowCamera; }
 
+////////////////////////////////////////////
 protected:
 	virtual void BeginPlay()override;
 	virtual void PossessedBy(AController* NewController)override;
@@ -125,9 +132,4 @@ protected:
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 	// End of APawn interface
 
-public:
-	/** Returns CameraBoom subobject **/
-	FORCEINLINE class USpringArmComponent* GetCameraBoom() const { return CameraBoom; }
-	/** Returns FollowCamera subobject **/
-	FORCEINLINE class UCameraComponent* GetFollowCamera() const { return FollowCamera; }
 };
