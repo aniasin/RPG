@@ -67,6 +67,8 @@ public:
 	void OnHealthChanged(float Health, float MaxHealth);
 	UFUNCTION(BlueprintImplementableEvent, Category = CharacterStats, meta = (DisplayName = "OnHealthChanged"))
 	void K2_OnHealthChanged(float Health, float MaxHealth);
+	UFUNCTION(BlueprintImplementableEvent, Category = CharacterStats, meta = (DisplayName = "OnDeath"))
+	void K2_OnDeath();
 
 	// Initialize Abilities and Attributes
 	UFUNCTION(BlueprintCallable, Category = Abilities)
@@ -105,7 +107,7 @@ protected:
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Abilities, meta = (AllowPrivateAccess = "true"))
 	class UHS_AbilitySystemComponent* AbilitySystemComponent;
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Abilities, meta = (AllowPrivateAccess = "true"))
+	UPROPERTY()
 	class UPlayerAttributesSet* AttributesComponent;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Abilities)
@@ -117,7 +119,8 @@ protected:
 	void TurnAtRate(float Rate);
 	void LookUpAtRate(float Rate);
 
-protected:
+	bool bIsDead;
+
 	// APawn interface
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 	// End of APawn interface
