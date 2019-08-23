@@ -264,6 +264,7 @@ void AHSCharacter::OnOverlapBegin_Implementation(UPrimitiveComponent* Comp, AAct
 	UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& HitResult)
 {
 	auto PlayerController = Cast<AHSPlayerController>(GetWorld()->GetFirstPlayerController());
+	// Interaction is only possible with actor tagged for
 	if (OtherActor->ActorHasTag(TEXT("Interactable")))
 	{
 		PlayerController->ToggleInteractionWidget();
@@ -276,6 +277,7 @@ void AHSCharacter::OnOverlapEnd_Implementation(UPrimitiveComponent* Comp, AActor
 	UPrimitiveComponent* OtherComp, int32 OtherBodyIndex)
 {
 	auto PlayerController = Cast<AHSPlayerController>(GetWorld()->GetFirstPlayerController());
+	// Interaction is only possible with actor tagged for
 	if (OtherActor->ActorHasTag(TEXT("Interactable")))
 	{
 		PlayerController->ToggleInteractionWidget();
@@ -316,45 +318,42 @@ void AHSCharacter::Takeobject(AActor* OtherActor)
 
 void AHSCharacter::UsePotion()
 {
-	//TODO Prevent usage if at max health
 	//Check Equipped Potions if there is to use
 	if (EquippedPotions.Num() > 0)
 	{
 		APotion* Potion = EquippedPotions[0]; //TODO Map 1-5, so player can choose which to use.
-		
+				
 		// Get Potion Properties
 		float EffectAmount = Potion->GetEffectAmount();
 		bool bIsOvertime = Potion->GetIsOvertime();
 		float Duration = Potion->GetDuration();
 
+		//if full health and it's not poison, don't use potion //TODO Player feedback
+		float MaxHealth = AttributesComponent->MaxHealth.GetCurrentValue();
+		float CurrentHealth = AttributesComponent->Health.GetCurrentValue();
+		if (CurrentHealth >= MaxHealth && EffectAmount > 0.1f) {return;}
+
 		// Construct & retrieve UProperty to affect
 		UGameplayEffect* RecoverHP = ConstructGameplayEffect("RecoverHP");
 
-		// Compile-time checked retrieval of Hp UPROPERTY()
-		// from our UGameUnitAttributeSet class (listed in
-		// UGameUnitAttributeSet.h)
 		UProperty* hpProperty = FindFieldChecked<UProperty>(
 			UPlayerAttributesSet::StaticClass(),
 			GET_MEMBER_NAME_CHECKED(UPlayerAttributesSet, Health));
 
-		// Command the addition of +5 HP to the hpProperty
+		// Command the addition of EffectAmount HP to the hpProperty
 		AddModifier(RecoverHP, hpProperty, EGameplayModOp::Additive, FScalableFloat(EffectAmount));
-		// .. for a fixed-duration if checked
+		// .. overtime effect if checked
 		if (bIsOvertime)
 		{
 			RecoverHP->DurationPolicy = EGameplayEffectDurationType::HasDuration;
 			RecoverHP->DurationMagnitude = FScalableFloat(Duration);
 		}
-
 		// .. with 100% chance of success ..
 		RecoverHP->ChanceToApplyToTarget = 1.f;
-
-		// .. with recurrency (Period) of 1 seconds
+		// .. every second
 		RecoverHP->Period = 1.0f;
 		FActiveGameplayEffectHandle recoverHpEffectHandle = AbilitySystemComponent->ApplyGameplayEffectToTarget(
 			RecoverHP, AbilitySystemComponent, 1.f);
-
-
 		//Then Destroy potion and remove from Array
 		Potion->Destroy();
 		EquippedPotions.RemoveAt(0);

@@ -20,9 +20,6 @@ public:
 	bool GetIsOvertime();
 	float GetDuration();
 
-	UPROPERTY()
-	class UCapsuleComponent* CapsuleComponent;
-
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
