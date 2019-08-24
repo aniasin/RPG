@@ -70,7 +70,8 @@ void AHSCharacter::SetupPlayerInputComponent(class UInputComponent* PlayerInputC
 	PlayerInputComponent->BindAction("Jump", IE_Pressed, this, &ACharacter::Jump);
 	PlayerInputComponent->BindAction("Jump", IE_Released, this, &ACharacter::StopJumping);
 
-	PlayerInputComponent->BindAction("Attack", IE_Pressed, this, &AHSCharacter::MeleeAttack);
+	PlayerInputComponent->BindAction("Attack", IE_Pressed, this, &AHSCharacter::RightHand);
+	PlayerInputComponent->BindAction("LeftHand", IE_Pressed, this, &AHSCharacter::LeftHand);
 
 	//Items on belt
 	PlayerInputComponent->BindAction("Belt_01", IE_Pressed, this, &AHSCharacter::UsePotion);
@@ -251,10 +252,21 @@ void AHSCharacter::SwitchCombat()
 	}
 }
 
-void AHSCharacter::MeleeAttack()
+void AHSCharacter::RightHand()
 {
-	//Basic Melee attack
-	AbilitySystemComponent->TryActivateAbilityByClass(Abilities[0]);
+	if (Status == EStatus::InCombat)
+	{
+		//Basic Melee attack
+		AbilitySystemComponent->TryActivateAbilityByClass(Abilities[0]);
+	}
+}
+
+void AHSCharacter::LeftHand()
+{
+	if (Status == EStatus::InCombat)
+	{
+		AbilitySystemComponent->TryActivateAbilityByClass(Abilities[2]);
+	}
 }
 
 ////////////////////////////////

@@ -46,7 +46,8 @@ class AHSCharacter : public ACharacter, public IAbilitySystemInterface
 	virtual void Jump()override;
 
 	//Basic melee attack
-	void MeleeAttack();
+	void RightHand();
+	void LeftHand();
 
 	//Ability when using potion
 	void UsePotion();
