@@ -5,6 +5,9 @@ UE4.22 Powered.
 Drop those directories from Thirdperson Template in Content/
 + /Geometry
 + /ThirdPerson
++ Climbing
+Climbable objects have to be WorldStatic
+With overlap response to SphereTracer channel
 
 ### Controls
 + Movement: ZQSD
@@ -16,13 +19,18 @@ Drop those directories from Thirdperson Template in Content/
 
 ### Features
 + Ability System
-Player Health
+Health
+AttackSpeed
 + Pause menu
-Keybinding
-
-+ Potions Config
+Settings>>Keybinding
+Quit
+Resume
++ Climbing
+Rough system... lot to tweak
+MoveForward to climb(see setup)
+Jump to climb ledges (while hanging)
++ Configurable potions
 EffectAmount (Positive/Negative)
 Can be Overtime with duration or instant
-
 + Dynamic Material
 Red potions with negative effect, Green positive.
