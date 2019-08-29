@@ -40,9 +40,6 @@ class AHSCharacter : public ACharacter, public IAbilitySystemInterface
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera, meta = (AllowPrivateAccess = "true"))
 	class UCameraComponent* FollowCamera;
 
-	UPROPERTY()
-	TArray <class APotion*> EquippedPotions;
-
 	virtual void Jump()override;
 
 	//Basic melee attack
@@ -57,11 +54,19 @@ class AHSCharacter : public ACharacter, public IAbilitySystemInterface
 ////////////////////////////////////////
 public:
 	AHSCharacter();
+
+	//Equipment
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = Equipment)
-		UChildActorComponent* WeaponRight;
+		TArray <class APotion*> EquippedPotions;
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = Equipment)
-		UChildActorComponent* WeaponLeft;
-	
+		class AWeapon* CurrentWeaponRight;
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = Equipment)
+		class AWeapon* CurrentWeaponLeft;
+
+	// Get weapon
+	UFUNCTION(BlueprintImplementableEvent, Category = Equipment, meta = (DisplayName = "TakeWeapon"))
+		void K2_TakeWeapon(AWeapon* Weapon);
+
 	// Player Status ie: Combat, peace, ect.
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = Status)
 	EStatus Status;

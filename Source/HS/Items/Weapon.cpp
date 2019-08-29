@@ -2,9 +2,6 @@
 
 
 #include "Weapon.h"
-#include "Components/StaticMeshComponent.h"
-#include "Components/CapsuleComponent.h"
-#include "Components/SphereComponent.h"
 
 // Sets default values
 AWeapon::AWeapon()

@@ -11,16 +11,13 @@ class HS_API AWeapon : public AActor
 {
 	GENERATED_BODY()
 	
-public:	
 	// Sets default values for this actor's properties
 	AWeapon();
 
-	// Called every frame
-	virtual void Tick(float DeltaTime) override;
-
-protected:
-	// Called when the game starts or when spawned
-	virtual void BeginPlay() override;
+public:
+	// The owner of this
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = Equipment)
+		AActor* OwnerActor;
 
 	//Item Stats
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Stats)
@@ -29,6 +26,13 @@ protected:
 		float Damage;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Stats)
 		float SpeedMultiplier;
+
+	// Called every frame
+	virtual void Tick(float DeltaTime) override;
+
+protected:
+	// Called when the game starts or when spawned
+	virtual void BeginPlay() override;
 
 private:
 

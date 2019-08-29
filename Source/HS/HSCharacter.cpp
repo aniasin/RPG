@@ -12,6 +12,7 @@
 #include "Abilities/HS_AbilitySystemComponent.h"
 #include "Abilities/PlayerAttributesSet.h"
 #include "Items/Potion.h"
+#include "Items/Weapon.h"
 #include "Classes/Components/SceneComponent.h"
 #include "Classes/GameFramework/Controller.h"
 #include "HSPlayerController.h"
@@ -48,11 +49,6 @@ AHSCharacter::AHSCharacter()
 	FollowCamera = CreateDefaultSubobject<UCameraComponent>(TEXT("FollowCamera"));
 	FollowCamera->SetupAttachment(CameraBoom, USpringArmComponent::SocketName); // Attach the camera to the end of the boom and let the boom adjust to match the controller orientation
 	FollowCamera->bUsePawnControlRotation = false; // Camera does not rotate relative to arm
-
-	WeaponRight = CreateDefaultSubobject<UChildActorComponent>(TEXT("WeaponRight"));
-	WeaponRight->SetupAttachment(GetMesh(), TEXT("Weapon_r"));
-	WeaponLeft = CreateDefaultSubobject<UChildActorComponent>(TEXT("WeaponLeft"));
-	WeaponLeft->SetupAttachment(GetMesh());
 
 	// Create ability system component, and set it to be explicitly replicated
 	AbilitySystemComponent = CreateDefaultSubobject<UHS_AbilitySystemComponent>(TEXT("AbilitySystemComponent"));
@@ -246,21 +242,38 @@ void AHSCharacter::MoveRight(float Value)
 // COMBAT ---------------------------
 void AHSCharacter::SwitchCombat()
 {
+	//Change status for AnimBP to know and attach weapons (if there is) on correct socket
 	if (Status == EStatus::InPeace)
 	{
 		Status = EStatus::InCombat;
 		bUseControllerRotationYaw = true;
+		if (CurrentWeaponRight)
+		{
+			CurrentWeaponRight->AttachToComponent(GetMesh(), FAttachmentTransformRules::SnapToTargetIncludingScale, TEXT("Weapon_r"));
+		}
+		if (CurrentWeaponLeft)
+		{
+			CurrentWeaponLeft->AttachToComponent(GetMesh(), FAttachmentTransformRules::SnapToTargetIncludingScale, TEXT("Weapon_l"));
+		}
 	}
 	else
 	{
 		Status = EStatus::InPeace;
 		bUseControllerRotationYaw = false;
+		if (CurrentWeaponRight)
+		{
+			CurrentWeaponRight->AttachToComponent(GetMesh(), FAttachmentTransformRules::SnapToTargetIncludingScale, TEXT("WeaponBack"));
+		}
+		if (CurrentWeaponLeft)
+		{
+			CurrentWeaponLeft->AttachToComponent(GetMesh(), FAttachmentTransformRules::SnapToTargetIncludingScale, TEXT("WeaponBack2"));
+		}
 	}
 }
 
 void AHSCharacter::RightHand()
 {
-	if (Status == EStatus::InCombat)
+	if (Status == EStatus::InCombat && CurrentWeaponRight)
 	{
 		//Basic Melee attack
 		AbilitySystemComponent->TryActivateAbilityByClass(Abilities[0]);
@@ -269,7 +282,7 @@ void AHSCharacter::RightHand()
 
 void AHSCharacter::LeftHand()
 {
-	if (Status == EStatus::InCombat)
+	if (Status == EStatus::InCombat && CurrentWeaponLeft)
 	{
 		AbilitySystemComponent->TryActivateAbilityByClass(Abilities[2]);
 	}
@@ -283,7 +296,7 @@ void AHSCharacter::OnOverlapBegin_Implementation(UPrimitiveComponent* Comp, AAct
 {
 	auto PlayerController = Cast<AHSPlayerController>(GetWorld()->GetFirstPlayerController());
 	// Interaction is only possible with actor tagged for
-	if (OtherActor->ActorHasTag(TEXT("Interactable")))
+	if (OtherActor->ActorHasTag(TEXT("Interact")))
 	{
 		PlayerController->ToggleInteractionWidget();
 		CurrentFocusedObject = OtherActor;
@@ -296,7 +309,7 @@ void AHSCharacter::OnOverlapEnd_Implementation(UPrimitiveComponent* Comp, AActor
 {
 	auto PlayerController = Cast<AHSPlayerController>(GetWorld()->GetFirstPlayerController());
 	// Interaction is only possible with actor tagged for
-	if (OtherActor->ActorHasTag(TEXT("Interactable")))
+	if (OtherActor->ActorHasTag(TEXT("Interact")))
 	{
 		PlayerController->ToggleInteractionWidget();
 	}
@@ -317,8 +330,9 @@ void AHSCharacter::Interaction()
 
 void AHSCharacter::Takeobject(AActor* OtherActor)
 {
-	APotion* IsPotion = Cast<APotion>(OtherActor);
-	if (IsPotion)//TODO Make enum?
+	// Potion
+	APotion* Potion = Cast<APotion>(OtherActor);
+	if (Potion)//TODO Make enum?
 	{
 		// Get current Equipped potions count
 		int32 PotionCount = EquippedPotions.Num();
@@ -327,10 +341,34 @@ void AHSCharacter::Takeobject(AActor* OtherActor)
 
 		//Get Potion and attach to belt at the correct socket
 		const FString Socket = FString::Printf(TEXT("Potion_%d"), PotionCount);
-		IsPotion->SetActorEnableCollision(false);
-		IsPotion->AttachToComponent(this->GetMesh(), FAttachmentTransformRules::SnapToTargetNotIncludingScale, (TEXT("%s"), *Socket));
+		Potion->SetActorEnableCollision(false);
+		Potion->AttachToComponent(this->GetMesh(), FAttachmentTransformRules::SnapToTargetNotIncludingScale, (TEXT("%s"), *Socket));
 		//Add Potion to EquipedPotions Array
-		EquippedPotions.Add(IsPotion);
+		EquippedPotions.Add(Potion);
+	}
+	// Weapon
+	AWeapon* Weapon = Cast<AWeapon>(OtherActor);
+	if (Weapon)
+	{
+		// take the weapon and register it as currently equipped
+		if (Weapon->bIsLeftHand && !CurrentWeaponLeft) //TODO offer opportunity to change weapon if player has already one
+		{
+			K2_TakeWeapon(Weapon);
+			Weapon->AttachToComponent(GetMesh(), FAttachmentTransformRules::SnapToTargetIncludingScale, TEXT("WeaponBack2"));
+			Weapon->Tags.RemoveAt(0);
+			Weapon->OwnerActor = this;
+			CurrentWeaponLeft = Weapon;
+
+		}
+		else if (!(Weapon->bIsLeftHand) && !CurrentWeaponRight)
+		{
+			K2_TakeWeapon(Weapon);
+			Weapon->AttachToComponent(GetMesh(), FAttachmentTransformRules::SnapToTargetIncludingScale, TEXT("WeaponBack"));
+			Weapon->Tags.RemoveAt(0);
+			Weapon->OwnerActor = this;
+			//UE_LOG(LogTemp, Warning, TEXT("OWNER IS: %s"), *(Weapon->OwnerActor))
+			CurrentWeaponRight = Weapon;
+		}
 	}
 }
 
