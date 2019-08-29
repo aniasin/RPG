@@ -7,7 +7,7 @@
 
 
 
-ANpcCharacter::ANpcCharacter()
+ANpcCharacter::ANpcCharacter():Super()
 {
 
 }

@@ -2,9 +2,6 @@
 UE4.22 Powered.
 
 ### SetUp
-Drop those directories from Thirdperson Template in Content/
-+ /Geometry
-+ /ThirdPerson
 + Climbing
 Climbable objects have to be WorldStatic
 With overlap response to SphereTracer channel

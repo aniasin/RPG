@@ -4,6 +4,7 @@
 #include "Camera/CameraComponent.h"
 #include "Components/CapsuleComponent.h"
 #include "Components/InputComponent.h"
+#include "Components/StaticMeshComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "GameFramework/Controller.h"
 #include "GameFramework/SpringArmComponent.h"
@@ -47,6 +48,11 @@ AHSCharacter::AHSCharacter()
 	FollowCamera = CreateDefaultSubobject<UCameraComponent>(TEXT("FollowCamera"));
 	FollowCamera->SetupAttachment(CameraBoom, USpringArmComponent::SocketName); // Attach the camera to the end of the boom and let the boom adjust to match the controller orientation
 	FollowCamera->bUsePawnControlRotation = false; // Camera does not rotate relative to arm
+
+	WeaponRight = CreateDefaultSubobject<UChildActorComponent>(TEXT("WeaponRight"));
+	WeaponRight->SetupAttachment(GetMesh(), TEXT("Weapon_r"));
+	WeaponLeft = CreateDefaultSubobject<UChildActorComponent>(TEXT("WeaponLeft"));
+	WeaponLeft->SetupAttachment(GetMesh());
 
 	// Create ability system component, and set it to be explicitly replicated
 	AbilitySystemComponent = CreateDefaultSubobject<UHS_AbilitySystemComponent>(TEXT("AbilitySystemComponent"));

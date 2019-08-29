@@ -57,6 +57,10 @@ class AHSCharacter : public ACharacter, public IAbilitySystemInterface
 ////////////////////////////////////////
 public:
 	AHSCharacter();
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = Equipment)
+		UChildActorComponent* WeaponRight;
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = Equipment)
+		UChildActorComponent* WeaponLeft;
 	
 	// Player Status ie: Combat, peace, ect.
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = Status)
