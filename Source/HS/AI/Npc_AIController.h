@@ -16,6 +16,8 @@ class HS_API ANpc_AIController : public AAIController
 	GENERATED_BODY()
 		ANpc_AIController();
 
+	class ANpcCharacter* AICharacter;
+
 	class UAIPerceptionComponent* PerceptionComponent;
 	class UAISenseConfig_Sight* SightConfig;
 	class UAISenseConfig_Hearing* HearingConfig;
@@ -29,6 +31,9 @@ class HS_API ANpc_AIController : public AAIController
 
 	UFUNCTION()
 		void OnTargetPerceptionUpdate(AActor* Actor, FAIStimulus Stimulus);
+
+public:
+	void TakeObject(AActor* OtherActor);
 
 protected:
 	void OnPossess(APawn* InPawn);

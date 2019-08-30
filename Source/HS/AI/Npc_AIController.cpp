@@ -43,7 +43,7 @@ void ANpc_AIController::OnPossess(APawn* InPawn)
 {
 	Super::OnPossess(InPawn);
 
-	ANpcCharacter* AICharacter = Cast<ANpcCharacter>(InPawn);
+	AICharacter = Cast<ANpcCharacter>(InPawn);
 	if (AICharacter)
 	{
 		UBehaviorTree* BehaviorTree = AICharacter->BehaviorTree;
@@ -56,9 +56,21 @@ void ANpc_AIController::OnPossess(APawn* InPawn)
 
 void ANpc_AIController::OnTargetPerceptionUpdate(AActor* Actor, FAIStimulus Stimulus)
 {
-	if (Cast<AHSCharacter>(Actor))
-	{
-		UE_LOG(LogTemp, Warning, TEXT("I CAN SEE YOU!"))
-	}
+	//Retrieving perceived actors
+	TArray<AActor*> SeenActors;
+	PerceptionComponent->GetCurrentlyPerceivedActors(TSubclassOf<UAISense_Sight>(), SeenActors);
+
+	// Numbers of seen actors and if they enter or exit view
+	bool bIsSeen = SeenActors.Contains(Actor);
+	int32 NumberOfActorsSeen = SeenActors.Num();
+
+	// Formating text for debug message
+	FString DebugText = FString(Actor->GetName() + " has just " + (bIsSeen ? "entered" : "left") + " my field of view ");
+	UE_LOG(LogTemp, Warning, TEXT("%s"), *DebugText);
+}
+
+void ANpc_AIController::TakeObject(AActor* OtherActor)
+{
+	AICharacter->Takeobject(OtherActor);
 }
 
