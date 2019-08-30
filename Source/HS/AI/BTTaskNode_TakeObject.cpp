@@ -5,24 +5,29 @@
 #include "BehaviorTree/BlackboardComponent.h"
 #include "AIController.h"
 #include "AI/Npc_AIController.h"
+#include "Classes/GameFramework/Character.h"
+#include "HSCharacter.h"
 
 EBTNodeResult::Type UBTTaskNode_TakeObject::ExecuteTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory)
 {
-	UE_LOG(LogTemp, Warning, TEXT("TASK TAKEOBJECT IS RUNNING!"))
 	// Check Blackboard component and controlled pawn
 	UBlackboardComponent* BlackboardComponent = OwnerComp.GetBlackboardComponent();
-	APawn* ControlledPawn = OwnerComp.GetAIOwner()->GetPawn();
-	if (!BlackboardComponent || !ControlledPawn)
+	ACharacter* ControlledCharacter = OwnerComp.GetAIOwner()->GetCharacter();
+	if (!BlackboardComponent || !ControlledCharacter)
 	{
 		return EBTNodeResult::Failed;
 	}
+
 	//Retrieve object
 	auto OtherObject = BlackboardComponent->GetValueAsObject(TEXT("WeaponQueryed"));
 	AActor* OtherActor = Cast<AActor>(OtherObject);
-	// Call AIController to take object
-	ANpc_AIController* AIController = Cast<ANpc_AIController>(OwnerComp.GetAIOwner());
-	AIController->TakeObject(OtherActor);
-	UE_LOG(LogTemp, Warning, TEXT("Trying to grab! %s"), *OtherActor->GetName())
+
+	// Call Controlled Character to take object
+	AHSCharacter* NPC = Cast<AHSCharacter>(ControlledCharacter);
+ 	NPC->TakeObject(OtherActor);
+
+	//clear EnvQuery targetObject so it can run again
 	BlackboardComponent->ClearValue(ObjectToTake.SelectedKeyName);
+
 	return EBTNodeResult::Succeeded;
 }

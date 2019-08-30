@@ -12,6 +12,15 @@ ANpcCharacter::ANpcCharacter():Super()
 
 }
 
+bool ANpcCharacter::IsEquipped()
+{
+	if (!CurrentWeaponLeft && !CurrentWeaponRight)
+	{
+		return false;
+	}
+	return true;
+}
+
 void ANpcCharacter::BeginPlay()
 {
 	Super::BeginPlay();

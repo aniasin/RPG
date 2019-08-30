@@ -58,6 +58,12 @@ AHSCharacter::AHSCharacter()
 	bIsDead = false;
 }
 
+void AHSCharacter::GetOwnedGameplayTags(FGameplayTagContainer& TagContainer) const
+{
+	TagContainer = GameplayTags;
+	return;
+}
+
 UAbilitySystemComponent* AHSCharacter::GetAbilitySystemComponent() const
 {
 	return AbilitySystemComponent;
@@ -324,11 +330,11 @@ void AHSCharacter::Interaction()
 	//If there is something to use and player hit "Interaction" input
 	if (bHasActorToUse)
 	{
-		Takeobject(CurrentFocusedObject);
+		TakeObject(CurrentFocusedObject);
 	}
 }
 
-void AHSCharacter::Takeobject(AActor* OtherActor)
+void AHSCharacter::TakeObject(AActor* OtherActor)
 {
 	// Potion
 	APotion* Potion = Cast<APotion>(OtherActor);
@@ -358,6 +364,8 @@ void AHSCharacter::Takeobject(AActor* OtherActor)
 			Weapon->Tags.RemoveAt(0);
 			Weapon->OwnerActor = this;
 			CurrentWeaponLeft = Weapon;
+			GameplayTags.AddTag(FGameplayTag::RequestGameplayTag("Equipment.Left"));
+			
 
 		}
 		else if (!(Weapon->bIsLeftHand) && !CurrentWeaponRight)
@@ -366,8 +374,8 @@ void AHSCharacter::Takeobject(AActor* OtherActor)
 			Weapon->AttachToComponent(GetMesh(), FAttachmentTransformRules::SnapToTargetIncludingScale, TEXT("WeaponBack"));
 			Weapon->Tags.RemoveAt(0);
 			Weapon->OwnerActor = this;
-			//UE_LOG(LogTemp, Warning, TEXT("OWNER IS: %s"), *(Weapon->OwnerActor))
 			CurrentWeaponRight = Weapon;
+			GameplayTags.AddTag(FGameplayTag::RequestGameplayTag("Equipment.Right"));
 		}
 	}
 }

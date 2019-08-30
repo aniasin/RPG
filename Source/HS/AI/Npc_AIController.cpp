@@ -68,9 +68,3 @@ void ANpc_AIController::OnTargetPerceptionUpdate(AActor* Actor, FAIStimulus Stim
 	FString DebugText = FString(Actor->GetName() + " has just " + (bIsSeen ? "entered" : "left") + " my field of view ");
 	UE_LOG(LogTemp, Warning, TEXT("%s"), *DebugText);
 }
-
-void ANpc_AIController::TakeObject(AActor* OtherActor)
-{
-	AICharacter->Takeobject(OtherActor);
-}
-

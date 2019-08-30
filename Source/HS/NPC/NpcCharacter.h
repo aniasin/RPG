@@ -21,6 +21,9 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AI)
 	class UBehaviorTree* BehaviorTree;
 
+	// Check if npc is fully equipped
+	bool IsEquipped();
+
 protected:
 	virtual void BeginPlay()override;
 

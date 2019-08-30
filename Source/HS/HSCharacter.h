@@ -5,6 +5,8 @@
 #include "CoreMinimal.h"
 #include "GameFramework/Character.h"
 #include "AbilitySystemInterface.h"
+#include "GameplayTagAssetInterface.h"
+#include "Classes/GameplayTagContainer.h"
 #include "HSCharacter.generated.h"
 
 //It's very important that this enum is UENUM, because the code will look for UENUM by the given name and crash if the UENUM can't be found. BlueprintType is there so we can use these in blueprints, too. Just in case. Can be neat to define ability packages.
@@ -29,7 +31,7 @@ enum class EStatus : uint8
 };
 
 UCLASS(config=Game)
-class AHSCharacter : public ACharacter, public IAbilitySystemInterface
+class AHSCharacter : public ACharacter, public IAbilitySystemInterface, public IGameplayTagAssetInterface
 {
 	GENERATED_BODY()
 
@@ -54,6 +56,11 @@ class AHSCharacter : public ACharacter, public IAbilitySystemInterface
 ////////////////////////////////////////
 public:
 	AHSCharacter();
+
+	UPROPERTY(EditAnywhere, Category = GameplayTags)
+	FGameplayTagContainer GameplayTags;
+
+	virtual void GetOwnedGameplayTags(FGameplayTagContainer& TagContainer)const override;
 
 	//Equipment
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = Equipment)
@@ -100,7 +107,7 @@ public:
 	bool bHasActorToUse;
 
 	AActor* CurrentFocusedObject;
-	void Takeobject(AActor* OtherActor);
+	void TakeObject(AActor* OtherActor);
 
 	// Movement
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera)

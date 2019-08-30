@@ -33,7 +33,6 @@ class HS_API ANpc_AIController : public AAIController
 		void OnTargetPerceptionUpdate(AActor* Actor, FAIStimulus Stimulus);
 
 public:
-	void TakeObject(AActor* OtherActor);
 
 protected:
 	void OnPossess(APawn* InPawn);
