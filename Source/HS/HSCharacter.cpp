@@ -301,10 +301,15 @@ void AHSCharacter::OnOverlapBegin_Implementation(UPrimitiveComponent* Comp, AAct
 	UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& HitResult)
 {
 	auto PlayerController = Cast<AHSPlayerController>(GetWorld()->GetFirstPlayerController());
+	auto CurrentController = GetController();
+
 	// Interaction is only possible with actor tagged for
 	if (OtherActor->ActorHasTag(TEXT("Interact")))
 	{
-		PlayerController->ToggleInteractionWidget();
+		if (CurrentController == PlayerController) //Only toggle widget if it's the player
+		{
+			PlayerController->ToggleInteractionWidget();
+		}
 		CurrentFocusedObject = OtherActor;
 		bHasActorToUse = true; //There is something to interact with
 	}
@@ -314,10 +319,15 @@ void AHSCharacter::OnOverlapEnd_Implementation(UPrimitiveComponent* Comp, AActor
 	UPrimitiveComponent* OtherComp, int32 OtherBodyIndex)
 {
 	auto PlayerController = Cast<AHSPlayerController>(GetWorld()->GetFirstPlayerController());
+	auto CurrentController = GetController();
+
 	// Interaction is only possible with actor tagged for
 	if (OtherActor->ActorHasTag(TEXT("Interact")))
 	{
-		PlayerController->ToggleInteractionWidget();
+		if (CurrentController == PlayerController) //Only toggle widget if it's the player
+		{
+			PlayerController->ToggleInteractionWidget();
+		}
 	}
 	if (OtherActor == CurrentFocusedObject) 
 	{

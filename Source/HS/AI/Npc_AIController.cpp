@@ -64,6 +64,14 @@ void ANpc_AIController::OnTargetPerceptionUpdate(AActor* Actor, FAIStimulus Stim
 	bool bIsSeen = SeenActors.Contains(Actor);
 	int32 NumberOfActorsSeen = SeenActors.Num();
 
+	// Check if sensed actor is Player
+	if (Cast<AHSCharacter>(Actor))
+	{
+		LastKnownPlayerPosition = Stimulus.StimulusLocation;
+		bCanSeePlayer = Stimulus.WasSuccessfullySensed();
+		UE_LOG(LogTemp, Warning, TEXT("See PLAYER!"))
+	}
+
 	// Formating text for debug message
 	FString DebugText = FString(Actor->GetName() + " has just " + (bIsSeen ? "entered" : "left") + " my field of view ");
 	UE_LOG(LogTemp, Warning, TEXT("%s"), *DebugText);

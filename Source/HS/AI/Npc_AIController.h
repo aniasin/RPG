@@ -22,17 +22,22 @@ class HS_API ANpc_AIController : public AAIController
 	class UAISenseConfig_Sight* SightConfig;
 	class UAISenseConfig_Hearing* HearingConfig;
 
-	UPROPERTY(EditDefaultsOnly, Category = AI)
+	UPROPERTY(EditDefaultsOnly, Category = NPC_AI)
 		float SightRange = 2000.f;
-	UPROPERTY(EditDefaultsOnly, Category = AI)
+	UPROPERTY(EditDefaultsOnly, Category = NPC_AI)
 		float LoseSightRange = 2500.f;
-	UPROPERTY(EditDefaultsOnly, Category = AI)
+	UPROPERTY(EditDefaultsOnly, Category = NPC_AI)
 		float HearingRange = 1000.f;
 
 	UFUNCTION()
 		void OnTargetPerceptionUpdate(AActor* Actor, FAIStimulus Stimulus);
 
 public:
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = NPC_AI)
+	bool bCanSeePlayer;
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = NPC_AI)
+	FVector LastKnownPlayerPosition;
 
 protected:
 	void OnPossess(APawn* InPawn);
