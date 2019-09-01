@@ -69,10 +69,9 @@ void ANpc_AIController::OnTargetPerceptionUpdate(AActor* Actor, FAIStimulus Stim
 	{
 		LastKnownPlayerPosition = Stimulus.StimulusLocation;
 		bCanSeePlayer = Stimulus.WasSuccessfullySensed();
-		UE_LOG(LogTemp, Warning, TEXT("See PLAYER!"))
 	}
 
 	// Formating text for debug message
-	FString DebugText = FString(Actor->GetName() + " has just " + (bIsSeen ? "entered" : "left") + " my field of view ");
-	UE_LOG(LogTemp, Warning, TEXT("%s"), *DebugText);
+// 	FString DebugText = FString(Actor->GetName() + " has just " + (bIsSeen ? "entered" : "left") + " my field of view ");
+// 	UE_LOG(LogTemp, Warning, TEXT("%s"), *DebugText);
 }

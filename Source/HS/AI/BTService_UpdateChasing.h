@@ -19,7 +19,7 @@ class HS_API UBTService_UpdateChasing : public UBTService
 	FBlackboardKeySelector CanSeePlayerKey;
 
 	UPROPERTY(EditAnywhere, Category = Blackboard)
-		FBlackboardKeySelector PlayerKey;
+		FBlackboardKeySelector CurrentPlayerPositionKey;
 
 	UPROPERTY(EditAnywhere, Category = Blackboard)
 		FBlackboardKeySelector LastKnownPositionKey;

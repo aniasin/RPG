@@ -19,14 +19,15 @@ void UBTService_UpdateChasing::OnBecomeRelevant(UBehaviorTreeComponent& OwnerCom
 	UBlackboardComponent* BlackboardComponent = OwnerComp.GetBlackboardComponent();
 	if (!BlackboardComponent){return;}
 
-	if (!PlayerKey.IsSet())
+	if (!CurrentPlayerPositionKey.IsSet())
 	{
-		// Retrieve Player and updateBlackboard
+		// Retrieve Player Position and updateBlackboard
 		TArray<AActor*> FoundActors;
 		UGameplayStatics::GetAllActorsOfClass(GetWorld(), PlayerClass, FoundActors);
 		if (FoundActors[0])
 		{
-			BlackboardComponent->SetValueAsObject(PlayerKey.SelectedKeyName, FoundActors[0]);
+			FVector PlayerLocation = FoundActors[0]->GetActorLocation();
+			BlackboardComponent->SetValueAsVector(CurrentPlayerPositionKey.SelectedKeyName, PlayerLocation);
 		}
 	}
 }
