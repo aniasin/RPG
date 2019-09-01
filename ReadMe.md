@@ -79,8 +79,11 @@ NPCs detect player entering or exitind sight
 + BehaviorTree
 
 Simple task: Npc looks for weapons and equips
-
 Stops looking for weapon when fully equipped
+---
+Simple task: Npc follow Player
+When sight is lost pursue the last player's direction seen
+---
 
 + EnvironmentQuery
 
