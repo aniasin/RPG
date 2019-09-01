@@ -38,6 +38,8 @@ public:
 	bool bCanSeePlayer;
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = NPC_AI)
 	FVector LastKnownPlayerPosition;
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = NPC_AI)
+	FVector LastKnownPlayerDirection;
 
 protected:
 	void OnPossess(APawn* InPawn);

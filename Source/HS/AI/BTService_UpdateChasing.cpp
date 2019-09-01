@@ -47,6 +47,8 @@ void UBTService_UpdateChasing::TickNode(UBehaviorTreeComponent& OwnerComp, uint8
 	if (ChasingController->bCanSeePlayer != bLastCanSeePlayer)
 	{
 		BlackboardComp->SetValueAsVector(LastKnownPositionKey.SelectedKeyName, ChasingController->LastKnownPlayerPosition);
+		BlackboardComp->SetValueAsVector(LastKnownDirectionKey.SelectedKeyName, ChasingController->LastKnownPlayerDirection);
+		BlackboardComp->SetValueAsVector(NextMovelocationKey.SelectedKeyName, (ChasingController->LastKnownPlayerPosition + ChasingController->LastKnownPlayerDirection * 1000));
 	}
 
 	// update last can see Player

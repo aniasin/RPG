@@ -69,6 +69,15 @@ void ANpc_AIController::OnTargetPerceptionUpdate(AActor* Actor, FAIStimulus Stim
 	{
 		LastKnownPlayerPosition = Stimulus.StimulusLocation;
 		bCanSeePlayer = Stimulus.WasSuccessfullySensed();
+		// when sight is lost remember player's direction
+		if (!bIsSeen)
+		{
+			LastKnownPlayerDirection = Actor->GetActorForwardVector();
+		}
+		if (bIsSeen)
+		{
+			UE_LOG(LogTemp, Warning, TEXT("Gain Sight!"))
+		}
 	}
 
 	// Formating text for debug message
