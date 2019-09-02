@@ -2,7 +2,7 @@
 UE4.22 Powered.
 
 ### SetUp
-+ Climbing
++ **Climbing**
 
 Climbable objects have to be WorldStatic.
 With overlap response to SphereTracer channel.
@@ -20,18 +20,16 @@ With overlap response to SphereTracer channel.
 
 ### COMBAT
 
-+ Ability System
++ **Ability System**
 
-Health.
+Health. 
 AttackSpeed.
 
 ### UI
 
-+ Main Menu
++ **Main Menu**
 
-Crash game & editor (have to check).
-
-+ Pause menu
++ **Pause menu**
 
 Settings>>Keybinding.
 Quit.
@@ -39,39 +37,38 @@ Resume.
 
 ### MOVEMENT
 
-+ Climbing
++ **Climbing**
 
 Rough system... lot to tweak.
 MoveForward to climb(see setup).
 Jump to climb ledges (while hanging).
 
-+ Dash Ability
++ **Dash Ability**
 
 Dash forward while in combat.
 
 ### ITEMS
 
-+ Configurable potions
++ **Configurable potions**
 
-EffectAmount (Positive/Negative)
-
+EffectAmount (Positive/Negative).
 Can be Overtime with duration or instant.
 
-+ Configurable Weapons
++ **Configurable Weapons**
 
 Damage, SpeedMultiplier, left or right hand.
 
-+ Dynamic Material
++ **Dynamic Material**
 
 Red potions with negative effect, Green positive.
 
 ### AI
 
-+ AiSight and Hear
++ **AiSight and Hear**
 
 NPCs detect player entering or exitind sight.
 
-+ BehaviorTree
++ **BehaviorTree**
 
 Simple task: Npc looks for weapons and equips.
 Stops looking for weapon when fully equipped.
@@ -79,6 +76,6 @@ Stops looking for weapon when fully equipped.
 Simple task: Npc follow Player.
 When sight is lost pursue the last player's direction seen.
 
-+ EnvironmentQuery
++ **EnvironmentQuery**
 
 Weapons in range.
