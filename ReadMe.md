@@ -70,11 +70,15 @@ NPCs detect player entering or exitind sight.
 
 + **BehaviorTree**
 
-Simple task: Npc looks for weapons and equips.
+Simple BTtask: Npc looks for weapons and equips.
 Stops looking for weapon when fully equipped.
 
-Simple task: Npc follow Player.
+Simple BTtask: Npc follow Player.
 When sight is lost pursue the last player's direction seen.
+
+Simple BTtask: Npc Aggro.
+When Player's reached, NPC attacks, defend, retreat or flee.
+(Only UE_LOG for now)
 
 + **EnvironmentQuery**
 
