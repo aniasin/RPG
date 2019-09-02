@@ -7,6 +7,13 @@
 #include "Perception/AIPerceptionTypes.h"
 #include "NpcCharacter.generated.h"
 
+
+UENUM(BlueprintType)
+enum class ENpc_Type : uint8
+{
+	Aggressive UMETA(DisplayName = "Aggressive"),
+	Peacefull UMETA(DisplayName = "Peacefull")
+};
 /**
  * 
  */
@@ -21,8 +28,16 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AI)
 	class UBehaviorTree* BehaviorTree;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AI)
+		ENpc_Type Npc_Type;
+	
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AI)
+	float PercentHP;
+
 	// Check if npc is fully equipped
 	bool IsEquipped();
+	void SetCombatBehavior();
+	void SetCanSeePlayer(bool bCanSee);
 
 protected:
 	virtual void BeginPlay()override;

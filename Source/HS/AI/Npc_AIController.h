@@ -41,6 +41,8 @@ public:
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = NPC_AI)
 	FVector LastKnownPlayerDirection;
 
+	void SetCombatBehavior();
+
 protected:
 	void OnPossess(APawn* InPawn);
 

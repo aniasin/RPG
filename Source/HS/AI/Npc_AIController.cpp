@@ -54,6 +54,15 @@ void ANpc_AIController::OnPossess(APawn* InPawn)
 	}
 }
 
+void ANpc_AIController::SetCombatBehavior()
+{
+	//TODO Logic to set combat behavior which could be: Flee, Retreat, Aggressive, Defensive, Neutral...
+	//Set GameplayTag Accordingly (Combat.Behavior.x)
+	UE_LOG(LogTemp, Warning, TEXT("Now Setting Combat Behavior!"))
+
+	AICharacter->SetCombatBehavior();
+}
+
 void ANpc_AIController::OnTargetPerceptionUpdate(AActor* Actor, FAIStimulus Stimulus)
 {
 	//Retrieving perceived actors
@@ -73,10 +82,12 @@ void ANpc_AIController::OnTargetPerceptionUpdate(AActor* Actor, FAIStimulus Stim
 		if (!bIsSeen)
 		{
 			LastKnownPlayerDirection = Actor->GetActorForwardVector();
+			AICharacter->SetCanSeePlayer(false);
 		}
 		if (bIsSeen)
 		{
 			UE_LOG(LogTemp, Warning, TEXT("Gain Sight!"))
+			AICharacter->SetCanSeePlayer(true);
 		}
 	}
 

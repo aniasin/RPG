@@ -19,8 +19,8 @@ void UBTService_UpdateChasing::OnBecomeRelevant(UBehaviorTreeComponent& OwnerCom
 	UBlackboardComponent* BlackboardComponent = OwnerComp.GetBlackboardComponent();
 	if (!BlackboardComponent){return;}
 
-	if (!CurrentPlayerPositionKey.IsSet())
-	{
+ 	if (!CurrentPlayerPositionKey.IsSet())
+ 	{
 		// Retrieve Player Position and updateBlackboard
 		TArray<AActor*> FoundActors;
 		UGameplayStatics::GetAllActorsOfClass(GetWorld(), PlayerClass, FoundActors);

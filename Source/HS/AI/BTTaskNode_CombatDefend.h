@@ -14,4 +14,9 @@ class HS_API UBTTaskNode_CombatDefend : public UBTTaskNode
 {
 	GENERATED_BODY()
 	
+protected:
+	UPROPERTY(VisibleAnywhere, Category = Blackboard)
+		FBlackboardKeySelector TargetKey;
+
+	virtual EBTNodeResult::Type ExecuteTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory)override;
 };
