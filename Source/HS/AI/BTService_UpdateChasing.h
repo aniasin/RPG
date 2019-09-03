@@ -28,15 +28,20 @@ class HS_API UBTService_UpdateChasing : public UBTService
 		TSubclassOf<AActor> PlayerClass;
 
 	UPROPERTY(EditAnywhere, Category = Blackboard)
+		FBlackboardKeySelector PlayerKey;
+
+	UPROPERTY(EditAnywhere, Category = Blackboard)
 		FBlackboardKeySelector LastKnownDirectionKey;
 
 	UPROPERTY(EditAnywhere, Category = Blackboard)
-		FBlackboardKeySelector NextMovelocationKey;
+		FBlackboardKeySelector NextSearchLocationKey;
 
 protected:
 	virtual void OnBecomeRelevant(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory)override;
 
 	virtual void TickNode(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory, float DeltaSeconds)override;
+
+	FVector RandomLocationSearch(FVector Origin);
 
 private:
 
