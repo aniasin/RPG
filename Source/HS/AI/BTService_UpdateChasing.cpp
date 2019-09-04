@@ -18,8 +18,10 @@ UBTService_UpdateChasing::UBTService_UpdateChasing(const FObjectInitializer& Obj
 void UBTService_UpdateChasing::OnBecomeRelevant(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory)
 {
 	// Get Blackboard
-	UBlackboardComponent* BlackboardComponent = OwnerComp.GetBlackboardComponent();
-	if (!BlackboardComponent){return;}
+	 BlackboardComponent = OwnerComp.GetBlackboardComponent();
+	 AIController = OwnerComp.GetAIOwner();
+	if (!BlackboardComponent || !AIController) { return; }
+	ChasingController = Cast<ANpc_AIController>(AIController);
 
 	// Retrieve Player Position and updateBlackboard
 	TArray<AActor*> FoundActors;
@@ -35,21 +37,15 @@ void UBTService_UpdateChasing::OnBecomeRelevant(UBehaviorTreeComponent& OwnerCom
 
 void UBTService_UpdateChasing::TickNode(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory, float DeltaSeconds)
 {
-	// Check BB and AIController
-	UBlackboardComponent* BlackboardComp = OwnerComp.GetBlackboardComponent();
-	AAIController* AIController = OwnerComp.GetAIOwner();
-	if (!BlackboardComp || !AIController){	return;	}
-
-	ANpc_AIController* ChasingController = Cast<ANpc_AIController>(AIController);
-	if (!ChasingController)	{return;}
-
-	BlackboardComp->SetValueAsBool(CanSeePlayerKey.SelectedKeyName, ChasingController->bCanSeePlayer);
+	BlackboardComponent->SetValueAsBool(CanSeePlayerKey.SelectedKeyName, ChasingController->bCanSeePlayer);
 	// update last known position of the player
 	if (ChasingController->bCanSeePlayer != bLastCanSeePlayer)
 	{
-		BlackboardComp->SetValueAsVector(LastKnownPositionKey.SelectedKeyName, ChasingController->LastKnownPlayerPosition);
-		BlackboardComp->SetValueAsVector(LastKnownDirectionKey.SelectedKeyName, ChasingController->LastKnownPlayerDirection);
-		BlackboardComp->SetValueAsVector(NextSearchLocationKey.SelectedKeyName, (ChasingController->LastKnownPlayerPosition + ChasingController->LastKnownPlayerDirection * 1000));
+		BlackboardComponent->SetValueAsVector(LastKnownPositionKey.SelectedKeyName, ChasingController->LastKnownPlayerPosition);
+		BlackboardComponent->SetValueAsVector(LastKnownDirectionKey.SelectedKeyName, ChasingController->LastKnownPlayerDirection);
+		BlackboardComponent->SetValueAsVector(NextSearchLocationKey.SelectedKeyName, (ChasingController->LastKnownPlayerPosition + ChasingController->LastKnownPlayerDirection * 1000));
+
+
 	}
 
 	// update last can see Player

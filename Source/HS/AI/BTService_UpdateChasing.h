@@ -41,9 +41,9 @@ protected:
 
 	virtual void TickNode(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory, float DeltaSeconds)override;
 
-	FVector RandomLocationSearch(FVector Origin);
-
 private:
-
-	bool bLastCanSeePlayer;
+	class ANpc_AIController* ChasingController;
+	class AAIController* AIController;
+	class UBlackboardComponent* BlackboardComponent;
+	bool bLastCanSeePlayer = false;
 };
