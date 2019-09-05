@@ -17,6 +17,7 @@
 #include "Classes/GameFramework/Controller.h"
 #include "HSPlayerController.h"
 
+
 //////////////////////////////////////////////////////////////////////////
 // CONSTRUCTOR ----------------------------------------------------
 AHSCharacter::AHSCharacter()
@@ -433,3 +434,4 @@ void AHSCharacter::UsePotion()
 		EquippedPotions.RemoveAt(0);
 	}
 }
+

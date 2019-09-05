@@ -44,6 +44,8 @@ public:
 	void SetCombatBehavior();
 	void SwitchCombat();
 
+	FVector GetRandomSearchLocation(float Radius);
+
 protected:
 	void OnPossess(APawn* InPawn);
 

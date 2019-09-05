@@ -10,8 +10,8 @@
 #include "Perception/AISenseConfig_Hearing.h"
 #include "Perception/AIPerceptionTypes.h"
 #include "HSCharacter.h"
-
-
+#include "Engine.h"
+#include "NavigationSystem.h"
 
 ANpc_AIController::ANpc_AIController()
 {
@@ -100,3 +100,21 @@ void ANpc_AIController::OnTargetPerceptionUpdate(AActor* Actor, FAIStimulus Stim
 // 	FString DebugText = FString(Actor->GetName() + " has just " + (bIsSeen ? "entered" : "left") + " my field of view ");
 // 	UE_LOG(LogTemp, Warning, TEXT("%s"), *DebugText);
 }
+
+FVector ANpc_AIController::GetRandomSearchLocation(float radius)
+{
+	FVector Origin = AICharacter->GetActorLocation();
+	FNavLocation Result;
+
+	UWorld* World = GEngine->GetWorld();
+	if ensure(!World){return Origin;}
+
+	UNavigationSystemV1* NavSystem = UNavigationSystemV1::GetCurrent(World);
+	if ensure (!NavSystem){	return Origin;	}
+
+	bool bFoundPath = NavSystem->GetRandomReachablePointInRadius(Origin, radius, Result);
+
+	return Result.Location;
+}
+
+

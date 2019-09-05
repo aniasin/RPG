@@ -5,7 +5,6 @@
 #include "Kismet/GameplayStatics.h"
 #include "BehaviorTree/BlackboardComponent.h"
 #include "AI/Npc_AIController.h"
-#include "NavigationSystem.h"
 #include "HSCharacter.h"
 
 
@@ -46,14 +45,19 @@ void UBTService_UpdateChasing::TickNode(UBehaviorTreeComponent& OwnerComp, uint8
 		BlackboardComponent->SetValueAsVector(CurrentPlayerPositionKey.SelectedKeyName, PlayerLocation);
 		BlackboardComponent->SetValueAsObject(PlayerKey.SelectedKeyName, Player);
 	}
-
-	// update last known position of the player
-	if (!ChasingController->bCanSeePlayer)
+	else if (!ChasingController->bCanSeePlayer)
 	{
 		BlackboardComponent->ClearValue(PlayerKey.SelectedKeyName);
+	}
+
+	// update last known position of the player
+	if (ChasingController->bCanSeePlayer != bLastCanSeePlayer)
+	{
 		BlackboardComponent->SetValueAsVector(LastKnownPositionKey.SelectedKeyName, ChasingController->LastKnownPlayerPosition);
 		BlackboardComponent->SetValueAsVector(LastKnownDirectionKey.SelectedKeyName, ChasingController->LastKnownPlayerDirection);
-		BlackboardComponent->SetValueAsVector(NextSearchLocationKey.SelectedKeyName, (ChasingController->LastKnownPlayerPosition + ChasingController->LastKnownPlayerDirection * 1000));		
+		BlackboardComponent->SetValueAsVector(NextSearchLocationKey.SelectedKeyName, (ChasingController->LastKnownPlayerPosition + ChasingController->LastKnownPlayerDirection * 1500));		
+		
+		BlackboardComponent->SetValueAsVector(RandomSearchLocationKey.SelectedKeyName, ChasingController->GetRandomSearchLocation(Radius));			
 	}
 
 	// update last can see Player
