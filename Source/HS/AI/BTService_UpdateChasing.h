@@ -16,9 +16,6 @@ class HS_API UBTService_UpdateChasing : public UBTService
 		UBTService_UpdateChasing(const FObjectInitializer& ObjectInitializer = FObjectInitializer::Get());
 	
 	UPROPERTY(EditAnywhere, Category = Blackboard)
-	FBlackboardKeySelector CanSeePlayerKey;
-
-	UPROPERTY(EditAnywhere, Category = Blackboard)
 		FBlackboardKeySelector CurrentPlayerPositionKey;
 
 	UPROPERTY(EditAnywhere, Category = Blackboard)
@@ -29,9 +26,6 @@ class HS_API UBTService_UpdateChasing : public UBTService
 
 	UPROPERTY(EditAnywhere, Category = Blackboard)
 		FBlackboardKeySelector PlayerKey;
-
-	UPROPERTY(EditAnywhere, Category = Blackboard)
-		FBlackboardKeySelector LastKnownDirectionKey;
 
 	UPROPERTY(EditAnywhere, Category = Blackboard)
 		FBlackboardKeySelector NextSearchLocationKey;

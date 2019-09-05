@@ -38,8 +38,6 @@ void UBTService_UpdateChasing::OnBecomeRelevant(UBehaviorTreeComponent& OwnerCom
 
 void UBTService_UpdateChasing::TickNode(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory, float DeltaSeconds)
 {
-	BlackboardComponent->SetValueAsBool(CanSeePlayerKey.SelectedKeyName, ChasingController->bCanSeePlayer);
-
 	if (ChasingController->bCanSeePlayer)
 	{
 		BlackboardComponent->SetValueAsVector(CurrentPlayerPositionKey.SelectedKeyName, PlayerLocation);
@@ -50,14 +48,20 @@ void UBTService_UpdateChasing::TickNode(UBehaviorTreeComponent& OwnerComp, uint8
 		BlackboardComponent->ClearValue(PlayerKey.SelectedKeyName);
 	}
 
-	// update last known position of the player
+	// Sight changed
 	if (ChasingController->bCanSeePlayer != bLastCanSeePlayer)
 	{
-		BlackboardComponent->SetValueAsVector(LastKnownPositionKey.SelectedKeyName, ChasingController->LastKnownPlayerPosition);
-		BlackboardComponent->SetValueAsVector(LastKnownDirectionKey.SelectedKeyName, ChasingController->LastKnownPlayerDirection);
-		BlackboardComponent->SetValueAsVector(NextSearchLocationKey.SelectedKeyName, (ChasingController->LastKnownPlayerPosition + ChasingController->LastKnownPlayerDirection * 1500));		
-		
-		BlackboardComponent->SetValueAsVector(RandomSearchLocationKey.SelectedKeyName, ChasingController->GetRandomSearchLocation(Radius));			
+		//Sees Player
+		if (!ChasingController->bCanSeePlayer)
+		{
+			// Last position where player was seen
+			BlackboardComponent->SetValueAsVector(LastKnownPositionKey.SelectedKeyName, ChasingController->LastKnownPlayerPosition);
+			// From Last position seen, go to last direction seen
+			BlackboardComponent->SetValueAsVector(NextSearchLocationKey.SelectedKeyName, (ChasingController->LastKnownPlayerPosition + ChasingController->LastKnownPlayerDirection * 1500));		
+			// take another random location in range
+			BlackboardComponent->SetValueAsVector(RandomSearchLocationKey.SelectedKeyName, ChasingController->GetRandomSearchLocation(Radius));	
+			UE_LOG(LogTemp, Warning, TEXT("Searching..."))
+		}
 	}
 
 	// update last can see Player

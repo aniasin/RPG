@@ -88,6 +88,7 @@ void ANpc_AIController::OnTargetPerceptionUpdate(AActor* Actor, FAIStimulus Stim
 		{
 			LastKnownPlayerDirection = Actor->GetActorForwardVector();
 			AICharacter->SetCanSeePlayer(false);
+			UE_LOG(LogTemp, Warning, TEXT("Loose Sight!"))
 		}
 		if (bIsSeen)
 		{
