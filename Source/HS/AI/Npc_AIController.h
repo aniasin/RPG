@@ -42,6 +42,7 @@ public:
 	FVector LastKnownPlayerDirection;
 
 	void SetCombatBehavior();
+	void SwitchCombat();
 
 protected:
 	void OnPossess(APawn* InPawn);

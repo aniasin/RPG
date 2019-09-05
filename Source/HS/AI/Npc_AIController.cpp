@@ -63,6 +63,11 @@ void ANpc_AIController::SetCombatBehavior()
 	AICharacter->SetCombatBehavior();
 }
 
+void ANpc_AIController::SwitchCombat()
+{
+	AICharacter->SwitchCombat();
+}
+
 void ANpc_AIController::OnTargetPerceptionUpdate(AActor* Actor, FAIStimulus Stimulus)
 {
 	//Retrieving perceived actors

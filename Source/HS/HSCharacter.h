@@ -48,11 +48,6 @@ class AHSCharacter : public ACharacter, public IAbilitySystemInterface, public I
 	void RightHand();
 	void LeftHand();
 
-	//Ability when using potion
-	void UsePotion();
-
-	void SwitchCombat();
-
 ////////////////////////////////////////
 public:
 	AHSCharacter();
@@ -114,6 +109,11 @@ public:
 	float BaseTurnRate;
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera)
 	float BaseLookUpRate;
+
+	//Ability when using potion
+	void UsePotion();
+
+	void SwitchCombat();
 
 	/** Returns CameraBoom subobject **/
 	FORCEINLINE class USpringArmComponent* GetCameraBoom() const { return CameraBoom; }
