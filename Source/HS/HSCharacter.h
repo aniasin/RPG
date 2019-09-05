@@ -27,7 +27,8 @@ UENUM(BlueprintType)
 enum class EStatus : uint8
 {
 	InPeace UMETA(DisplayName = "In Peace"),
-	InCombat UMETA(DisplayName = "In Combat")
+	InCombat UMETA(DisplayName = "In Combat"),
+	InAlert UMETA(DisplayName = "In Alert")
 };
 
 UCLASS(config=Game)

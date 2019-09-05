@@ -41,6 +41,9 @@ public:
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = NPC_AI)
 	FVector LastKnownPlayerDirection;
 
+	UFUNCTION()
+		void EndAlert();
+
 	void SetCombatBehavior();
 	void SwitchCombat();
 

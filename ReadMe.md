@@ -81,6 +81,8 @@ Simple BTtask: Npc Aggro.
 Follow player when in sight.
 When Player's reached, NPC attacks, defend, retreat or flee (Only UE_LOG for now).
 
+Simple BTTask: Patrol (Revolving around an array of actor in PatrolComponent inside ennemyBP)
+
 + **EnvironmentQuery**
 
 Weapons in range.

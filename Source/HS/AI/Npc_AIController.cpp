@@ -89,17 +89,34 @@ void ANpc_AIController::OnTargetPerceptionUpdate(AActor* Actor, FAIStimulus Stim
 			LastKnownPlayerDirection = Actor->GetActorForwardVector();
 			AICharacter->SetCanSeePlayer(false);
 			UE_LOG(LogTemp, Warning, TEXT("Loose Sight!"))
+
+			AICharacter->Status = EStatus::InAlert;
+			AICharacter->GameplayTags.AddTag(FGameplayTag::RequestGameplayTag(FName("Alert")));
+
+// 			FTimerDelegate TimerDelegate;
+// 			FTimerHandle TimerHandle;
+// 			TimerDelegate.BindUFunction(this, FName("EndAlert"), 10, 20.f);
+// 			GetWorldTimerManager().SetTimer(TimerHandle, TimerDelegate, 20.f, false);
 		}
 		if (bIsSeen)
 		{
 			UE_LOG(LogTemp, Warning, TEXT("Gain Sight!"))
 			AICharacter->SetCanSeePlayer(true);
+
+			//GEngine->GetWorld()->GetTimerManager().ClearAllTimersForObject(this);
+
 		}
 	}
 
 	// Formating text for debug message
 // 	FString DebugText = FString(Actor->GetName() + " has just " + (bIsSeen ? "entered" : "left") + " my field of view ");
 // 	UE_LOG(LogTemp, Warning, TEXT("%s"), *DebugText);
+}
+
+void ANpc_AIController::EndAlert()
+{
+	AICharacter->Status = EStatus::InPeace;
+	AICharacter->GameplayTags.RemoveTag(FGameplayTag::RequestGameplayTag(FName("Alert")));
 }
 
 FVector ANpc_AIController::GetRandomSearchLocation(float radius)

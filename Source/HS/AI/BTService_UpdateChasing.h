@@ -34,7 +34,10 @@ class HS_API UBTService_UpdateChasing : public UBTService
 		FBlackboardKeySelector RandomSearchLocationKey;
 
 	UPROPERTY(EditAnywhere, Category = Parameter)
-		float Radius;
+		float SearchRadius;
+
+	UPROPERTY(EditAnywhere, Category = Parameter)
+		float SearchTime;
 
 protected:
 	virtual void OnBecomeRelevant(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory)override;
