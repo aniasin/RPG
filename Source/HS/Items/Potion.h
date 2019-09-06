@@ -6,6 +6,7 @@
 #include "GameFramework/Actor.h"
 #include "Potion.generated.h"
 
+
 UCLASS()
 class HS_API APotion : public AActor
 {

@@ -32,7 +32,27 @@ class HS_API ANpc_AIController : public AAIController
 	UFUNCTION()
 		void OnTargetPerceptionUpdate(AActor* Actor, FAIStimulus Stimulus);
 
+	// Combat
+	bool bAttacking = false;
+
+	//AI TaskMemory
+	uint32 NextRequestID;
+	FAIRequestID AttackRequestID;
+
+	FORCEINLINE void StoreAttackRequestID() { AttackRequestID = NextRequestID++; }
+	
 public:
+	FORCEINLINE FAIRequestID GetAttackRequestID() const { return AttackRequestID; }
+
+	void AttackTarget();
+
+	UFUNCTION()
+	void UpdateAttack();
+
+	/* Handle to manage timer */
+	FTimerHandle AttackTimerHandle;
+	FTimerHandle SearchTimerHandle;
+	FTimerDelegate SearchTimerDelegate;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = NPC_AI)
 	bool bCanSeePlayer;

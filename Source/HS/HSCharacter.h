@@ -43,18 +43,17 @@ class AHSCharacter : public ACharacter, public IAbilitySystemInterface, public I
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera, meta = (AllowPrivateAccess = "true"))
 	class UCameraComponent* FollowCamera;
 
-	virtual void Jump()override;
-
-	//Basic melee attack
-	void RightHand();
-	void LeftHand();
-
 ////////////////////////////////////////
 public:
 	AHSCharacter();
 
 	UPROPERTY(EditAnywhere, Category = GameplayTags)
 	FGameplayTagContainer GameplayTags;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Abilities, meta = (AllowPrivateAccess = "true"))
+		class UHS_AbilitySystemComponent* AbilitySystemComponent;
+	UPROPERTY()
+		class UPlayerAttributesSet* AttributesComponent;
 
 	virtual void GetOwnedGameplayTags(FGameplayTagContainer& TagContainer)const override;
 
@@ -73,6 +72,12 @@ public:
 	// Player Status ie: Combat, peace, ect.
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = Status)
 	EStatus Status;
+
+	virtual void Jump()override;
+
+	//Basic melee attack
+	void RightHand();
+	void LeftHand();
 
 	// Implement IAbilitySystemInterface
 	UAbilitySystemComponent* GetAbilitySystemComponent() const override;
@@ -114,6 +119,7 @@ public:
 	//Ability when using potion
 	void UsePotion();
 
+	// Combat
 	void SwitchCombat();
 
 	/** Returns CameraBoom subobject **/
@@ -129,12 +135,6 @@ protected:
 	/** Our ability system */
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = Abilities)
 	class UDataTable* AttrDataTable;
-
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Abilities, meta = (AllowPrivateAccess = "true"))
-	class UHS_AbilitySystemComponent* AbilitySystemComponent;
-	UPROPERTY()
-	class UPlayerAttributesSet* AttributesComponent;
-
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Abilities)
 	TArray <class TSubclassOf<UGameplayAbility>> Abilities;
 

@@ -12,6 +12,8 @@
 #include "HSCharacter.h"
 #include "Engine.h"
 #include "NavigationSystem.h"
+#include "BrainComponent.h"
+#include "Abilities/PlayerAttributesSet.h"
 
 ANpc_AIController::ANpc_AIController()
 {
@@ -60,7 +62,9 @@ void ANpc_AIController::SetCombatBehavior()
 	//Set GameplayTag Accordingly (Combat.Behavior.x)
 	UE_LOG(LogTemp, Warning, TEXT("Now Setting Combat Behavior!"))
 
+	
 	AICharacter->SetCombatBehavior();
+	AttackTarget();
 }
 
 void ANpc_AIController::SwitchCombat()
@@ -93,29 +97,33 @@ void ANpc_AIController::OnTargetPerceptionUpdate(AActor* Actor, FAIStimulus Stim
 			AICharacter->Status = EStatus::InAlert;
 			AICharacter->GameplayTags.AddTag(FGameplayTag::RequestGameplayTag(FName("Alert")));
 
-// 			FTimerDelegate TimerDelegate;
-// 			FTimerHandle TimerHandle;
-// 			TimerDelegate.BindUFunction(this, FName("EndAlert"), 10, 20.f);
-// 			GetWorldTimerManager().SetTimer(TimerHandle, TimerDelegate, 20.f, false);
+			SearchTimerDelegate.BindUFunction(this, FName("EndAlert"));
+			GetWorldTimerManager().SetTimer(SearchTimerHandle, SearchTimerDelegate, 20.f, false);
 		}
 		if (bIsSeen)
 		{
 			UE_LOG(LogTemp, Warning, TEXT("Gain Sight!"))
 			AICharacter->SetCanSeePlayer(true);
-
-			//GEngine->GetWorld()->GetTimerManager().ClearAllTimersForObject(this);
+			if (AICharacter->Status != EStatus::InCombat)
+			{
+				AICharacter->Status = EStatus::InCombat;
+				AICharacter->SwitchCombat();
+			}
+			UWorld* World = GEngine->GetWorld();
+			if ensure(!World)
+			{
+				return;
+			}
+			World->GetTimerManager().ClearTimer(SearchTimerHandle);
 
 		}
 	}
-
-	// Formating text for debug message
-// 	FString DebugText = FString(Actor->GetName() + " has just " + (bIsSeen ? "entered" : "left") + " my field of view ");
-// 	UE_LOG(LogTemp, Warning, TEXT("%s"), *DebugText);
 }
 
 void ANpc_AIController::EndAlert()
 {
 	AICharacter->Status = EStatus::InPeace;
+	AICharacter->SwitchCombat();
 	AICharacter->GameplayTags.RemoveTag(FGameplayTag::RequestGameplayTag(FName("Alert")));
 }
 
@@ -135,4 +143,35 @@ FVector ANpc_AIController::GetRandomSearchLocation(float radius)
 	return Result.Location;
 }
 
+//Combat
+void ANpc_AIController::AttackTarget()
+{
+	UE_LOG(LogTemp, Warning, TEXT("AIController is Performing Attack!"))
+	if (bAttacking)
+	{
+		FAIMessage Msg(UBrainComponent::AIMessage_MoveFinished, this, AttackRequestID, FAIMessage::Failure);
+		FAIMessage::Send(this, Msg);
+	}
+	bAttacking = true;
 
+	//Store New Request
+	StoreAttackRequestID();
+	AICharacter->RightHand();
+
+	FTimerDelegate TimerDelegate;
+
+	TimerDelegate.BindUFunction(this, FName("UpdateAttack"));
+	auto CooldownTime = AICharacter->AttributesComponent->AttackSpeed.GetCurrentValue();
+	GetWorldTimerManager().SetTimer(AttackTimerHandle, TimerDelegate, CooldownTime, false);
+
+}
+
+void ANpc_AIController::UpdateAttack()
+{
+	UE_LOG(LogTemp, Warning, TEXT("AIController: End Attack!"))
+	FAIMessage Msg(UBrainComponent::AIMessage_MoveFinished, this, AttackRequestID, FAIMessage::Success);
+	FAIMessage::Send(this, Msg);
+	bAttacking = false;
+
+	AttackRequestID = FAIRequestID::InvalidRequest;
+}

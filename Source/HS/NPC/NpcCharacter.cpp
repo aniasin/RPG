@@ -30,9 +30,15 @@ bool ANpcCharacter::IsEquipped()
 
 void ANpcCharacter::SetCombatBehavior()
 {
+	if (Status != EStatus::InCombat)
+	{
+		SwitchCombat();
+	}
+
 	float CurrentHealth = AttributesComponent->Health.GetCurrentValue();
 	float MaxHealth = AttributesComponent->MaxHealth.GetCurrentValue();
 	PercentHP = (CurrentHealth / MaxHealth) * 100;
+
 	GameplayTags.RemoveTag(FGameplayTag::RequestGameplayTag("Combat.Behavior"));
 	if (PercentHP >= 50.f)
 	{

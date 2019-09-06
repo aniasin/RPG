@@ -2,6 +2,7 @@
 
 
 #include "Weapon.h"
+#include "HSCharacter.h"
 
 // Sets default values
 AWeapon::AWeapon()

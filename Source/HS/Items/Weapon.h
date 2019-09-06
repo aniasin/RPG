@@ -6,6 +6,7 @@
 #include "GameFramework/Actor.h"
 #include "Weapon.generated.h"
 
+
 UCLASS()
 class HS_API AWeapon : public AActor
 {

@@ -130,6 +130,7 @@ void AHSCharacter::BeginPlay()
 	AquireAbility(Abilities);
 	//Subscribe to OnHealthChanged delegate from AttributeSet
 	AttributesComponent->OnHealthChanged.AddDynamic(this, &AHSCharacter::OnHealthChanged);
+	
 }
 
 void AHSCharacter::PostInitializeComponents()
@@ -198,7 +199,7 @@ void AHSCharacter::Jump()
 	else
 	{
 		//.. but Dash
-		AbilitySystemComponent->TryActivateAbilityByClass(Abilities[1]);
+		AbilitySystemComponent->TryActivateAbilityByClass(Abilities[0]);
 		FVector Direction = GetActorForwardVector(); //TODO change direction depending on input(right, left, front or back)
 		this->LaunchCharacter((Direction * 5000.f), false, false);//TODO perhaps could be variable (depending on skill)
 	}
@@ -283,7 +284,7 @@ void AHSCharacter::RightHand()
 	if (Status == EStatus::InCombat && CurrentWeaponRight)
 	{
 		//Basic Melee attack
-		AbilitySystemComponent->TryActivateAbilityByClass(Abilities[0]);
+		AbilitySystemComponent->TryActivateAbilityByClass(Abilities[1]);
 	}
 }
 
@@ -376,8 +377,6 @@ void AHSCharacter::TakeObject(AActor* OtherActor)
 			Weapon->OwnerActor = this;
 			CurrentWeaponLeft = Weapon;
 			GameplayTags.AddTag(FGameplayTag::RequestGameplayTag("Equipment.Left"));
-			
-
 		}
 		else if (!(Weapon->bIsLeftHand) && !CurrentWeaponRight)
 		{
@@ -387,6 +386,7 @@ void AHSCharacter::TakeObject(AActor* OtherActor)
 			Weapon->OwnerActor = this;
 			CurrentWeaponRight = Weapon;
 			GameplayTags.AddTag(FGameplayTag::RequestGameplayTag("Equipment.Right"));
+			
 		}
 	}
 }
