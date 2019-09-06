@@ -30,6 +30,8 @@ public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AI)
 		ENpc_Type Npc_Type;
+	UPROPERTY(EditAnywhere, Category = AI)
+		float SearchTime = 20.f;
 	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AI)
 	float PercentHP;

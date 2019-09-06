@@ -264,7 +264,7 @@ void AHSCharacter::SwitchCombat()
 			CurrentWeaponLeft->AttachToComponent(GetMesh(), FAttachmentTransformRules::SnapToTargetIncludingScale, TEXT("Weapon_l"));
 		}
 	}
-	else
+	else if (Status == EStatus::InCombat || Status == EStatus::InAlert)
 	{
 		Status = EStatus::InPeace;
 		bUseControllerRotationYaw = false;

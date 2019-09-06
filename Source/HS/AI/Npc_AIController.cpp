@@ -98,7 +98,7 @@ void ANpc_AIController::OnTargetPerceptionUpdate(AActor* Actor, FAIStimulus Stim
 			AICharacter->GameplayTags.AddTag(FGameplayTag::RequestGameplayTag(FName("Alert")));
 
 			SearchTimerDelegate.BindUFunction(this, FName("EndAlert"));
-			GetWorldTimerManager().SetTimer(SearchTimerHandle, SearchTimerDelegate, 20.f, false);
+			GetWorldTimerManager().SetTimer(SearchTimerHandle, SearchTimerDelegate, AICharacter->SearchTime, false);
 		}
 		if (bIsSeen)
 		{
@@ -106,24 +106,23 @@ void ANpc_AIController::OnTargetPerceptionUpdate(AActor* Actor, FAIStimulus Stim
 			AICharacter->SetCanSeePlayer(true);
 			if (AICharacter->Status != EStatus::InCombat)
 			{
-				AICharacter->Status = EStatus::InCombat;
 				AICharacter->SwitchCombat();
 			}
 			UWorld* World = GEngine->GetWorld();
-			if ensure(!World)
-			{
-				return;
-			}
-			World->GetTimerManager().ClearTimer(SearchTimerHandle);
+			if (!World)	{return;}
 
+			World->GetTimerManager().ClearTimer(SearchTimerHandle);
 		}
 	}
 }
 
 void ANpc_AIController::EndAlert()
 {
-	AICharacter->Status = EStatus::InPeace;
-	AICharacter->SwitchCombat();
+	if (AICharacter->Status == EStatus::InAlert)
+	{
+		AICharacter->SwitchCombat();
+	}
+
 	AICharacter->GameplayTags.RemoveTag(FGameplayTag::RequestGameplayTag(FName("Alert")));
 }
 
@@ -151,6 +150,7 @@ void ANpc_AIController::AttackTarget()
 	{
 		FAIMessage Msg(UBrainComponent::AIMessage_MoveFinished, this, AttackRequestID, FAIMessage::Failure);
 		FAIMessage::Send(this, Msg);
+		return;
 	}
 	bAttacking = true;
 
@@ -174,4 +174,13 @@ void ANpc_AIController::UpdateAttack()
 	bAttacking = false;
 
 	AttackRequestID = FAIRequestID::InvalidRequest;
+}
+
+void ANpc_AIController::EndPlay(EEndPlayReason::Type EndPlayReason)
+{
+	Super::EndPlay(EndPlayReason);
+
+	UWorld* World = GEngine->GetWorld();
+	if (!World)	{return;}
+	World->GetTimerManager().ClearAllTimersForObject(this);
 }

@@ -29,6 +29,7 @@ class HS_API ANpc_AIController : public AAIController
 	UPROPERTY(EditDefaultsOnly, Category = NPC_AI)
 		float HearingRange = 1000.f;
 
+
 	UFUNCTION()
 		void OnTargetPerceptionUpdate(AActor* Actor, FAIStimulus Stimulus);
 
@@ -40,6 +41,8 @@ class HS_API ANpc_AIController : public AAIController
 	FAIRequestID AttackRequestID;
 
 	FORCEINLINE void StoreAttackRequestID() { AttackRequestID = NextRequestID++; }
+
+	virtual void EndPlay(EEndPlayReason::Type EndPlayReason)override;
 	
 public:
 	FORCEINLINE FAIRequestID GetAttackRequestID() const { return AttackRequestID; }
@@ -60,6 +63,8 @@ public:
 	FVector LastKnownPlayerPosition;
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = NPC_AI)
 	FVector LastKnownPlayerDirection;
+	// Set how long npc will search for player after loosing sight
+
 
 	UFUNCTION()
 		void EndAlert();
