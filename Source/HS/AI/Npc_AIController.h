@@ -35,6 +35,7 @@ class HS_API ANpc_AIController : public AAIController
 
 	// Combat
 	bool bAttacking = false;
+	bool bDefending = false;
 
 	//AI TaskMemory
 	uint32 NextRequestID;
@@ -48,12 +49,16 @@ public:
 	FORCEINLINE FAIRequestID GetAttackRequestID() const { return AttackRequestID; }
 
 	void AttackTarget();
+	void Defend();
 
 	UFUNCTION()
 	void UpdateAttack();
+	UFUNCTION()
+		void UpdateDefend();
 
 	/* Handle to manage timer */
 	FTimerHandle AttackTimerHandle;
+	FTimerDelegate AttackTimerDelegate;
 	FTimerHandle SearchTimerHandle;
 	FTimerDelegate SearchTimerDelegate;
 

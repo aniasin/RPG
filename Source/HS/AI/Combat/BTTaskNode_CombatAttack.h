@@ -7,18 +7,18 @@
 #include "BTTaskNode_CombatAttack.generated.h"
 
 
-struct FBTCombatAttackTaskMemory
-{
-	/** Move request ID */
-	FAIRequestID AttackRequestID;
-
-	FDelegateHandle BBObserverDelegateHandle;
-	FVector PreviousGoalLocation;
-
-	TWeakObjectPtr<class UAITask_MoveTo> Task;
-
-	uint8 bObserverCanFinishTask : 1;
-};
+// struct FBTCombatAttackTaskMemory
+// {
+// 	/** Move request ID */
+// 	FAIRequestID AttackRequestID;
+// 
+// 	FDelegateHandle BBObserverDelegateHandle;
+// 	FVector PreviousGoalLocation;
+// 
+// 	TWeakObjectPtr<class UAITask_MoveTo> Task;
+// 
+// 	uint8 bObserverCanFinishTask : 1;
+// };
 /**
  * 
  */

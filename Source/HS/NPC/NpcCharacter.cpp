@@ -39,25 +39,29 @@ void ANpcCharacter::SetCombatBehavior()
 	float MaxHealth = AttributesComponent->MaxHealth.GetCurrentValue();
 	PercentHP = (CurrentHealth / MaxHealth) * 100;
 
-	GameplayTags.RemoveTag(FGameplayTag::RequestGameplayTag("Combat.Behavior"));
+	GameplayTags.RemoveTag(FGameplayTag::RequestGameplayTag("Combat"));
+	GameplayTags.RemoveTag(FGameplayTag::RequestGameplayTag("Defend"));
+	GameplayTags.RemoveTag(FGameplayTag::RequestGameplayTag("Retreat"));
+	GameplayTags.RemoveTag(FGameplayTag::RequestGameplayTag("Flee"));
+
 	if (PercentHP >= 50.f)
 	{
-		GameplayTags.AddTag(FGameplayTag::RequestGameplayTag("Combat.Behavior.Aggresive"));
+		GameplayTags.AddTag(FGameplayTag::RequestGameplayTag("Combat"));
 		UE_LOG(LogTemp, Warning, TEXT("I AM AGGRESSIVE!"))
 	}
 	else if (PercentHP >= 25.f)
 	{
-		GameplayTags.AddTag(FGameplayTag::RequestGameplayTag("Combat.Behavior.Defensive"));
+		GameplayTags.AddTag(FGameplayTag::RequestGameplayTag("Defend"));
 		UE_LOG(LogTemp, Warning, TEXT("I AM DEFENSIVE!"))
 	}
 	else if (PercentHP >= 10.f)
 	{
-		GameplayTags.AddTag(FGameplayTag::RequestGameplayTag("Combat.Behavior.Retreat"));
+		GameplayTags.AddTag(FGameplayTag::RequestGameplayTag("Retreat"));
 		UE_LOG(LogTemp, Warning, TEXT("I AM RETREATING!"))
 	}
 	else if (PercentHP < 10.f)
 	{
-		GameplayTags.AddTag(FGameplayTag::RequestGameplayTag("Combat.Behavior.Flee"));
+		GameplayTags.AddTag(FGameplayTag::RequestGameplayTag("Flee"));
 		UE_LOG(LogTemp, Warning, TEXT("I AM FLEEING!"))
 	}
 

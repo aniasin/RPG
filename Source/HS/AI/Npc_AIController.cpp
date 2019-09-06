@@ -104,13 +104,12 @@ void ANpc_AIController::OnTargetPerceptionUpdate(AActor* Actor, FAIStimulus Stim
 		{
 			UE_LOG(LogTemp, Warning, TEXT("Gain Sight!"))
 			AICharacter->SetCanSeePlayer(true);
-			if (AICharacter->Status != EStatus::InCombat)
-			{
-				AICharacter->SwitchCombat();
-			}
+			if (AICharacter->Status == EStatus::InCombat || AICharacter->Status == EStatus::InAlert) {return;}
+
+			AICharacter->SwitchCombat();
+
 			UWorld* World = GEngine->GetWorld();
 			if (!World)	{return;}
-
 			World->GetTimerManager().ClearTimer(SearchTimerHandle);
 		}
 	}
@@ -145,35 +144,55 @@ FVector ANpc_AIController::GetRandomSearchLocation(float radius)
 //Combat
 void ANpc_AIController::AttackTarget()
 {
-	UE_LOG(LogTemp, Warning, TEXT("AIController is Performing Attack!"))
 	if (bAttacking)
 	{
-		FAIMessage Msg(UBrainComponent::AIMessage_MoveFinished, this, AttackRequestID, FAIMessage::Failure);
-		FAIMessage::Send(this, Msg);
+// 		FAIMessage Msg(UBrainComponent::AIMessage_MoveFinished, this, AttackRequestID, FAIMessage::Failure);
+// 		FAIMessage::Send(this, Msg);
 		return;
 	}
 	bAttacking = true;
-
-	//Store New Request
-	StoreAttackRequestID();
+	UE_LOG(LogTemp, Warning, TEXT("AIController is Performing Attack!"))
+// 	//Store New Request
+// 	StoreAttackRequestID();
 	AICharacter->RightHand();
 
-	FTimerDelegate TimerDelegate;
-
-	TimerDelegate.BindUFunction(this, FName("UpdateAttack"));
-	auto CooldownTime = AICharacter->AttributesComponent->AttackSpeed.GetCurrentValue();
-	GetWorldTimerManager().SetTimer(AttackTimerHandle, TimerDelegate, CooldownTime, false);
+ 	AttackTimerDelegate.BindUFunction(this, FName("UpdateAttack"));
+ 	float CooldownTime = AICharacter->AttributesComponent->AttackSpeed.GetCurrentValue();
+ 	GetWorldTimerManager().SetTimer(AttackTimerHandle, AttackTimerDelegate, CooldownTime, false);
 
 }
 
 void ANpc_AIController::UpdateAttack()
 {
 	UE_LOG(LogTemp, Warning, TEXT("AIController: End Attack!"))
-	FAIMessage Msg(UBrainComponent::AIMessage_MoveFinished, this, AttackRequestID, FAIMessage::Success);
-	FAIMessage::Send(this, Msg);
+// 	FAIMessage Msg(UBrainComponent::AIMessage_MoveFinished, this, AttackRequestID, FAIMessage::Success);
+// 	FAIMessage::Send(this, Msg);
 	bAttacking = false;
 
-	AttackRequestID = FAIRequestID::InvalidRequest;
+	UWorld* World = GEngine->GetWorld();
+	if (!World) { return; }
+	World->GetTimerManager().ClearTimer(AttackTimerHandle);
+/*	AttackRequestID = FAIRequestID::InvalidRequest;*/
+}
+
+void ANpc_AIController::Defend()
+{
+	if (bDefending)	{return;}
+	bDefending = true;
+	AICharacter->LeftHand();
+
+	AttackTimerDelegate.BindUFunction(this, FName("UpdateDefend"));
+	float CooldownTime = AICharacter->AttributesComponent->AttackSpeed.GetCurrentValue();
+	GetWorldTimerManager().SetTimer(AttackTimerHandle, AttackTimerDelegate, CooldownTime, false);
+}
+
+void ANpc_AIController::UpdateDefend()
+{
+	bDefending = false;
+
+	UWorld* World = GEngine->GetWorld();
+	if (!World) { return; }
+	World->GetTimerManager().ClearTimer(AttackTimerHandle);
 }
 
 void ANpc_AIController::EndPlay(EEndPlayReason::Type EndPlayReason)
