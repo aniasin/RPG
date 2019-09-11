@@ -81,6 +81,7 @@ void AHSCharacter::SetupPlayerInputComponent(class UInputComponent* PlayerInputC
 
 	PlayerInputComponent->BindAction("Attack", IE_Pressed, this, &AHSCharacter::RightHand);
 	PlayerInputComponent->BindAction("LeftHand", IE_Pressed, this, &AHSCharacter::LeftHand);
+	PlayerInputComponent->BindAction("LeftHand", IE_Pressed, this, &AHSCharacter::EndLeftHand);
 
 	//Items on belt
 	PlayerInputComponent->BindAction("Belt_01", IE_Pressed, this, &AHSCharacter::UsePotion);
@@ -285,6 +286,8 @@ void AHSCharacter::RightHand()
 	{
 		//Basic Melee attack
 		AbilitySystemComponent->TryActivateAbilityByClass(Abilities[1]);
+		FVector Direction = GetActorForwardVector(); 
+		this->LaunchCharacter((Direction * AttackLaunchPower), false, false);
 	}
 }
 
@@ -292,7 +295,15 @@ void AHSCharacter::LeftHand()
 {
 	if (Status == EStatus::InCombat && CurrentWeaponLeft)
 	{
-		AbilitySystemComponent->TryActivateAbilityByClass(Abilities[2]);
+		//AbilitySystemComponent->TryActivateAbilityByClass(Abilities[2]);
+	}
+}
+
+void AHSCharacter::EndLeftHand()
+{
+	if (Status == EStatus::InCombat && CurrentWeaponLeft)
+	{
+		
 	}
 }
 
@@ -310,7 +321,7 @@ void AHSCharacter::OnOverlapBegin_Implementation(UPrimitiveComponent* Comp, AAct
 	{
 		if (CurrentController == PlayerController) //Only toggle widget if it's the player
 		{
-			PlayerController->ToggleInteractionWidget();
+			//PlayerController->ToggleInteractionWidget();
 		}
 		CurrentFocusedObject = OtherActor;
 		bHasActorToUse = true; //There is something to interact with
@@ -328,7 +339,7 @@ void AHSCharacter::OnOverlapEnd_Implementation(UPrimitiveComponent* Comp, AActor
 	{
 		if (CurrentController == PlayerController) //Only toggle widget if it's the player
 		{
-			PlayerController->ToggleInteractionWidget();
+			//PlayerController->ToggleInteractionWidget();
 		}
 	}
 	if (OtherActor == CurrentFocusedObject) 

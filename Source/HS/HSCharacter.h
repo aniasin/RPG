@@ -28,6 +28,7 @@ enum class EStatus : uint8
 {
 	InPeace UMETA(DisplayName = "In Peace"),
 	InCombat UMETA(DisplayName = "In Combat"),
+	IsDizzy UMETA(DisplayName = "Dizzy"),
 	InAlert UMETA(DisplayName = "In Alert")
 };
 
@@ -78,6 +79,10 @@ public:
 	//Basic melee attack
 	void RightHand();
 	void LeftHand();
+	void EndLeftHand();
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Combat)
+		float AttackLaunchPower;
 
 	// Implement IAbilitySystemInterface
 	UAbilitySystemComponent* GetAbilitySystemComponent() const override;

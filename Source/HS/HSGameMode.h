@@ -13,6 +13,19 @@ class AHSGameMode : public AGameModeBase
 
 public:
 	AHSGameMode();
+
+	void HeroDied(AController* Controller);
+
+protected:
+	float RespawnDelay;
+
+	TSubclassOf<class ACharacterV2> HeroClass;
+
+	AActor* EnemySpawnPoint;
+
+	virtual void BeginPlay() override;
+
+	void RespawnHero(AController* Controller);
 };
 
 

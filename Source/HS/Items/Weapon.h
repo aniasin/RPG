@@ -28,6 +28,10 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Stats)
 		float SpeedMultiplier;
 
+	// Animations
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = Animation)
+		TArray <UAnimMontage*> AnimMontages;
+
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 

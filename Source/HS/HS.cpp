@@ -2,6 +2,5 @@
 
 #include "HS.h"
 #include "Modules/ModuleManager.h"
-
-IMPLEMENT_PRIMARY_GAME_MODULE( FDefaultGameModuleImpl, HS, "HS" );
  
+IMPLEMENT_PRIMARY_GAME_MODULE(FDefaultGameModuleImpl, HS, "HS");
