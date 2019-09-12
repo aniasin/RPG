@@ -17,6 +17,9 @@
 #include "UI/HSFloatingStatusBarWidget.h"
 #include "UObject/ConstructorHelpers.h"
 #include "WidgetComponent.h"
+#include "Items/Weapon.h"
+#include "EngineUtils.h"
+#include "Classes/Engine/Engine.h"
 
 
 ACharacterV2::ACharacterV2(const class FObjectInitializer& ObjectInitializer) : Super(ObjectInitializer)

@@ -119,5 +119,5 @@ protected:
 private:
 	//////////////////////
 	// AI
-	bool bCanSeePlayer;
+	bool bCanSee;
 };
