@@ -4,9 +4,9 @@
 #include "Potion.h"
 #include "Classes/Components/CapsuleComponent.h"
 #include "GameplayEffect.h"
-#include "Abilities/PlayerAttributesSet.h"
-#include "Abilities/HS_AbilitySystemComponent.h"
-#include "HSCharacter.h"
+#include "Abilities/HSAttributeSetBase.h"
+#include "Abilities/HSAbilitySystemComponent.h"
+#include "CharacterV2.h"
 
 // Sets default values
 APotion::APotion()

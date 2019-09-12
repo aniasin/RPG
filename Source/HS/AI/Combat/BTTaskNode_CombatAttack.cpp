@@ -6,8 +6,8 @@
 #include "AIController.h"
 #include "AI/Npc_AIController.h"
 #include "Classes/GameFramework/Character.h"
-#include "HSCharacter.h"
-#include "NPC/NpcCharacter.h"
+#include "CharacterV2.h"
+
 
 EBTNodeResult::Type UBTTaskNode_CombatAttack::ExecuteTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory)
 {
@@ -25,11 +25,11 @@ EBTNodeResult::Type UBTTaskNode_CombatAttack::ExecuteTask(UBehaviorTreeComponent
 	ANpc_AIController* CurrentController = Cast<ANpc_AIController>(OwnerComp.GetAIOwner());
 	if (!CurrentController) {return EBTNodeResult::Aborted;	}
 
-	ANpcCharacter* CurrentCharacter = Cast<ANpcCharacter>(ControlledCharacter);
-	if (!CurrentCharacter->GameplayTags.HasTagExact(FGameplayTag::RequestGameplayTag("Combat")))
-	{
-		return EBTNodeResult::Aborted;
-	}
+// 	ACharacterV2* CurrentCharacter = Cast<ACharacterV2>(ControlledCharacter);
+// 	if (!CurrentCharacter->GameplayTags.HasTagExact(FGameplayTag::RequestGameplayTag("Combat")))
+// 	{
+// 		return EBTNodeResult::Aborted;
+// 	}
 
 	CurrentController->AttackTarget();
 

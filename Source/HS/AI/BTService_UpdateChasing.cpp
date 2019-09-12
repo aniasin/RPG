@@ -5,7 +5,7 @@
 #include "Kismet/GameplayStatics.h"
 #include "BehaviorTree/BlackboardComponent.h"
 #include "AI/Npc_AIController.h"
-#include "HSCharacter.h"
+#include "CharacterV2.h"
 
 
 UBTService_UpdateChasing::UBTService_UpdateChasing(const FObjectInitializer& ObjectInitializer)
@@ -31,7 +31,7 @@ void UBTService_UpdateChasing::OnBecomeRelevant(UBehaviorTreeComponent& OwnerCom
 		if (FoundActors[0])
 		{
 			PlayerLocation = FoundActors[0]->GetActorLocation();
-			Player = Cast<AHSCharacter>(FoundActors[0]);
+			Player = Cast<ACharacterV2>(FoundActors[0]);
 		}
 	}
  }

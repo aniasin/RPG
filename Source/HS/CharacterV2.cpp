@@ -169,6 +169,22 @@ void ACharacterV2::FinishDying()
 
 	Super::FinishDying();
 }
+
+///////////////////////////////
+// AI ////////////////////
+
+void ACharacterV2::SetCanSeePlayer(bool bCanSeePlayer)
+{
+	if (bCanSeePlayer) 
+	{
+		// do things
+	}
+	else if (!bCanSeePlayer)
+	{
+		// do things
+	}
+}
+
 /**
 * On the Server, Possession happens before BeginPlay.
 * On the Client, BeginPlay happens before Possession.

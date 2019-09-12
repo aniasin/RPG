@@ -5,10 +5,8 @@
 #include "AbilitySystemComponent.h"
 #include "Blueprint/UserWidget.h"
 #include "UI/HSDamageTextWidgetComponent.h"
-#include "HSCharacter.h"
 #include "HSPlayerState.h"
 #include "UI/HSHUDWidget.h"
-#include "UI/InteractionWidget.h"
 
 void AHSPlayerController::CreateHUD()
 {

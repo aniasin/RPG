@@ -6,7 +6,7 @@
 #include "AIController.h"
 #include "AI/Npc_AIController.h"
 #include "Classes/GameFramework/Character.h"
-#include "HSCharacter.h"
+#include "CharacterV2.h"
 
 EBTNodeResult::Type UBTTaskNode_CombatDefend::ExecuteTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory)
 {

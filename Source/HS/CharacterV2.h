@@ -6,6 +6,13 @@
 #include "Characters/HSCharacterBase.h"
 #include "CharacterV2.generated.h"
 
+UENUM(BlueprintType)
+enum class EStatus : uint8
+{
+	InPeace UMETA(DisplayName = "In Peace"),
+	InCombat UMETA(DisplayName = "In Combat"),
+	InAlert UMETA(DisplayName = "In Alert")
+};
 
 /**
  * A player or AI controlled hero character.
@@ -39,6 +46,13 @@ public:
 	USkeletalMeshComponent* GetGunComponent() const;
 
 	virtual void FinishDying() override;
+
+	////////////////////////////
+	// AI //////////
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "HS Parameters|AI")
+		class UBehaviorTree* BehaviorTree;
+
+	void SetCanSeePlayer(bool bCanSeePlayer);
 
 protected:
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "HS Parameters|Camera")
@@ -102,4 +116,8 @@ protected:
 	// Client only
 	virtual void OnRep_PlayerState() override;
 
+private:
+	//////////////////////
+	// AI
+	bool bCanSeePlayer;
 };

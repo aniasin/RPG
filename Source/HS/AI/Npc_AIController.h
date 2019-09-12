@@ -16,7 +16,7 @@ class HS_API ANpc_AIController : public AAIController
 	GENERATED_BODY()
 		ANpc_AIController();
 
-	class ANpcCharacter* AICharacter;
+	class ACharacterV2* AICharacter;
 
 	class UAIPerceptionComponent* PerceptionComponent;
 	class UAISenseConfig_Sight* SightConfig;

@@ -28,10 +28,6 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Stats)
 		float SpeedMultiplier;
 
-	// Animations
-	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = Animation)
-		TArray <UAnimMontage*> AnimMontages;
-
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;

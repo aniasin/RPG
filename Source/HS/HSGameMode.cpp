@@ -1,7 +1,6 @@
 // Copyright 1998-2019 Epic Games, Inc. All Rights Reserved.
 
 #include "HSGameMode.h"
-#include "HSCharacter.h"
 #include "CharacterV2.h"
 #include "Engine/World.h"
 #include "HSPlayerController.h"

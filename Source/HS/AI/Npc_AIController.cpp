@@ -2,18 +2,18 @@
 
 
 #include "Npc_AIController.h"
-#include "NPC/NpcCharacter.h"
+#include "CharacterV2.h"
 #include "Perception/AIPerceptionComponent.h"
 #include "Perception/AISense_Sight.h"
 #include "Perception/AISenseConfig_Sight.h"
 #include "Perception/AISense_Hearing.h"
 #include "Perception/AISenseConfig_Hearing.h"
 #include "Perception/AIPerceptionTypes.h"
-#include "HSCharacter.h"
 #include "Engine.h"
 #include "NavigationSystem.h"
 #include "BrainComponent.h"
-#include "Abilities/PlayerAttributesSet.h"
+#include "Abilities/HSAttributeSetBase.h"
+#include "BehaviorTree/BehaviorTree.h"
 
 ANpc_AIController::ANpc_AIController()
 {
@@ -45,7 +45,7 @@ void ANpc_AIController::OnPossess(APawn* InPawn)
 {
 	Super::OnPossess(InPawn);
 
-	AICharacter = Cast<ANpcCharacter>(InPawn);
+	AICharacter = Cast<ACharacterV2>(InPawn);
 	if (AICharacter)
 	{
 		UBehaviorTree* BehaviorTree = AICharacter->BehaviorTree;
@@ -62,15 +62,15 @@ void ANpc_AIController::SetCombatBehavior()
 	//Set GameplayTag Accordingly (Combat.Behavior.x)
 	UE_LOG(LogTemp, Warning, TEXT("Now Setting Combat Behavior!"))
 
-	
-	AICharacter->SetCombatBehavior();
-	AttackTarget();
-}
-
-void ANpc_AIController::SwitchCombat()
-{
-	AICharacter->SwitchCombat();
-}
+// 	
+// 	AICharacter->SetCombatBehavior();
+// 	AttackTarget();
+// }
+// 
+// void ANpc_AIController::SwitchCombat()
+// {
+// 	AICharacter->SwitchCombat();
+ }
 
 void ANpc_AIController::OnTargetPerceptionUpdate(AActor* Actor, FAIStimulus Stimulus)
 {
@@ -83,7 +83,7 @@ void ANpc_AIController::OnTargetPerceptionUpdate(AActor* Actor, FAIStimulus Stim
 	int32 NumberOfActorsSeen = SeenActors.Num();
 
 	// Check if sensed actor is Player
-	if (Cast<AHSCharacter>(Actor))
+	if (Cast<ACharacterV2>(Actor))
 	{
 		LastKnownPlayerPosition = Stimulus.StimulusLocation;
 		bCanSeePlayer = Stimulus.WasSuccessfullySensed();
@@ -94,35 +94,35 @@ void ANpc_AIController::OnTargetPerceptionUpdate(AActor* Actor, FAIStimulus Stim
 			AICharacter->SetCanSeePlayer(false);
 			UE_LOG(LogTemp, Warning, TEXT("Loose Sight!"))
 
-			AICharacter->Status = EStatus::InAlert;
-			AICharacter->GameplayTags.AddTag(FGameplayTag::RequestGameplayTag(FName("Alert")));
+			//AICharacter->Status = EStatus::InAlert;
+			//AICharacter->GameplayTags.AddTag(FGameplayTag::RequestGameplayTag(FName("Alert")));
 
-			SearchTimerDelegate.BindUFunction(this, FName("EndAlert"));
-			GetWorldTimerManager().SetTimer(SearchTimerHandle, SearchTimerDelegate, AICharacter->SearchTime, false);
+// 			SearchTimerDelegate.BindUFunction(this, FName("EndAlert"));
+// 			GetWorldTimerManager().SetTimer(SearchTimerHandle, SearchTimerDelegate, AICharacter->SearchTime, false);
 		}
 		if (bIsSeen)
 		{
 			UE_LOG(LogTemp, Warning, TEXT("Gain Sight!"))
 			AICharacter->SetCanSeePlayer(true);
-			if (AICharacter->Status == EStatus::InCombat || AICharacter->Status == EStatus::InAlert) {return;}
+			//if (AICharacter->Status == EStatus::InCombat || AICharacter->Status == EStatus::InAlert) {return;}
 
-			AICharacter->SwitchCombat();
-
-			UWorld* World = GEngine->GetWorld();
-			if (!World)	{return;}
-			World->GetTimerManager().ClearTimer(SearchTimerHandle);
+// 			AICharacter->SwitchCombat();
+// 
+// 			UWorld* World = GEngine->GetWorld();
+// 			if (!World)	{return;}
+// 			World->GetTimerManager().ClearTimer(SearchTimerHandle);
 		}
 	}
 }
 
 void ANpc_AIController::EndAlert()
 {
-	if (AICharacter->Status == EStatus::InAlert)
-	{
-		AICharacter->SwitchCombat();
-	}
-
-	AICharacter->GameplayTags.RemoveTag(FGameplayTag::RequestGameplayTag(FName("Alert")));
+// 	if (AICharacter->Status == EStatus::InAlert)
+// 	{
+// 		AICharacter->SwitchCombat();
+// 	}
+// 
+// 	AICharacter->GameplayTags.RemoveTag(FGameplayTag::RequestGameplayTag(FName("Alert")));
 }
 
 FVector ANpc_AIController::GetRandomSearchLocation(float radius)
@@ -154,11 +154,11 @@ void ANpc_AIController::AttackTarget()
 	UE_LOG(LogTemp, Warning, TEXT("AIController is Performing Attack!"))
 // 	//Store New Request
 // 	StoreAttackRequestID();
-	AICharacter->RightHand();
-
- 	AttackTimerDelegate.BindUFunction(this, FName("UpdateAttack"));
- 	float CooldownTime = AICharacter->AttributesComponent->AttackSpeed.GetCurrentValue();
- 	GetWorldTimerManager().SetTimer(AttackTimerHandle, AttackTimerDelegate, CooldownTime, false);
+// 	AICharacter->RightHand();
+// 
+//  	AttackTimerDelegate.BindUFunction(this, FName("UpdateAttack"));
+//  	float CooldownTime = AICharacter->AttributesComponent->AttackSpeed.GetCurrentValue();
+//  	GetWorldTimerManager().SetTimer(AttackTimerHandle, AttackTimerDelegate, CooldownTime, false);
 
 }
 
@@ -167,32 +167,32 @@ void ANpc_AIController::UpdateAttack()
 	UE_LOG(LogTemp, Warning, TEXT("AIController: End Attack!"))
 // 	FAIMessage Msg(UBrainComponent::AIMessage_MoveFinished, this, AttackRequestID, FAIMessage::Success);
 // 	FAIMessage::Send(this, Msg);
-	bAttacking = false;
-
-	UWorld* World = GEngine->GetWorld();
-	if (!World) { return; }
-	World->GetTimerManager().ClearTimer(AttackTimerHandle);
-/*	AttackRequestID = FAIRequestID::InvalidRequest;*/
+// 	bAttacking = false;
+// 
+// 	UWorld* World = GEngine->GetWorld();
+// 	if (!World) { return; }
+// 	World->GetTimerManager().ClearTimer(AttackTimerHandle);
+// /*	AttackRequestID = FAIRequestID::InvalidRequest;*/
 }
 
 void ANpc_AIController::Defend()
 {
-	if (bDefending)	{return;}
-	bDefending = true;
-	AICharacter->LeftHand();
-
-	AttackTimerDelegate.BindUFunction(this, FName("UpdateDefend"));
-	float CooldownTime = AICharacter->AttributesComponent->AttackSpeed.GetCurrentValue();
-	GetWorldTimerManager().SetTimer(AttackTimerHandle, AttackTimerDelegate, CooldownTime, false);
+// 	if (bDefending)	{return;}
+// 	bDefending = true;
+// 	AICharacter->LeftHand();
+// 
+// 	AttackTimerDelegate.BindUFunction(this, FName("UpdateDefend"));
+// 	float CooldownTime = AICharacter->AttributesComponent->AttackSpeed.GetCurrentValue();
+// 	GetWorldTimerManager().SetTimer(AttackTimerHandle, AttackTimerDelegate, CooldownTime, false);
 }
 
 void ANpc_AIController::UpdateDefend()
 {
-	bDefending = false;
-
-	UWorld* World = GEngine->GetWorld();
-	if (!World) { return; }
-	World->GetTimerManager().ClearTimer(AttackTimerHandle);
+// 	bDefending = false;
+// 
+// 	UWorld* World = GEngine->GetWorld();
+// 	if (!World) { return; }
+// 	World->GetTimerManager().ClearTimer(AttackTimerHandle);
 }
 
 void ANpc_AIController::EndPlay(EEndPlayReason::Type EndPlayReason)

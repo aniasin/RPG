@@ -6,7 +6,7 @@
 #include "AIController.h"
 #include "AI/Npc_AIController.h"
 #include "Classes/GameFramework/Character.h"
-#include "HSCharacter.h"
+#include "CharacterV2.h"
 
 EBTNodeResult::Type UBTTaskNode_TakeObject::ExecuteTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory)
 {
@@ -23,8 +23,8 @@ EBTNodeResult::Type UBTTaskNode_TakeObject::ExecuteTask(UBehaviorTreeComponent& 
 	AActor* OtherActor = Cast<AActor>(OtherObject);
 
 	// Call Controlled Character to take object
-	AHSCharacter* NPC = Cast<AHSCharacter>(ControlledCharacter);
- 	NPC->TakeObject(OtherActor);
+	ACharacterV2* NPC = Cast<ACharacterV2>(ControlledCharacter);
+ 	//NPC->TakeObject(OtherActor);
 
 	//clear EnvQuery targetObject so it can run again
 	BlackboardComponent->ClearValue(ObjectToTake.SelectedKeyName);
