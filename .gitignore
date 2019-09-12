@@ -1,8 +1,8 @@
 # Visual Studio 2015 user specific files
 .vs/
 
-Content/StarterContent/*
-Content/PolygonCity/*
+Content/ArchivedCharacter/*
+
 
 # Visual Studio 2015 database file
 *.VC.db
