@@ -87,6 +87,17 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "HS Parameters|Character")
 		virtual void FinishDying();
 
+	//////////////////////////
+	// Interaction
+
+	/////////////////////////
+	// Combat
+	UFUNCTION(BlueprintCallable)
+	virtual void AttachWeaponR();
+	UFUNCTION(BlueprintCallable)
+	virtual void DetachWeaponR();
+
+
 	protected:
 		// Called when the game starts or when spawned
 		virtual void BeginPlay() override;

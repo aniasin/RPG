@@ -14,21 +14,26 @@ class HS_API AWeapon : public AActor
 	
 	// Sets default values for this actor's properties
 	AWeapon();
-	UPROPERTY(EditAnyWhere, Category = "HS Parameters")
+
+public:
+	UPROPERTY(EditAnyWhere, BlueprintReadWrite, Category = "HS Parameters")
+		TArray<class ACharacterV2*> CurrentOverlapingActors;
+	UPROPERTY(EditAnyWhere, BlueprintReadWrite, Category = "HS Parameters")
+		FText Name;
+	UPROPERTY(EditAnyWhere, BlueprintReadWrite, Category = "HS Parameters")
 	class USceneComponent* SceneComponent;
-	UPROPERTY(EditAnyWhere, Category = "HS Parameters")
+	UPROPERTY(EditAnyWhere, BlueprintReadWrite, Category = "HS Parameters")
 		class UStaticMeshComponent* Mesh;
-	UPROPERTY(EditAnyWhere, Category = "HS Parameters")
+	UPROPERTY(EditAnyWhere, BlueprintReadWrite, Category = "HS Parameters")
 		class USphereComponent* SphereComponent;
-	UPROPERTY(EditAnyWhere, Category = "HS Parameters")
+	UPROPERTY(EditAnyWhere, BlueprintReadWrite, Category = "HS Parameters")
 		class UCapsuleComponent* CapsuleComponent;
-	UPROPERTY(EditAnyWhere, Category = "HS Parameters")
-		class UTextRenderComponent* TextRender;
+	UPROPERTY(EditAnyWhere, BlueprintReadWrite, Category = "HS Parameters")
+		class UWidgetComponent* WidgetComponent;
 
 	UPROPERTY(EditAnyWhere, Category = "HS Parameters")
 		FText ItemName;
 
-public:
 	UFUNCTION(BlueprintNativeEvent, Category = Collision)
 		void OnOverlapBegin(UPrimitiveComponent* Comp, AActor* OtherActor, UPrimitiveComponent* OtherComp,
 			int32 OtherBodyIndex, bool bFromSweep, const FHitResult& HitResult);
@@ -38,11 +43,6 @@ public:
 
 	virtual void PostInitializeComponents()override;
 
-
-	// The owner of this
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = Equipment)
-		AActor* OwnerActor;
-
 	//Item Stats
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Stats)
 		bool bIsLeftHand;
@@ -51,14 +51,12 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Stats)
 		float SpeedMultiplier;
 
+	// Interactions
+	void ItemTaken();
+
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 	virtual void Tick(float DeltaSeconds)override;
 
-	void UpdateRenderTextRotation(class ACharacterV2* Character);
-
-private:
-
-	ACharacterV2* CurrentFocusedActor;
 };

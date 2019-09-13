@@ -6,6 +6,7 @@
 #include "Components/StaticMeshComponent.h"
 #include "Components/SphereComponent.h"
 #include "Components/TextRenderComponent.h"
+#include "Components/WidgetComponent.h"
 #include "CharacterV2.h"
 #include "Classes/Engine/Engine.h"
 #include "Camera/CameraComponent.h"
@@ -30,8 +31,10 @@ AWeapon::AWeapon()
 	CapsuleComponent = CreateDefaultSubobject<UCapsuleComponent>("CapsuleComponent");
 	CapsuleComponent->AttachToComponent(Mesh, FAttachmentTransformRules::KeepRelativeTransform);
 
-	TextRender = CreateDefaultSubobject<UTextRenderComponent>("TextRender");
-	TextRender->AttachToComponent(Mesh, FAttachmentTransformRules::KeepRelativeTransform);
+	WidgetComponent = CreateDefaultSubobject<UWidgetComponent>("WidgetComponent");
+	WidgetComponent->AttachToComponent(Mesh, FAttachmentTransformRules::KeepRelativeTransform);
+
+	WidgetComponent->SetVisibility(false);
 }
 
 // Called when the game starts or when spawned
@@ -39,19 +42,12 @@ void AWeapon::BeginPlay()
 {
 	Super::BeginPlay();
 
-	TextRender->SetVisibility(false);
-	TextRender->SetText(ItemName);	
 }
 
 void AWeapon::Tick(float DeltaSeconds)
 {
 	Super::Tick(DeltaSeconds);
 
-	if (CurrentFocusedActor && HasAuthority())
-	{
-		UpdateRenderTextRotation(CurrentFocusedActor);
-	}
-	
 }
 
 void AWeapon::PostInitializeComponents()
@@ -64,16 +60,16 @@ void AWeapon::PostInitializeComponents()
 void AWeapon::OnOverlapBegin_Implementation(UPrimitiveComponent* Comp, AActor* OtherActor, UPrimitiveComponent* OtherComp, 
 	int32 OtherBodyIndex, bool bFromSweep, const FHitResult& HitResult)
 {
-	if (!HasAuthority()) {return;}
-
-	CurrentFocusedActor = Cast<ACharacterV2>(OtherActor);
-	if (CurrentFocusedActor)
+	ACharacterV2* Player = Cast<ACharacterV2>(OtherActor);
+	if (HasAuthority())
 	{
-		TextRender->SetVisibility(true);
-		GEngine->AddOnScreenDebugMessage(-1, 1, FColor::Blue, FString::Printf(TEXT("OverlapBegin with %s!"),
-		*(OtherActor->GetName())));
+		if (!Player) { return; }
+		CurrentOverlapingActors.Add(Player);
+
+		GEngine->AddOnScreenDebugMessage(-1, 1, FColor::Blue, FString::Printf(TEXT("OverlapBegin with %s!"), *(OtherActor->GetName())));
 		UE_LOG(LogTemp, Warning, TEXT("Overlap Begin with %s!"), *OtherActor->GetName())
 	}
+	Player->TakeItem(this);
 }
 
 void AWeapon::OnOverlapEnd_Implementation(UPrimitiveComponent* Comp, AActor* OtherActor, UPrimitiveComponent* OtherComp, 
@@ -81,20 +77,16 @@ void AWeapon::OnOverlapEnd_Implementation(UPrimitiveComponent* Comp, AActor* Oth
 {
 	if (!HasAuthority()) {return;}
 
-	if (CurrentFocusedActor)
-	{
-		TextRender->SetVisibility(false);
-		GEngine->AddOnScreenDebugMessage(-1, 1, FColor::Blue, FString::Printf(TEXT("OverlapEnd with %s!"),
-		*(OtherActor->GetName())));
-		UE_LOG(LogTemp, Warning, TEXT("Overlap End with %s!"), *OtherActor->GetName())
-		CurrentFocusedActor = NULL;
-	}
+	ACharacterV2* Player = Cast<ACharacterV2>(OtherActor);
+	if (!Player) { return; }
+
+	CurrentOverlapingActors.Remove(Player);
+	GEngine->AddOnScreenDebugMessage(-1, 1, FColor::Blue, FString::Printf(TEXT("OverlapEnd with %s!"), *(OtherActor->GetName())));
+	UE_LOG(LogTemp, Warning, TEXT("Overlap End with %s!"), *OtherActor->GetName())
 }
 
-void AWeapon::UpdateRenderTextRotation(ACharacterV2* CurrentCharacter)
+void AWeapon::ItemTaken()
 {
-	ACharacterV2* Player = Cast<ACharacterV2>(CurrentCharacter);
-	FRotator Rotation = Player->GetFollowCamera()->GetComponentRotation();
-	TextRender->SetWorldRotation(FRotator(Rotation.Pitch * -1, Rotation.Yaw - 180, 0));
+	SphereComponent->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 }
 

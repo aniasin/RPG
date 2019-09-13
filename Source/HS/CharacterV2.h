@@ -54,6 +54,15 @@ public:
 
 	void SetCanSeePlayer(bool bCanSeePlayer);
 
+	////////////////////////////
+	// Item interaction
+	void TakeItem(AActor* ItemToTake);
+
+	/////////////////////////////////
+	// Combat
+	virtual void AttachWeaponR()override;
+	virtual void DetachWeaponR()override;
+
 protected:
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "HS Parameters|Camera")
 		float BaseTurnRate = 45.0f;
@@ -120,4 +129,9 @@ private:
 	//////////////////////
 	// AI
 	bool bCanSee;
+
+	///////////////////////
+	// Equipment
+	class AWeapon* WeaponR;
+	class AWeapon* WeaponL;
 };

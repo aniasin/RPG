@@ -356,3 +356,12 @@ void AHSCharacterBase::SetStamina(float Stamina)
 	}
 }
 
+void AHSCharacterBase::AttachWeaponR()
+{
+
+}
+
+void AHSCharacterBase::DetachWeaponR()
+{
+
+}

@@ -188,6 +188,33 @@ void ACharacterV2::SetCanSeePlayer(bool bCanSeePlayer)
 	}
 }
 
+//////////////////////////////////////
+// Item Interactions
+void ACharacterV2::TakeItem(AActor* ItemToTake)
+{
+	AWeapon* IsWeapon = Cast<AWeapon>(ItemToTake);
+	if (IsWeapon)
+	{
+		IsWeapon->AttachToComponent(GetMesh(), FAttachmentTransformRules::SnapToTargetIncludingScale, TEXT("WeaponBack"));
+		IsWeapon->ItemTaken();
+		WeaponR = IsWeapon;
+	}
+}
+
+///////////////////////////////////////
+// Combat
+void ACharacterV2::AttachWeaponR()
+{
+	Super::AttachWeaponR();
+	WeaponR->AttachToComponent(GetMesh(), FAttachmentTransformRules::SnapToTargetIncludingScale, TEXT("Weapon_r"));
+}
+
+void ACharacterV2::DetachWeaponR()
+{
+	Super::DetachWeaponR();
+	WeaponR->AttachToComponent(GetMesh(), FAttachmentTransformRules::SnapToTargetIncludingScale, TEXT("WeaponBack"));
+}
+
 /**
 * On the Server, Possession happens before BeginPlay.
 * On the Client, BeginPlay happens before Possession.
