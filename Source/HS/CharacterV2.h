@@ -60,8 +60,9 @@ public:
 
 	/////////////////////////////////
 	// Combat
-	virtual void AttachWeaponR()override;
-	virtual void DetachWeaponR()override;
+	UFUNCTION(NetMulticast, Unreliable, BlueprintCallable)
+	void AttachDetachWeaponR(bool bIsAttaching);
+
 
 protected:
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "HS Parameters|Camera")

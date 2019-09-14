@@ -73,7 +73,7 @@ void ACharacterV2::SetupPlayerInputComponent(class UInputComponent* PlayerInputC
 
 	PlayerInputComponent->BindAxis("LookUp", this, &ACharacterV2::LookUp);
 	PlayerInputComponent->BindAxis("LookUpRate", this, &ACharacterV2::LookUpRate);
-	PlayerInputComponent->BindAxis("Turn", this, &ACharacterV2::Turn);
+	PlayerInputComponent->BindAxis("Turn", this, &APawn::AddControllerYawInput);
 	PlayerInputComponent->BindAxis("TurnRate", this, &ACharacterV2::TurnRate);
 
 	// Bind to AbilitySystemComponent
@@ -201,18 +201,14 @@ void ACharacterV2::TakeItem(AActor* ItemToTake)
 	}
 }
 
-///////////////////////////////////////
-// Combat
-void ACharacterV2::AttachWeaponR()
-{
-	Super::AttachWeaponR();
-	WeaponR->AttachToComponent(GetMesh(), FAttachmentTransformRules::SnapToTargetIncludingScale, TEXT("Weapon_r"));
-}
 
-void ACharacterV2::DetachWeaponR()
+/////////////////////////////////////
+// Combat
+void ACharacterV2::AttachDetachWeaponR_Implementation(bool bIsAttaching)
 {
-	Super::DetachWeaponR();
-	WeaponR->AttachToComponent(GetMesh(), FAttachmentTransformRules::SnapToTargetIncludingScale, TEXT("WeaponBack"));
+	if (!WeaponR) { return; }
+	FName Socket = bIsAttaching ? FName("Weapon_r") : FName("Weaponback");
+	WeaponR->AttachToComponent(GetMesh(), FAttachmentTransformRules::SnapToTargetIncludingScale, Socket);
 }
 
 /**
@@ -250,14 +246,6 @@ void ACharacterV2::LookUpRate(float Value)
 	{
 		// calculate delta for this frame from the rate information
 		AddControllerPitchInput(Value * BaseLookUpRate * GetWorld()->GetDeltaSeconds());
-	}
-}
-
-void ACharacterV2::Turn(float Value)
-{
-	if (IsAlive())
-	{
-		AddControllerYawInput(Value);
 	}
 }
 

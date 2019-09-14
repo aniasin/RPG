@@ -355,13 +355,3 @@ void AHSCharacterBase::SetStamina(float Stamina)
 		AttributeSetBase->SetStamina(Stamina);
 	}
 }
-
-void AHSCharacterBase::AttachWeaponR()
-{
-
-}
-
-void AHSCharacterBase::DetachWeaponR()
-{
-
-}
