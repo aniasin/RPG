@@ -49,12 +49,24 @@ public:
 
 	////////////////////////////
 	// Item interaction
-	void TakeItem(AActor* ItemToTake);
+		UFUNCTION(NetMulticast, Unreliable)
+			void TakeItem(AActor* ItemToTake);
+		UFUNCTION(Server, Unreliable, WithValidation)
+			void ServerTakeItem(AActor* ItemToTake);
+
 
 	/////////////////////////////////
 	// Combat
-	UFUNCTION(NetMulticast, Unreliable, BlueprintCallable)
+		UFUNCTION(NetMulticast, Unreliable, BlueprintCallable)
 	void AttachDetachWeaponR(bool bIsAttaching);
+
+	////////////////////////////////
+	// Interactions
+	void Interaction();
+
+	UFUNCTION(Client, Unreliable)
+	void ToggleInteractionWidget(AActor* Item);
+
 
 
 protected:
@@ -87,6 +99,9 @@ protected:
 
 	UPROPERTY(BlueprintReadOnly, VisibleAnywhere, Category = "HS Parameters|UI")
 		class UWidgetComponent* UIFloatingStatusBarComponent;
+
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "HS Parameters|UI")
+		class UUserWidget* InteractionWidget;
 
 	FGameplayTag DeadTag;
 
@@ -128,4 +143,6 @@ private:
 	// Equipment
 	class AWeapon* WeaponR;
 	class AWeapon* WeaponL;
+	// Interaction
+	AActor* CurrentFocusedItem;
 };

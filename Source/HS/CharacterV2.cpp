@@ -76,6 +76,8 @@ void ACharacterV2::SetupPlayerInputComponent(class UInputComponent* PlayerInputC
 	PlayerInputComponent->BindAxis("Turn", this, &APawn::AddControllerYawInput);
 	PlayerInputComponent->BindAxis("TurnRate", this, &ACharacterV2::TurnRate);
 
+	PlayerInputComponent->BindAction("Interaction", IE_Pressed, this, &ACharacterV2::Interaction);
+
 	// Bind to AbilitySystemComponent
  	AbilitySystemComponent->BindAbilityActivationToInputComponent(PlayerInputComponent, FGameplayAbilityInputBinds(FString("ConfirmTarget"),
 	FString("CancelTarget"), FString("EGDAbilityInputID"), static_cast<int32>(EGDAbilityInputID::Confirm), static_cast<int32>(EGDAbilityInputID::Cancel)));
@@ -173,9 +175,7 @@ void ACharacterV2::FinishDying()
 	Super::FinishDying();
 }
 
-//////////////////////////////////////
-// Item Interactions
-void ACharacterV2::TakeItem(AActor* ItemToTake)
+void ACharacterV2::ServerTakeItem_Implementation(AActor* ItemToTake)
 {
 	AWeapon* IsWeapon = Cast<AWeapon>(ItemToTake);
 	if (IsWeapon)
@@ -187,6 +187,51 @@ void ACharacterV2::TakeItem(AActor* ItemToTake)
 	}
 }
 
+bool ACharacterV2::ServerTakeItem_Validate(AActor* ItemToTake)
+{
+	return true;
+}
+
+//////////////////////////////////////
+// Item Interactions
+void ACharacterV2::TakeItem_Implementation(AActor* ItemToTake)
+{
+	AWeapon* IsWeapon = Cast<AWeapon>(ItemToTake);
+	if (IsWeapon)
+	{
+		IsWeapon->AttachToComponent(GetMesh(), FAttachmentTransformRules::SnapToTargetIncludingScale, TEXT("WeaponBack"));
+		IsWeapon->ItemTaken();
+		IsWeapon->OwnerActor = this;
+		WeaponR = IsWeapon;
+	}
+}
+
+void ACharacterV2::Interaction()
+{
+	if (!CurrentFocusedItem) { return; }
+	if (Role < ROLE_Authority)
+	{
+		ServerTakeItem(CurrentFocusedItem);
+	}
+	TakeItem(CurrentFocusedItem);
+
+}
+
+void ACharacterV2::ToggleInteractionWidget_Implementation(AActor* Item)
+{
+	// if no widget it is an AI
+	if (!InteractionWidget)	{return;}
+	if (InteractionWidget->GetVisibility() == ESlateVisibility::Visible)
+	{
+		InteractionWidget->SetVisibility(ESlateVisibility::Hidden);
+		CurrentFocusedItem = NULL;
+	}
+	else
+	{
+		InteractionWidget->SetVisibility(ESlateVisibility::Visible);
+		CurrentFocusedItem = Item;
+	}
+}
 
 /////////////////////////////////////
 // Combat

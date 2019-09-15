@@ -16,6 +16,8 @@ class HS_API UBTTaskNode_TakeObject : public UBTTaskNode
 
 	UPROPERTY(EditAnywhere, Category = BlackBoard)
 	FBlackboardKeySelector ObjectToTake;
+	UPROPERTY(EditAnywhere, Category = BlackBoard)
+		FBlackboardKeySelector CurrentWeapon;
 
 	virtual EBTNodeResult::Type ExecuteTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory)override;
 };

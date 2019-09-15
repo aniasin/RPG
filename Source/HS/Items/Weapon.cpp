@@ -68,21 +68,23 @@ void AWeapon::OnOverlapBegin_Implementation(UPrimitiveComponent* Comp, AActor* O
 
 		GEngine->AddOnScreenDebugMessage(-1, 1, FColor::Blue, FString::Printf(TEXT("OverlapBegin with %s!"), *(OtherActor->GetName())));
 		UE_LOG(LogTemp, Warning, TEXT("Overlap Begin with %s!"), *OtherActor->GetName())
+		Player->ToggleInteractionWidget(this);
 	}
-	Player->TakeItem(this);
 }
 
 void AWeapon::OnOverlapEnd_Implementation(UPrimitiveComponent* Comp, AActor* OtherActor, UPrimitiveComponent* OtherComp, 
 	int32 OtherBodyIndex)
 {
-	if (!HasAuthority()) {return;}
-
 	ACharacterV2* Player = Cast<ACharacterV2>(OtherActor);
-	if (!Player) { return; }
+	if (HasAuthority())
+	{
+		if (!Player) { return; }
 
-	CurrentOverlapingActors.Remove(Player);
-	GEngine->AddOnScreenDebugMessage(-1, 1, FColor::Blue, FString::Printf(TEXT("OverlapEnd with %s!"), *(OtherActor->GetName())));
-	UE_LOG(LogTemp, Warning, TEXT("Overlap End with %s!"), *OtherActor->GetName())
+		CurrentOverlapingActors.Remove(Player);
+		GEngine->AddOnScreenDebugMessage(-1, 1, FColor::Blue, FString::Printf(TEXT("OverlapEnd with %s!"), *(OtherActor->GetName())));
+		UE_LOG(LogTemp, Warning, TEXT("Overlap End with %s!"), *OtherActor->GetName())
+		Player->ToggleInteractionWidget(this);
+	}
 }
 
 void AWeapon::ItemTaken()
