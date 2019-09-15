@@ -16,6 +16,10 @@ class HS_API AWeapon : public AActor
 	AWeapon();
 
 public:
+	// The owner of this
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = Equipment)
+		AActor* OwnerActor;
+
 	UPROPERTY(EditAnyWhere, BlueprintReadWrite, Category = "HS Parameters")
 		TArray<class ACharacterV2*> CurrentOverlapingActors;
 	UPROPERTY(EditAnyWhere, BlueprintReadWrite, Category = "HS Parameters")

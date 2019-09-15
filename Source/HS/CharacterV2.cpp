@@ -197,6 +197,7 @@ void ACharacterV2::TakeItem(AActor* ItemToTake)
 	{
 		IsWeapon->AttachToComponent(GetMesh(), FAttachmentTransformRules::SnapToTargetIncludingScale, TEXT("WeaponBack"));
 		IsWeapon->ItemTaken();
+		IsWeapon->OwnerActor = this;
 		WeaponR = IsWeapon;
 	}
 }
