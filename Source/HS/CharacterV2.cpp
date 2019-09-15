@@ -173,21 +173,6 @@ void ACharacterV2::FinishDying()
 	Super::FinishDying();
 }
 
-///////////////////////////////
-// AI ////////////////////
-
-void ACharacterV2::SetCanSeePlayer(bool bCanSeePlayer)
-{
-	if (bCanSeePlayer) 
-	{
-		// do things
-	}
-	else if (!bCanSeePlayer)
-	{
-		// do things
-	}
-}
-
 //////////////////////////////////////
 // Item Interactions
 void ACharacterV2::TakeItem(AActor* ItemToTake)

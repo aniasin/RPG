@@ -48,13 +48,6 @@ public:
 	virtual void FinishDying() override;
 
 	////////////////////////////
-	// AI //////////
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "HS Parameters|AI")
-		class UBehaviorTree* BehaviorTree;
-
-	void SetCanSeePlayer(bool bCanSeePlayer);
-
-	////////////////////////////
 	// Item interaction
 	void TakeItem(AActor* ItemToTake);
 

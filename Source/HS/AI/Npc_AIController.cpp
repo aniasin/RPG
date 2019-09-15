@@ -17,6 +17,8 @@
 
 ANpc_AIController::ANpc_AIController()
 {
+	bWantsPlayerState = true;
+
 	// Creating Perception component
 	PerceptionComponent = CreateDefaultSubobject<UAIPerceptionComponent>(TEXT("PerceptionComponent"));
 	SightConfig = CreateDefaultSubobject<UAISenseConfig_Sight>(FName("SightConfig"));
@@ -46,13 +48,9 @@ void ANpc_AIController::OnPossess(APawn* InPawn)
 	Super::OnPossess(InPawn);
 
 	AICharacter = Cast<ACharacterV2>(InPawn);
-	if (AICharacter)
+	if (AICharacter && BehaviorTree)
 	{
-		UBehaviorTree* BehaviorTree = AICharacter->BehaviorTree;
-		if (BehaviorTree)
-		{
-			RunBehaviorTree(BehaviorTree);
-		}
+		RunBehaviorTree(BehaviorTree);
 	}
 }
 
@@ -91,7 +89,7 @@ void ANpc_AIController::OnTargetPerceptionUpdate(AActor* Actor, FAIStimulus Stim
 		if (!bIsSeen)
 		{
 			LastKnownPlayerDirection = Actor->GetActorForwardVector();
-			AICharacter->SetCanSeePlayer(false);
+
 			UE_LOG(LogTemp, Warning, TEXT("Loose Sight!"))
 
 			//AICharacter->Status = EStatus::InAlert;
@@ -103,7 +101,7 @@ void ANpc_AIController::OnTargetPerceptionUpdate(AActor* Actor, FAIStimulus Stim
 		if (bIsSeen)
 		{
 			UE_LOG(LogTemp, Warning, TEXT("Gain Sight!"))
-			AICharacter->SetCanSeePlayer(true);
+
 			//if (AICharacter->Status == EStatus::InCombat || AICharacter->Status == EStatus::InAlert) {return;}
 
 // 			AICharacter->SwitchCombat();

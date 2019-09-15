@@ -28,6 +28,8 @@ class HS_API ANpc_AIController : public AAIController
 		float LoseSightRange = 2500.f;
 	UPROPERTY(EditDefaultsOnly, Category = NPC_AI)
 		float HearingRange = 1000.f;
+	UPROPERTY(EditAnywhere, Category = NPC_AI)
+		class UBehaviorTree* BehaviorTree;
 
 
 	UFUNCTION()
