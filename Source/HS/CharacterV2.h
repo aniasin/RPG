@@ -54,20 +54,15 @@ public:
 		UFUNCTION(Server, Unreliable, WithValidation)
 			void ServerTakeItem(AActor* ItemToTake);
 
+		void Interaction();
+
+		UFUNCTION(Client, Unreliable)
+			void ToggleInteractionWidget(AActor* Item);
 
 	/////////////////////////////////
 	// Combat
 		UFUNCTION(NetMulticast, Unreliable, BlueprintCallable)
 	void AttachDetachWeaponR(bool bIsAttaching);
-
-	////////////////////////////////
-	// Interactions
-	void Interaction();
-
-	UFUNCTION(Client, Unreliable)
-	void ToggleInteractionWidget(AActor* Item);
-
-
 
 protected:
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "HS Parameters|Camera")
