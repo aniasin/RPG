@@ -62,7 +62,13 @@ public:
 	/////////////////////////////////
 	// Combat
 		UFUNCTION(NetMulticast, Unreliable, BlueprintCallable)
-	void AttachDetachWeaponR(bool bIsAttaching);
+		void AttachDetachWeaponR(bool bIsAttaching);
+
+		void SwitchCombat();
+
+		UFUNCTION(BlueprintImplementableEvent, Category = AICombat, meta = (DisplayName = "AISwitchCombat"))
+			void K2_AISwitchCombat();
+
 
 protected:
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "HS Parameters|Camera")

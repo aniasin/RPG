@@ -81,6 +81,7 @@ void ACharacterV2::SetupPlayerInputComponent(class UInputComponent* PlayerInputC
 	PlayerInputComponent->BindAxis("TurnRate", this, &ACharacterV2::TurnRate);
 
 	PlayerInputComponent->BindAction("Interaction", IE_Pressed, this, &ACharacterV2::Interaction);
+	PlayerInputComponent->BindAction("SwitchCombat", IE_Pressed, this, &ACharacterV2::SwitchCombat);
 
 	// Bind to AbilitySystemComponent
  	AbilitySystemComponent->BindAbilityActivationToInputComponent(PlayerInputComponent, FGameplayAbilityInputBinds(FString("ConfirmTarget"),
@@ -391,4 +392,19 @@ void ACharacterV2::OnRep_PlayerState()
 		SetMana(GetMaxMana());
 		SetStamina(GetMaxStamina());
 	}
+}
+
+void ACharacterV2::SwitchCombat()
+{
+	AHSPlayerController* PC = Cast<AHSPlayerController>(GetController());
+	if (PC)
+	{
+		bUseControllerRotationYaw = !bUseControllerRotationYaw;
+	}
+	// If not player, then it's an AI
+	else
+	{
+		K2_AISwitchCombat();
+	}
+
 }

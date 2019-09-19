@@ -104,7 +104,7 @@ void ANpc_AIController::OnTargetPerceptionUpdate(AActor* Actor, FAIStimulus Stim
 
 			//if (AICharacter->Status == EStatus::InCombat || AICharacter->Status == EStatus::InAlert) {return;}
 
-// 			AICharacter->SwitchCombat();
+ 			AICharacter->SwitchCombat();
 // 
 // 			UWorld* World = GEngine->GetWorld();
 // 			if (!World)	{return;}
