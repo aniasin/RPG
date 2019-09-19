@@ -81,14 +81,15 @@ void ANpc_AIController::OnTargetPerceptionUpdate(AActor* Actor, FAIStimulus Stim
 	int32 NumberOfActorsSeen = SeenActors.Num();
 
 	// Check if sensed actor is Player
-	if (Cast<ACharacterV2>(Actor))
+	ACharacterV2* Player = Cast<ACharacterV2>(Actor);
+	if (Player)
 	{
 		LastKnownPlayerPosition = Stimulus.StimulusLocation;
 		bCanSeePlayer = Stimulus.WasSuccessfullySensed();
 		// when sight is lost remember player's direction
 		if (!bSeeAPlayer)
 		{
-			LastKnownPlayerDirection = Actor->GetActorForwardVector();
+			LastKnownPlayerDirection = Player->GetVelocity().GetSafeNormal(1.f);
 
 			UE_LOG(LogTemp, Warning, TEXT("Loose Sight! %s"), *Actor->GetName())
 
