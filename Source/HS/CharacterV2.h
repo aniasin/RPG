@@ -43,8 +43,6 @@ public:
 
 	class UHSFloatingStatusBarWidget* GetFloatingStatusBar();
 
-	USkeletalMeshComponent* GetGunComponent() const;
-
 	virtual void FinishDying() override;
 
 	////////////////////////////
@@ -69,6 +67,16 @@ public:
 		UFUNCTION(BlueprintImplementableEvent, Category = AICombat, meta = (DisplayName = "AISwitchCombat"))
 			void K2_AISwitchCombat();
 
+	////////////////////////////
+	// AI
+	// Player Status ie: Combat, peace, ect.
+		UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "HS Parameters|AI")
+			EStatus Status;
+
+	// How long AI will search for player when sight is lost
+		UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "HS Parameters|AI")
+			float SearchTime;
+
 
 protected:
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "HS Parameters|Camera")
@@ -88,9 +96,6 @@ protected:
 
 	UPROPERTY(BlueprintReadOnly, VisibleAnywhere, Category = "HS Parameters|Camera")
 		class UCameraComponent* FollowCamera;
-
-	UPROPERTY(BlueprintReadOnly, VisibleAnywhere)
-		USkeletalMeshComponent* GunComponent;
 
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "HS Parameters|UI")
 		TSubclassOf<class UHSFloatingStatusBarWidget> UIFloatingStatusBarClass;

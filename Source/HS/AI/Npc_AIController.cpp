@@ -10,9 +10,11 @@
 #include "Perception/AISenseConfig_Hearing.h"
 #include "Perception/AIPerceptionTypes.h"
 #include "Engine.h"
+#include "Engine/World.h"
 #include "NavigationSystem.h"
 #include "BrainComponent.h"
 #include "Abilities/HSAttributeSetBase.h"
+#include "Abilities/HSAbilitySystemComponent.h"
 #include "BehaviorTree/BehaviorTree.h"
 
 ANpc_AIController::ANpc_AIController()
@@ -82,46 +84,41 @@ void ANpc_AIController::OnTargetPerceptionUpdate(AActor* Actor, FAIStimulus Stim
 
 	// Check if sensed actor is Player
 	ACharacterV2* Player = Cast<ACharacterV2>(Actor);
-	if (Player)
+	if (Player) 
 	{
 		LastKnownPlayerPosition = Stimulus.StimulusLocation;
 		bCanSeePlayer = Stimulus.WasSuccessfullySensed();
+		UWorld* World = GetWorld();
+		if (!World) {UE_LOG(LogTemp, Warning, TEXT("NO WORLD!")) return; }
 		// when sight is lost remember player's direction
 		if (!bSeeAPlayer)
 		{
-			LastKnownPlayerDirection = Player->GetVelocity().GetSafeNormal(1.f);
-
+			LastKnownPlayerDirection = Player->GetVelocity().GetUnsafeNormal();
 			UE_LOG(LogTemp, Warning, TEXT("Loose Sight! %s"), *Actor->GetName())
 
-			//AICharacter->Status = EStatus::InAlert;
-			//AICharacter->GameplayTags.AddTag(FGameplayTag::RequestGameplayTag(FName("Alert")));
+			AICharacter->Status = EStatus::InAlert;
 
-// 			SearchTimerDelegate.BindUFunction(this, FName("EndAlert"));
-// 			GetWorldTimerManager().SetTimer(SearchTimerHandle, SearchTimerDelegate, AICharacter->SearchTime, false);
+ 			SearchTimerDelegate.BindUFunction(this, FName("EndAlert"));
+ 			World->GetTimerManager().SetTimer(SearchTimerHandle, SearchTimerDelegate, AICharacter->SearchTime, false);
 		}
 		if (bSeeAPlayer)
 		{
 			UE_LOG(LogTemp, Warning, TEXT("Gain Sight! %s"), *Actor->GetName())
 
-			//if (AICharacter->Status == EStatus::InCombat || AICharacter->Status == EStatus::InAlert) {return;}
+			if (AICharacter->Status == EStatus::InCombat || AICharacter->Status == EStatus::InAlert) {return;}
 
  			AICharacter->SwitchCombat();
-// 
-// 			UWorld* World = GEngine->GetWorld();
-// 			if (!World)	{return;}
-// 			World->GetTimerManager().ClearTimer(SearchTimerHandle);
+
+			World->GetTimerManager().ClearTimer(SearchTimerHandle);
 		}
 	}
 }
 
 void ANpc_AIController::EndAlert()
 {
-// 	if (AICharacter->Status == EStatus::InAlert)
-// 	{
-// 		AICharacter->SwitchCombat();
-// 	}
-// 
-// 	AICharacter->GameplayTags.RemoveTag(FGameplayTag::RequestGameplayTag(FName("Alert")));
+	UE_LOG(LogTemp, Warning, TEXT("End Searching..."))
+	AICharacter->SwitchCombat();
+	AICharacter->Status = EStatus::InPeace;
 }
 
 FVector ANpc_AIController::GetRandomSearchLocation(float radius)

@@ -38,8 +38,6 @@ ACharacterV2::ACharacterV2(const class FObjectInitializer& ObjectInitializer) : 
 	FollowCamera->SetupAttachment(CameraBoom);
 	FollowCamera->FieldOfView = 80.0f;
 
-	GunComponent = CreateDefaultSubobject<USkeletalMeshComponent>(FName("Gun"));
-
 	GetCapsuleComponent()->SetCollisionResponseToChannel(ECollisionChannel::ECC_Camera, ECollisionResponse::ECR_Ignore);
 
 	// Makes sure that the animations play on the Server so that we can use bone and socket transforms
@@ -160,11 +158,6 @@ class UHSFloatingStatusBarWidget* ACharacterV2::GetFloatingStatusBar()
 	return UIFloatingStatusBar;
 }
 
-USkeletalMeshComponent* ACharacterV2::GetGunComponent() const
-{
-	return GunComponent;
-}
-
 void ACharacterV2::FinishDying()
 {
 	if (Role == ROLE_Authority)
@@ -261,8 +254,6 @@ void ACharacterV2::BeginPlay()
 	// On respawn, they are set up in PossessedBy.
 	// When the player a client, the floating status bars are all set up in OnRep_PlayerState.
 	InitializeFloatingStatusBar();
-
-	GunComponent->AttachToComponent(GetMesh(), FAttachmentTransformRules::SnapToTargetNotIncludingScale, FName("GunSocket"));
 
 	StartingCameraBoomArmLength = CameraBoom->TargetArmLength;
 	StartingCameraBoomLocation = CameraBoom->RelativeLocation;
