@@ -77,7 +77,7 @@ void ANpc_AIController::OnTargetPerceptionUpdate(AActor* Actor, FAIStimulus Stim
 	PerceptionComponent->GetCurrentlyPerceivedActors(TSubclassOf<UAISense_Sight>(), SeenActors);
 
 	// Numbers of seen actors and if they enter or exit view
-	bool bSeePlayer = SeenActors.Contains(Actor);
+	bool bSeeAPlayer = SeenActors.Contains(Actor);
 	int32 NumberOfActorsSeen = SeenActors.Num();
 
 	// Check if sensed actor is Player
@@ -86,11 +86,11 @@ void ANpc_AIController::OnTargetPerceptionUpdate(AActor* Actor, FAIStimulus Stim
 		LastKnownPlayerPosition = Stimulus.StimulusLocation;
 		bCanSeePlayer = Stimulus.WasSuccessfullySensed();
 		// when sight is lost remember player's direction
-		if (!bSeePlayer)
+		if (!bSeeAPlayer)
 		{
 			LastKnownPlayerDirection = Actor->GetActorForwardVector();
 
-			UE_LOG(LogTemp, Warning, TEXT("Loose Sight!"))
+			UE_LOG(LogTemp, Warning, TEXT("Loose Sight! %s"), *Actor->GetName())
 
 			//AICharacter->Status = EStatus::InAlert;
 			//AICharacter->GameplayTags.AddTag(FGameplayTag::RequestGameplayTag(FName("Alert")));
@@ -98,9 +98,9 @@ void ANpc_AIController::OnTargetPerceptionUpdate(AActor* Actor, FAIStimulus Stim
 // 			SearchTimerDelegate.BindUFunction(this, FName("EndAlert"));
 // 			GetWorldTimerManager().SetTimer(SearchTimerHandle, SearchTimerDelegate, AICharacter->SearchTime, false);
 		}
-		if (bSeePlayer)
+		if (bSeeAPlayer)
 		{
-			UE_LOG(LogTemp, Warning, TEXT("Gain Sight!"))
+			UE_LOG(LogTemp, Warning, TEXT("Gain Sight! %s"), *Actor->GetName())
 
 			//if (AICharacter->Status == EStatus::InCombat || AICharacter->Status == EStatus::InAlert) {return;}
 

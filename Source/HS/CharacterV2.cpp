@@ -24,6 +24,11 @@
 
 ACharacterV2::ACharacterV2(const class FObjectInitializer& ObjectInitializer) : Super(ObjectInitializer)
 {
+	// Don't rotate when the controller rotates. Let that just affect the camera.
+	bUseControllerRotationPitch = false;
+	bUseControllerRotationYaw = false;
+	bUseControllerRotationRoll = false;
+
 	CameraBoom = CreateDefaultSubobject<USpringArmComponent>(FName("CameraBoom"));
 	CameraBoom->SetupAttachment(RootComponent);
 	CameraBoom->bUsePawnControlRotation = true;
@@ -67,9 +72,8 @@ void ACharacterV2::SetupPlayerInputComponent(class UInputComponent* PlayerInputC
 	Super::SetupPlayerInputComponent(PlayerInputComponent);
 
 	PlayerInputComponent->BindAxis("MoveForward", this, &ACharacterV2::MoveForward);
-	PlayerInputComponent->BindAxis("MoveBackward", this, &ACharacterV2::MoveForward);
 	PlayerInputComponent->BindAxis("MoveRight", this, &ACharacterV2::MoveRight);
-	PlayerInputComponent->BindAxis("MoveLeft", this, &ACharacterV2::MoveRight);
+	PlayerInputComponent->BindAxis("Turn", this, &APawn::AddControllerYawInput);
 
 	PlayerInputComponent->BindAxis("LookUp", this, &ACharacterV2::LookUp);
 	PlayerInputComponent->BindAxis("LookUpRate", this, &ACharacterV2::LookUpRate);

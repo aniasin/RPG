@@ -51,7 +51,7 @@ void UBTService_UpdateChasing::TickNode(UBehaviorTreeComponent& OwnerComp, uint8
 	// Sight changed
 	if (ChasingController->bCanSeePlayer != bLastCanSeePlayer)
 	{
-		//Sees Player
+		// No Sees Player, set searching points
 		if (!ChasingController->bCanSeePlayer)
 		{
 			// Last position where player was seen

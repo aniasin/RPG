@@ -8,6 +8,8 @@
 
 UHSCharacterMovementComponent::UHSCharacterMovementComponent()
 {
+	bOrientRotationToMovement = true; // Character moves in the direction of input...	
+	RotationRate = FRotator(0.0f, 540.0f, 0.0f); // ...at this rotation rate
 	SprintSpeedMultiplier = 1.4f;
 	ADSSpeedMultiplier = 0.5f;
 }
