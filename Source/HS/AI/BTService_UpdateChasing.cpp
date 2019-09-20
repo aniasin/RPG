@@ -21,51 +21,38 @@ void UBTService_UpdateChasing::OnBecomeRelevant(UBehaviorTreeComponent& OwnerCom
 	 AIController = OwnerComp.GetAIOwner();
 	if (!BlackboardComponent || !AIController) { return; }
 	ChasingController = Cast<ANpc_AIController>(AIController);
-
-	if (!PlayerKey.IsSet())
-		{
-
-		// Retrieve Player
-		TArray<AActor*> FoundActors;
-		UGameplayStatics::GetAllActorsOfClass(GetWorld(), PlayerClass, FoundActors);
-		if (FoundActors[0])
-		{
-			PlayerLocation = FoundActors[0]->GetActorLocation();
-			Player = Cast<ACharacterV2>(FoundActors[0]);
-		}
-	}
  }
 
 void UBTService_UpdateChasing::TickNode(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory, float DeltaSeconds)
 {
-	if (ChasingController->bCanSeePlayer)
-	{
-		BlackboardComponent->SetValueAsVector(CurrentPlayerPositionKey.SelectedKeyName, PlayerLocation);
-		BlackboardComponent->SetValueAsObject(PlayerKey.SelectedKeyName, Player);
-	}
-	else if (!ChasingController->bCanSeePlayer)
-	{
-		BlackboardComponent->ClearValue(PlayerKey.SelectedKeyName);
-	}
 
 	// Sight changed
-	if (ChasingController->bCanSeePlayer != bLastCanSeePlayer)
+	if (ChasingController->bAPlayerIsSeen != bLastCanSeePlayer)
 	{
-		// No Sees Player, set searching points
-		if (!ChasingController->bCanSeePlayer)
+		// A player is Seen
+		if (ChasingController->bAPlayerIsSeen)
 		{
+			PlayerToChase = ChasingController->SeenPlayers[0];
+			BlackboardComponent->SetValueAsVector(CurrentPlayerPositionKey.SelectedKeyName, PlayerToChase->GetActorLocation());
+			BlackboardComponent->SetValueAsObject(PlayerKey.SelectedKeyName, PlayerToChase);
+		}
+		// No Sees Player, set searching points
+		if (!ChasingController->bAPlayerIsSeen && ChasingController->bIsInAlert)
+		{
+			BlackboardComponent->ClearValue(PlayerKey.SelectedKeyName);
 			// Last position where player was seen
 			BlackboardComponent->SetValueAsVector(LastKnownPositionKey.SelectedKeyName, ChasingController->LastKnownPlayerPosition);
 			// From Last position seen, go to last direction seen
 			BlackboardComponent->SetValueAsVector(NextSearchLocationKey.SelectedKeyName, (ChasingController->LastKnownPlayerPosition + ChasingController->LastKnownPlayerDirection * 1500));		
 			// take another random location in range
 			BlackboardComponent->SetValueAsVector(RandomSearchLocationKey.SelectedKeyName, ChasingController->GetRandomSearchLocation(SearchRadius));	
+
 			UE_LOG(LogTemp, Warning, TEXT("Searching..."))
 		}
 	}
 
 	// update last can see Player
-	bLastCanSeePlayer = ChasingController->bCanSeePlayer;
+	bLastCanSeePlayer = ChasingController->bAPlayerIsSeen;
 
 	Super::TickNode(OwnerComp, NodeMemory, DeltaSeconds);
 }

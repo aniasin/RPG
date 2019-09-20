@@ -59,7 +59,6 @@ void ANpc_AIController::OnPossess(APawn* InPawn)
 void ANpc_AIController::SetCombatBehavior()
 {
 	//TODO Logic to set combat behavior which could be: Flee, Retreat, Aggressive, Defensive, Neutral...
-	//Set GameplayTag Accordingly (Combat.Behavior.x)
 	UE_LOG(LogTemp, Warning, TEXT("Now Setting Combat Behavior!"))
 
 // 	
@@ -79,38 +78,41 @@ void ANpc_AIController::OnTargetPerceptionUpdate(AActor* Actor, FAIStimulus Stim
 	PerceptionComponent->GetCurrentlyPerceivedActors(TSubclassOf<UAISense_Sight>(), SeenActors);
 
 	// Numbers of seen actors and if they enter or exit view
-	bool bSeeAPlayer = SeenActors.Contains(Actor);
 	int32 NumberOfActorsSeen = SeenActors.Num();
 
-	// Check if sensed actor is Player
+	LastKnownPlayerPosition = Stimulus.StimulusLocation;
+	bCanSeeActor = Stimulus.WasSuccessfullySensed();
+
+	UWorld* World = GetWorld();
+	if (!World) { return; }
+
 	ACharacterV2* Player = Cast<ACharacterV2>(Actor);
-	if (Player) 
+	// sight is lost
+	if (!bCanSeeActor && Player)
 	{
-		LastKnownPlayerPosition = Stimulus.StimulusLocation;
-		bCanSeePlayer = Stimulus.WasSuccessfullySensed();
-		UWorld* World = GetWorld();
-		if (!World) {UE_LOG(LogTemp, Warning, TEXT("NO WORLD!")) return; }
-		// when sight is lost remember player's direction
-		if (!bSeeAPlayer)
-		{
-			LastKnownPlayerDirection = Player->GetVelocity().GetUnsafeNormal();
-			UE_LOG(LogTemp, Warning, TEXT("Loose Sight! %s"), *Actor->GetName())
+		// remember player's direction and remove from array
+		LastKnownPlayerDirection = SeenPlayers[0]->GetVelocity().GetUnsafeNormal();
+		SeenPlayers.RemoveSingle(Player);
+		if (SeenPlayers.Num() == 0) { bAPlayerIsSeen = false; }
+		UE_LOG(LogTemp, Warning, TEXT("Loose Sight! %s"), *Actor->GetName())
 
-			AICharacter->Status = EStatus::InAlert;
+		AICharacter->Status = EStatus::InAlert;
+		bIsInAlert = true;
 
- 			SearchTimerDelegate.BindUFunction(this, FName("EndAlert"));
- 			World->GetTimerManager().SetTimer(SearchTimerHandle, SearchTimerDelegate, AICharacter->SearchTime, false);
-		}
-		if (bSeeAPlayer)
-		{
-			UE_LOG(LogTemp, Warning, TEXT("Gain Sight! %s"), *Actor->GetName())
+		// Starting up a timer for how long npc will search
+		SearchTimerDelegate.BindUFunction(this, FName("EndAlert"));
+		World->GetTimerManager().SetTimer(SearchTimerHandle, SearchTimerDelegate, AICharacter->SearchTime, false);
+	}
+	// Gain Sight
+	if (bCanSeeActor && Player)
+	{
+		bAPlayerIsSeen = true;
+		SeenPlayers.AddUnique(Player);
+		UE_LOG(LogTemp, Warning, TEXT("Gain Sight! %s"), *Actor->GetName())
+		if (AICharacter->Status == EStatus::InCombat || AICharacter->Status == EStatus::InAlert) { return; }
 
-			if (AICharacter->Status == EStatus::InCombat || AICharacter->Status == EStatus::InAlert) {return;}
-
- 			AICharacter->SwitchCombat();
-
-			World->GetTimerManager().ClearTimer(SearchTimerHandle);
-		}
+		AICharacter->SwitchCombat();
+		World->GetTimerManager().ClearTimer(SearchTimerHandle);
 	}
 }
 
@@ -119,9 +121,10 @@ void ANpc_AIController::EndAlert()
 	UE_LOG(LogTemp, Warning, TEXT("End Searching..."))
 	AICharacter->SwitchCombat();
 	AICharacter->Status = EStatus::InPeace;
+	bIsInAlert = false;
 }
 
-FVector ANpc_AIController::GetRandomSearchLocation(float radius)
+FVector ANpc_AIController::GetRandomSearchLocation(float Radius)
 {
 	FVector Origin = AICharacter->GetActorLocation();
 	FNavLocation Result;
@@ -132,7 +135,7 @@ FVector ANpc_AIController::GetRandomSearchLocation(float radius)
 	UNavigationSystemV1* NavSystem = UNavigationSystemV1::GetCurrent(World);
 	if ensure (!NavSystem){	return Origin;	}
 
-	bool bFoundPath = NavSystem->GetRandomReachablePointInRadius(Origin, radius, Result);
+	bool bFoundPath = NavSystem->GetRandomReachablePointInRadius(Origin, Radius, Result);
 
 	return Result.Location;
 }

@@ -16,7 +16,7 @@ class HS_API UBTDecorator_AggroCheck : public UBTDecorator
 
 protected:
 	UPROPERTY(VisibleAnywhere, Category = Blackboard)
-		FBlackboardKeySelector VariableToCheck;
+		FBlackboardKeySelector BoolToCheck;
 
 public:
 	virtual bool CalculateRawConditionValue(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory)const override;

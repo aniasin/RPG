@@ -2,19 +2,17 @@
 
 
 #include "BTDecorator_AggroCheck.h"
+#include "AI/Npc_AIController.h"
 #include "BehaviorTree/BlackboardComponent.h"
 
 bool UBTDecorator_AggroCheck::CalculateRawConditionValue(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory) const
 {
-	const UBlackboardComponent* BlackboardComponent = OwnerComp.GetBlackboardComponent();
-	if (!BlackboardComponent) { return false; }
+	UBlackboardComponent* BlackboardComponent = OwnerComp.GetBlackboardComponent();
+	AAIController* AIController = OwnerComp.GetAIOwner();
+	if (!BlackboardComponent || !AIController) { return false; }
 
-	// -1 = Flee, 0 = Neutral, 1 = Aggressive, 2 = Defensive
-	int32 CurrentAggro = BlackboardComponent->GetValueAsInt(VariableToCheck.SelectedKeyName);
-	if (CurrentAggro >= 1)
-	{
-		return true;
-	}
+	ANpc_AIController* ChasingController = Cast<ANpc_AIController>(AIController);
+	BlackboardComponent->SetValueAsBool(BoolToCheck.SelectedKeyName, ChasingController->bIsInAlert);
 
-	return false;
+	return BlackboardComponent->GetValueAsBool(BoolToCheck.SelectedKeyName);
 }

@@ -49,6 +49,5 @@ private:
 	class AAIController* AIController;
 	class UBlackboardComponent* BlackboardComponent;
 	bool bLastCanSeePlayer = false;
-	FVector PlayerLocation;
-	AActor* Player;
+	class ACharacterV2* PlayerToChase;
 };

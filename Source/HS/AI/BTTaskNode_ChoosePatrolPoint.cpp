@@ -14,7 +14,7 @@ EBTNodeResult::Type UBTTaskNode_ChoosePatrolPoint::ExecuteTask(UBehaviorTreeComp
 	if (!BlackboardComponent || !AIController) { return EBTNodeResult::Failed; }
 
 	ANpc_AIController* NpcController = Cast<ANpc_AIController>(AIController);
-	if (NpcController->bCanSeePlayer)
+	if (NpcController->bAPlayerIsSeen)
 	{
 		return EBTNodeResult::Failed;
 	}

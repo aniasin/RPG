@@ -65,7 +65,7 @@ public:
 	FTimerDelegate SearchTimerDelegate;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = NPC_AI)
-	bool bCanSeePlayer;
+	bool bCanSeeActor;
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = NPC_AI)
 	FVector LastKnownPlayerPosition;
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = NPC_AI)
@@ -75,6 +75,12 @@ public:
 
 	UFUNCTION()
 		void EndAlert();
+	bool bIsInAlert;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = NPC_AI)
+	TArray<ACharacterV2*>SeenPlayers;
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = NPC_AI)
+	bool bAPlayerIsSeen;
 
 	void SetCombatBehavior();
 	void SwitchCombat();
