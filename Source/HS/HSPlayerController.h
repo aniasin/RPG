@@ -5,17 +5,21 @@
 #include "CoreMinimal.h"
 #include "GameFramework/PlayerController.h"
 #include "Characters/HSCharacterBase.h"
+#include "GenericTeamAgentInterface.h"
 #include "HSPlayerController.generated.h"
 
 /**
  * 
  */
 UCLASS()
-class HS_API AHSPlayerController : public APlayerController
+class HS_API AHSPlayerController : public APlayerController, public IGenericTeamAgentInterface
 {
 	GENERATED_BODY()
 
 public:
+	AHSPlayerController();
+	//Implement GenericTeamInterface	FGenericTeamId TeamId;
+
 	void CreateHUD();
 
 	UPROPERTY(EditAnywhere, Category = "HS Parameters|UI")
@@ -42,5 +46,5 @@ protected:
 		class UHSHUDWidget* UIHUDWidget;
 
 	// Server only
-	virtual void OnPossess(APawn* InPawn) override;
+	virtual void OnPossess(APawn* InPawn) override;private:
 };

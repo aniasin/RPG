@@ -21,6 +21,10 @@ public:
 	// Sets default values for this character's properties
 	AHSCharacterBase(const class FObjectInitializer& ObjectInitializer);
 
+
+	UPROPERTY(BlueprintReadOnly, EditAnywhere, Category = "HS Parameters|Character")
+		FText CharacterName;
+
 	// Set the Hit React direction in the Animation Blueprint
 	UPROPERTY(BlueprintAssignable, Category = "HS Parameters | Character")
 		FCharacterBaseHitReactDelegate ShowHitReact;
@@ -104,9 +108,6 @@ public:
 		FGameplayTag HitDirectionLeftTag;
 		FGameplayTag DeadTag;
 		FGameplayTag EffectRemoveOnDeathTag;
-
-		UPROPERTY(BlueprintReadOnly, EditAnywhere, Category = "HS Parameters|Character")
-			FText CharacterName;
 
 		// Death Animation
 		UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "HS Parameters|Character")

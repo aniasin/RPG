@@ -7,6 +7,13 @@
 #include "UI/HSDamageTextWidgetComponent.h"
 #include "HSPlayerState.h"
 #include "UI/HSHUDWidget.h"
+#include "GenericTeamAgentInterface.h"
+
+AHSPlayerController::AHSPlayerController()
+{
+	PrimaryActorTick.bCanEverTick = true;
+	SetGenericTeamId(1);
+}
 
 void AHSPlayerController::CreateHUD()
 {

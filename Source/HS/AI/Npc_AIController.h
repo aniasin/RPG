@@ -50,6 +50,8 @@ class HS_API ANpc_AIController : public AAIController
 public:
 	FORCEINLINE FAIRequestID GetAttackRequestID() const { return AttackRequestID; }
 
+	ETeamAttitude::Type GetTeamAttitudeTowards(const AActor& Other)const override;
+
 	void AttackTarget();
 	void Defend();
 
