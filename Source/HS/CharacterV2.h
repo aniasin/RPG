@@ -63,9 +63,12 @@ public:
 		void AttachDetachWeaponR(bool bIsAttaching);
 
 		void SwitchCombat();
+		void AIPerformMeleeAttack();
 
 		UFUNCTION(BlueprintImplementableEvent, Category = AICombat, meta = (DisplayName = "AISwitchCombat"))
 			void K2_AISwitchCombat();
+		UFUNCTION(BlueprintImplementableEvent, Category = AICombat, meta = (DisplayName = "AIPerformMeleeAttack"))
+			void K2_AIPerformMeleeAttack();
 
 	////////////////////////////
 	// AI

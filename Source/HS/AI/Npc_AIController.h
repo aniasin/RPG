@@ -83,7 +83,6 @@ public:
 	bool bAPlayerIsSeen;
 
 	void SetCombatBehavior();
-	void SwitchCombat();
 
 	FVector GetRandomSearchLocation(float Radius);
 

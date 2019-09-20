@@ -150,14 +150,18 @@ void ANpc_AIController::AttackTarget()
 		return;
 	}
 	bAttacking = true;
+	AICharacter->Status = EStatus::InCombat;
 	UE_LOG(LogTemp, Warning, TEXT("AIController is Performing Attack!"))
 // 	//Store New Request
 // 	StoreAttackRequestID();
-// 	AICharacter->RightHand();
+ 	AICharacter->AIPerformMeleeAttack();
 // 
-//  	AttackTimerDelegate.BindUFunction(this, FName("UpdateAttack"));
-//  	float CooldownTime = AICharacter->AttributesComponent->AttackSpeed.GetCurrentValue();
-//  	GetWorldTimerManager().SetTimer(AttackTimerHandle, AttackTimerDelegate, CooldownTime, false);
+ 	AttackTimerDelegate.BindUFunction(this, FName("UpdateAttack"));
+ 	float CooldownTime = 1.0f;
+	UWorld* World = GetWorld();
+	if (!World) { return; }
+	World->GetTimerManager().ClearTimer(SearchTimerHandle);
+	World->GetTimerManager().SetTimer(AttackTimerHandle, AttackTimerDelegate, CooldownTime, false);
 
 }
 
@@ -166,11 +170,11 @@ void ANpc_AIController::UpdateAttack()
 	UE_LOG(LogTemp, Warning, TEXT("AIController: End Attack!"))
 // 	FAIMessage Msg(UBrainComponent::AIMessage_MoveFinished, this, AttackRequestID, FAIMessage::Success);
 // 	FAIMessage::Send(this, Msg);
-// 	bAttacking = false;
-// 
-// 	UWorld* World = GEngine->GetWorld();
-// 	if (!World) { return; }
-// 	World->GetTimerManager().ClearTimer(AttackTimerHandle);
+	bAttacking = false;
+
+	UWorld* World = GetWorld();
+	if (!World) { return; }
+	World->GetTimerManager().ClearTimer(AttackTimerHandle);
 // /*	AttackRequestID = FAIRequestID::InvalidRequest;*/
 }
 

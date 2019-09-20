@@ -399,3 +399,8 @@ void ACharacterV2::SwitchCombat()
 	}
 
 }
+
+void ACharacterV2::AIPerformMeleeAttack()
+{
+	K2_AIPerformMeleeAttack();
+}
