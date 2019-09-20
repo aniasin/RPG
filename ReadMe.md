@@ -2,32 +2,25 @@
 UE4.23 Powered.
 Using [tranek's GASDocumentation](https://github.com/tranek/GASDocumentation) wonderfull sample.
 
-**<span style="color:red">I'm currently heavy refactoring it, the last working commit is [here](https://github.com/aniasin/RPG/commit/67195af155dce3d5b0b843627e585c81e97102f0)</span>**
 ### SetUp
-+ **Climbing**
 
-Climbable objects have to be WorldStatic.
-With overlap response to SphereTracer channel.
 
 ### Controls
 + Movement: ZQSD
 
 + Left Alt: Switch Combat/Peace
 
-+ Space: jump(Peace) or Dash (Combat)
++ Space: jump while in peace or Dash while in combat (to be refactored)
 
-+ Escape: Pause menu
++ Escape: Pause menu (To be refactored)
 
 ## Features
 
+### MULTIPLAYER
+
 ### COMBAT
 
-+ **Ability System**
-
-Health. 
-AttackSpeed.
-
-### UI
+### UI (To be Refactored)
 
 + **Main Menu**
 
@@ -39,13 +32,13 @@ Resume.
 
 ### MOVEMENT
 
-+ **Climbing**
++ **Climbing** (To be Refactored)
 
 Rough system... lot to tweak.
 MoveForward to climb(see setup).
 Jump to climb ledges (while hanging).
 
-+ **Dash Ability**
++ **Dash Ability** (To be Refactored)
 
 Dash forward while in combat.
 
@@ -81,7 +74,7 @@ then last direction the player was moving to, and finally a random spot in range
 
 **Patrol**: NPC patrol when not in alert
 
-**Combat**: NPC Attacks, Defends, retreats or flees.
+**Combat**: NPC Attacks, Defends, retreats or flees. (To be Refactored)
 
 + **EnvironmentQuery**
 
