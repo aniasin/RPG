@@ -72,11 +72,13 @@ public:
 	FVector LastKnownPlayerPosition;
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = NPC_AI)
 	FVector LastKnownPlayerDirection;
-	// Set how long npc will search for player after loosing sight
 
+	FText GetCharacterName();
 
 	UFUNCTION()
 		void EndAlert();
+	UFUNCTION()
+		void StartAlert();
 	bool bIsInAlert;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = NPC_AI)

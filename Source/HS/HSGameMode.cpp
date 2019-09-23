@@ -45,6 +45,7 @@ void AHSGameMode::HeroDied(AController* Controller)
 
 void AHSGameMode::BeginPlay()
 {
+	Super::BeginPlay();
 	// Get the enemy hero spawn point
 	TArray<AActor*> Actors;
 	UGameplayStatics::GetAllActorsOfClass(GetWorld(), AActor::StaticClass(), Actors);
