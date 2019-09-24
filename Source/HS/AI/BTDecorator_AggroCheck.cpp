@@ -12,7 +12,5 @@ bool UBTDecorator_AggroCheck::CalculateRawConditionValue(UBehaviorTreeComponent&
 	if (!BlackboardComponent || !AIController) { return false; }
 
 	ANpc_AIController* ChasingController = Cast<ANpc_AIController>(AIController);
-	BlackboardComponent->SetValueAsBool(BoolToCheck.SelectedKeyName, ChasingController->bIsInAlert);
-
 	return BlackboardComponent->GetValueAsBool(BoolToCheck.SelectedKeyName);
 }

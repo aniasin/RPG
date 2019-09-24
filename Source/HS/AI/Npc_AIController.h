@@ -30,6 +30,7 @@ class HS_API ANpc_AIController : public AAIController
 		float HearingRange = 1000.f;
 	UPROPERTY(EditAnywhere, Category = NPC_AI)
 		class UBehaviorTree* BehaviorTree;
+	UBlackboardComponent* BlackboardComponent;
 
 
 	UFUNCTION()
@@ -79,7 +80,6 @@ public:
 		void EndAlert();
 	UFUNCTION()
 		void StartAlert();
-	bool bIsInAlert;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = NPC_AI)
 	TArray<ACharacterV2*>SeenPlayers;

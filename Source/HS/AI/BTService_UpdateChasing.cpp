@@ -37,7 +37,7 @@ void UBTService_UpdateChasing::TickNode(UBehaviorTreeComponent& OwnerComp, uint8
 			BlackboardComponent->SetValueAsObject(PlayerKey.SelectedKeyName, PlayerToChase);
 		}
 		// No Sees Player, set searching points
-		if (!ChasingController->bAPlayerIsSeen && ChasingController->bIsInAlert)
+		if (!ChasingController->bAPlayerIsSeen && BlackboardComponent->GetValueAsBool("InAlert"))
 		{
 			BlackboardComponent->ClearValue(PlayerKey.SelectedKeyName);
 			// Last position where player was seen

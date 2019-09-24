@@ -17,6 +17,7 @@
 #include "Abilities/HSAbilitySystemComponent.h"
 #include "BehaviorTree/BehaviorTree.h"
 #include "GenericTeamAgentInterface.h"
+#include "BehaviorTree/BlackboardComponent.h"
 
 ANpc_AIController::ANpc_AIController()
 {
@@ -54,6 +55,7 @@ void ANpc_AIController::OnPossess(APawn* InPawn)
 	if (AICharacter && BehaviorTree)
 	{
 		RunBehaviorTree(BehaviorTree);
+		BlackboardComponent = GetBlackboardComponent();
 	}
 }
 
@@ -99,16 +101,18 @@ void ANpc_AIController::OnTargetPerceptionUpdate(AActor* Actor, FAIStimulus Stim
 	int32 NumberOfActorsSeen = SeenActors.Num();
 
 	LastKnownPlayerPosition = Stimulus.StimulusLocation;
-	bCanSeeActor = Stimulus.WasSuccessfullySensed();
-
-	UWorld* World = GetWorld();
-	if (!World || !AICharacter) { return; }
-	// Starting up a timer for how long npc will search
-	StartAlert();
-	SearchTimerDelegate.BindUFunction(this, FName("EndAlert"));
-	World->GetTimerManager().SetTimer(SearchTimerHandle, SearchTimerDelegate, AICharacter->SearchTime, false);
+	bCanSeeActor = Stimulus.WasSuccessfullySensed();	
 
 	ACharacterV2* Hero = Cast<ACharacterV2>(Actor);
+	// Gain Sight
+	if (bCanSeeActor && Hero)
+	{
+		// When gaining sight npc is in Alert
+		if (!BlackboardComponent->GetValueAsBool("InAlert")) { StartAlert(); }
+		bAPlayerIsSeen = true;
+		SeenPlayers.AddUnique(Hero);
+		UE_LOG(LogTemp, Warning, TEXT("%s: Gain Sight with %s!"), *AICharacter->CharacterName.ToString(), *Actor->GetName())
+	}
 	// sight is lost
 	if (!bCanSeeActor && Hero)
 	{
@@ -117,77 +121,53 @@ void ANpc_AIController::OnTargetPerceptionUpdate(AActor* Actor, FAIStimulus Stim
 		SeenPlayers.RemoveSingle(Hero);
 		if (SeenPlayers.Num() == 0) { bAPlayerIsSeen = false; }
 		UE_LOG(LogTemp, Warning, TEXT("%s: Loose Sight with %s!"), *AICharacter->CharacterName.ToString(), *Actor->GetName())
+
+		// if In alert Starting up a timer for how long npc will stay in alert, aka search
+		if (BlackboardComponent->GetValueAsBool("InAlert"))
+		{
+			UWorld* World = GetWorld();
+			if (!World || !AICharacter) { return; }
+			SearchTimerDelegate.BindUFunction(this, FName("EndAlert"));
+			World->GetTimerManager().SetTimer(SearchTimerHandle, SearchTimerDelegate, AICharacter->SearchTime, false);
+		}
 	}
-	// Gain Sight
-	if (bCanSeeActor && Hero)
-	{
-		bAPlayerIsSeen = true;
-		SeenPlayers.AddUnique(Hero);
-		UE_LOG(LogTemp, Warning, TEXT("%s: Gain Sight with %s!"), *AICharacter->CharacterName.ToString(), *Actor->GetName())
-
-	}
-}
-
-void ANpc_AIController::EndAlert()
-{
-	if (!AICharacter || AICharacter->Status != EStatus::InAlert) { return; }
-
-	UE_LOG(LogTemp, Warning, TEXT("%s: End Searching..."), *AICharacter->CharacterName.ToString())
-	AICharacter->SwitchCombat();
-	AICharacter->Status = EStatus::InPeace;
-	bIsInAlert = false;
-	UWorld* World = GetWorld();
-	if (!World) { return; }
-	World->GetTimerManager().ClearTimer(SearchTimerHandle);
 }
 
 void ANpc_AIController::StartAlert()
 {
-	if (!AICharacter || AICharacter->Status == EStatus::InAlert) { return; }
+	if (!AICharacter || !BlackboardComponent) { return; }
+	BlackboardComponent->SetValueAsBool("InAlert", true);
 
 	UE_LOG(LogTemp, Warning, TEXT("%s: Alert..."), *AICharacter->CharacterName.ToString())
 	AICharacter->SwitchCombat();
-	AICharacter->Status = EStatus::InAlert;
-	bIsInAlert = true;
 }
 
-FVector ANpc_AIController::GetRandomSearchLocation(float Radius)
+void ANpc_AIController::EndAlert()
 {
-	FVector Origin = AICharacter->GetActorLocation();
-	FNavLocation Result;
+	if (!AICharacter || !BlackboardComponent) { return; }
+	UWorld* World = GetWorld();
+	if (!World) { return; }
+	World->GetTimerManager().ClearTimer(SearchTimerHandle);
+	BlackboardComponent->SetValueAsBool("InAlert", false);
 
-	UWorld* World = GEngine->GetWorld();
-	if ensure(!World){return Origin;}
-
-	UNavigationSystemV1* NavSystem = UNavigationSystemV1::GetCurrent(World);
-	if ensure (!NavSystem){	return Origin;	}
-
-	bool bFoundPath = NavSystem->GetRandomReachablePointInRadius(Origin, Radius, Result);
-
-	return Result.Location;
+	if (bAttacking) { return; }
+	UE_LOG(LogTemp, Warning, TEXT("%s: End Searching..."), *AICharacter->CharacterName.ToString())
+	AICharacter->SwitchCombat();
 }
 
 //Combat
 void ANpc_AIController::AttackTarget()
 {
-	if (bAttacking)
-	{
-// 		FAIMessage Msg(UBrainComponent::AIMessage_MoveFinished, this, AttackRequestID, FAIMessage::Failure);
-// 		FAIMessage::Send(this, Msg);
-		return;
-	}
+	if (bAttacking)	{return;}
 	bAttacking = true;
-	AICharacter->Status = EStatus::InCombat;
 	UE_LOG(LogTemp, Warning, TEXT("%s is Performing Attack!"), *AICharacter->CharacterName.ToString())
-// 	//Store New Request
-// 	StoreAttackRequestID();
+
  	AICharacter->AIPerformMeleeAttack();
-// 
+
  	AttackTimerDelegate.BindUFunction(this, FName("UpdateAttack"));
  	float CooldownTime = 1.0f;
 	UWorld* World = GetWorld();
 	if (!World) { return; }
-	World->GetTimerManager().ClearTimer(SearchTimerHandle);
 	World->GetTimerManager().SetTimer(AttackTimerHandle, AttackTimerDelegate, CooldownTime, false);
 
 }
@@ -195,14 +175,11 @@ void ANpc_AIController::AttackTarget()
 void ANpc_AIController::UpdateAttack()
 {
 	UE_LOG(LogTemp, Warning, TEXT("%s: End Attack!"), *AICharacter->CharacterName.ToString())
-// 	FAIMessage Msg(UBrainComponent::AIMessage_MoveFinished, this, AttackRequestID, FAIMessage::Success);
-// 	FAIMessage::Send(this, Msg);
 	bAttacking = false;
 
 	UWorld* World = GetWorld();
 	if (!World) { return; }
 	World->GetTimerManager().ClearTimer(AttackTimerHandle);
-// /*	AttackRequestID = FAIRequestID::InvalidRequest;*/
 }
 
 void ANpc_AIController::Defend()
@@ -224,6 +201,24 @@ void ANpc_AIController::UpdateDefend()
 // 	if (!World) { return; }
 // 	World->GetTimerManager().ClearTimer(AttackTimerHandle);
 }
+
+
+FVector ANpc_AIController::GetRandomSearchLocation(float Radius)
+{
+	FVector Origin = AICharacter->GetActorLocation();
+	FNavLocation Result;
+
+	UWorld* World = GEngine->GetWorld();
+	if ensure(!World) { return Origin; }
+
+	UNavigationSystemV1* NavSystem = UNavigationSystemV1::GetCurrent(World);
+	if ensure(!NavSystem) { return Origin; }
+
+	bool bFoundPath = NavSystem->GetRandomReachablePointInRadius(Origin, Radius, Result);
+
+	return Result.Location;
+}
+
 
 void ANpc_AIController::EndPlay(EEndPlayReason::Type EndPlayReason)
 {
