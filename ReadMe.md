@@ -20,13 +20,14 @@ Using [tranek's GASDocumentation](https://github.com/tranek/GASDocumentation) wo
 
 ### COMBAT
 
-### UI (To be Refactored)
+### UI
 
 + **Main Menu**
+Host, Join(IP), Quit
 
-+ **Pause menu**
++ **Pause menu** (To be refactored)
 
-Settings>>Keybinding.
+Settings>>Keybinding 
 Quit.
 Resume.
 
