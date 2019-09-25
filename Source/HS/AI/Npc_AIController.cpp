@@ -107,8 +107,18 @@ void ANpc_AIController::OnTargetPerceptionUpdate(AActor* Actor, FAIStimulus Stim
 	// Gain Sight
 	if (bCanSeeActor && Hero)
 	{
-		// When gaining sight npc is in Alert
-		if (!BlackboardComponent->GetValueAsBool("InAlert")) { StartAlert(); }
+		// When gaining sight if already in alert, reset any timer running
+		if (BlackboardComponent->GetValueAsBool("InAlert"))
+		{ 
+			UWorld* World = GetWorld();
+			if (!World) { return; }
+			World->GetTimerManager().ClearTimer(SearchTimerHandle);
+		}
+		else
+		{
+			StartAlert();
+		}
+
 		bAPlayerIsSeen = true;
 		SeenPlayers.AddUnique(Hero);
 		UE_LOG(LogTemp, Warning, TEXT("%s: Gain Sight with %s!"), *AICharacter->CharacterName.ToString(), *Actor->GetName())
@@ -150,7 +160,6 @@ void ANpc_AIController::EndAlert()
 	World->GetTimerManager().ClearTimer(SearchTimerHandle);
 	BlackboardComponent->SetValueAsBool("InAlert", false);
 
-	if (bAttacking) { return; }
 	UE_LOG(LogTemp, Warning, TEXT("%s: End Searching..."), *AICharacter->CharacterName.ToString())
 	AICharacter->SwitchCombat();
 }
