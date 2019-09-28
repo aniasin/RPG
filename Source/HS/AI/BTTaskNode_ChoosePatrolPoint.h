@@ -23,9 +23,8 @@ protected:
 
 	UPROPERTY(VisibleAnywhere, Category = "Blackboard")
 		FBlackboardKeySelector WaypointKey;
-
-	UPROPERTY(VisibleAnywhere, Category = "Parameter")
-		FBlackboardKeySelector bBoolVarToCheck;
+	UPROPERTY(VisibleAnywhere, Category = "Blackboard")
+		FBlackboardKeySelector PlayerKey;
 
 private:
 

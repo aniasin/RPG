@@ -40,17 +40,9 @@ class HS_API ANpc_AIController : public AAIController
 	bool bAttacking = false;
 	bool bDefending = false;
 
-	//AI TaskMemory
-	uint32 NextRequestID;
-	FAIRequestID AttackRequestID;
-
-	FORCEINLINE void StoreAttackRequestID() { AttackRequestID = NextRequestID++; }
-
 	virtual void EndPlay(EEndPlayReason::Type EndPlayReason)override;
 	
 public:
-	FORCEINLINE FAIRequestID GetAttackRequestID() const { return AttackRequestID; }
-
 	ETeamAttitude::Type GetTeamAttitudeTowards(const AActor& Other)const override;
 
 	void AttackTarget();
@@ -68,7 +60,7 @@ public:
 	FTimerDelegate SearchTimerDelegate;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = NPC_AI)
-	bool bCanSeeActor;
+	bool bCanSeeActor = false;
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = NPC_AI)
 	FVector LastKnownPlayerPosition;
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = NPC_AI)
@@ -83,8 +75,6 @@ public:
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = NPC_AI)
 	TArray<ACharacterV2*>SeenPlayers;
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = NPC_AI)
-	bool bAPlayerIsSeen;
 
 	void SetCombatBehavior();
 

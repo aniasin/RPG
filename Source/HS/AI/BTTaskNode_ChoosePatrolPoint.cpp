@@ -14,7 +14,7 @@ EBTNodeResult::Type UBTTaskNode_ChoosePatrolPoint::ExecuteTask(UBehaviorTreeComp
 	if (!BlackboardComponent || !AIController) { return EBTNodeResult::Failed; }
 
 	ANpc_AIController* NpcController = Cast<ANpc_AIController>(AIController);
-	if (NpcController->bAPlayerIsSeen)
+	if (PlayerKey.IsSet())
 	{
 		return EBTNodeResult::Failed;
 	}
@@ -27,12 +27,15 @@ EBTNodeResult::Type UBTTaskNode_ChoosePatrolPoint::ExecuteTask(UBehaviorTreeComp
 	TArray<AActor*>PatrolRoute = PatrolComponent->GetPatrolRoute();
 	if (PatrolRoute.Num() == 0) {return EBTNodeResult::Failed;}
 
+	// Remember last patrol point
+	BlackboardComponent->SetValueAsObject("PreviousPatrolPoint", BlackboardComponent->GetValueAsObject(WaypointKey.SelectedKeyName));
+
 	// Set Next Patrol Point in BB
 	int32 IndexValue = BlackboardComponent->GetValueAsInt(IndexKey.SelectedKeyName);
 	BlackboardComponent->SetValueAsObject(WaypointKey.SelectedKeyName, PatrolRoute[IndexValue]);
 
-	UE_LOG(LogTemp, Warning, TEXT("%s: Now going to patrol point %s"), *NpcController->GetCharacterName().ToString(), 
-		*PatrolRoute[IndexValue]->GetName())
+	UE_LOG(LogTemp, Warning, TEXT("%s: Now going to patrol point %s"), *NpcController->GetCharacterName().ToString(),
+	*PatrolRoute[IndexValue]->GetName())
 
 	// Cycle through Patrol Points
 	int32 NewIndexValue = (IndexValue + 1) % PatrolRoute.Num();

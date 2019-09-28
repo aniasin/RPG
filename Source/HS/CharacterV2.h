@@ -76,9 +76,11 @@ public:
 		UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "HS Parameters|AI")
 			EStatus Status;
 
-	// How long AI will search for player when sight is lost
+	// How long and how far AI will search for player when sight is lost
 		UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "HS Parameters|AI")
 			float SearchTime;
+		UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "HS Parameters|AI")
+			float SearchRadius = 2000.0f;
 
 
 protected:

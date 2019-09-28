@@ -113,25 +113,36 @@ void ANpc_AIController::OnTargetPerceptionUpdate(AActor* Actor, FAIStimulus Stim
 			UWorld* World = GetWorld();
 			if (!World) { return; }
 			World->GetTimerManager().ClearTimer(SearchTimerHandle);
+			StartAlert();
 		}
 		else
 		{
 			StartAlert();
+			AICharacter->SwitchCombat();
 		}
-
-		bAPlayerIsSeen = true;
 		SeenPlayers.AddUnique(Hero);
+		BlackboardComponent->SetValueAsObject("Player", Hero);
 		UE_LOG(LogTemp, Warning, TEXT("%s: Gain Sight with %s!"), *AICharacter->CharacterName.ToString(), *Actor->GetName())
 	}
 	// sight is lost
 	if (!bCanSeeActor && Hero)
 	{
-		// remember player's direction and remove from array
+		// remember player's position and direction and a random one, set BB accordingly
+		BlackboardComponent->SetValueAsVector("LastKnownPlayerPos", LastKnownPlayerPosition);
 		LastKnownPlayerDirection = SeenPlayers[0]->GetVelocity().GetUnsafeNormal();
+		BlackboardComponent->SetValueAsVector("NextSearchLocation", LastKnownPlayerDirection * AICharacter->SearchRadius);
+		BlackboardComponent->SetValueAsVector("RandomSearchLocation", GetRandomSearchLocation(AICharacter->SearchRadius));
+		// Remove this player from SeenActors
 		SeenPlayers.RemoveSingle(Hero);
-		if (SeenPlayers.Num() == 0) { bAPlayerIsSeen = false; }
 		UE_LOG(LogTemp, Warning, TEXT("%s: Loose Sight with %s!"), *AICharacter->CharacterName.ToString(), *Actor->GetName())
-
+		if (SeenPlayers.Num() <= 0) 
+		{ 
+			BlackboardComponent->ClearValue("Player"); 
+		}
+		else
+		{
+			BlackboardComponent->SetValueAsObject("Player", SeenPlayers[0]);
+		}
 		// if In alert Starting up a timer for how long npc will stay in alert, aka search
 		if (BlackboardComponent->GetValueAsBool("InAlert"))
 		{
@@ -149,7 +160,6 @@ void ANpc_AIController::StartAlert()
 	BlackboardComponent->SetValueAsBool("InAlert", true);
 
 	UE_LOG(LogTemp, Warning, TEXT("%s: Alert..."), *AICharacter->CharacterName.ToString())
-	AICharacter->SwitchCombat();
 }
 
 void ANpc_AIController::EndAlert()
@@ -215,16 +225,14 @@ void ANpc_AIController::UpdateDefend()
 FVector ANpc_AIController::GetRandomSearchLocation(float Radius)
 {
 	FVector Origin = AICharacter->GetActorLocation();
-	FNavLocation Result;
-
 	UWorld* World = GEngine->GetWorld();
 	if ensure(!World) { return Origin; }
 
 	UNavigationSystemV1* NavSystem = UNavigationSystemV1::GetCurrent(World);
 	if ensure(!NavSystem) { return Origin; }
+	FNavLocation Result;
 
 	bool bFoundPath = NavSystem->GetRandomReachablePointInRadius(Origin, Radius, Result);
-
 	return Result.Location;
 }
 
