@@ -61,6 +61,8 @@ public:
 	// Combat
 		UFUNCTION(NetMulticast, Unreliable, BlueprintCallable)
 		void AttachDetachWeaponR(bool bIsAttaching);
+		UFUNCTION(NetMulticast, Unreliable, BlueprintCallable)
+			void AttachDetachWeaponL(bool bIsAttaching);
 
 		void SwitchCombat();
 		void AIPerformMeleeAttack();

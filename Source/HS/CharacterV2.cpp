@@ -173,15 +173,19 @@ void ACharacterV2::FinishDying()
 	Super::FinishDying();
 }
 
+
+//////////////////////////////////////
+// Item Interactions
 void ACharacterV2::ServerTakeItem_Implementation(AActor* ItemToTake)
 {
 	AWeapon* IsWeapon = Cast<AWeapon>(ItemToTake);
 	if (IsWeapon)
 	{
-		IsWeapon->AttachToComponent(GetMesh(), FAttachmentTransformRules::SnapToTargetIncludingScale, TEXT("WeaponBack"));
-		IsWeapon->ItemTaken();
+		FName Socket = IsWeapon->bIsLeftHand ? FName("WeaponBack2") : FName("WeaponBack");
+		IsWeapon->AttachToComponent(GetMesh(), FAttachmentTransformRules::SnapToTargetIncludingScale, Socket);
 		IsWeapon->OwnerActor = this;
-		WeaponR = IsWeapon;
+		IsWeapon->ItemTaken();
+		if (IsWeapon->bIsLeftHand)	{WeaponL = IsWeapon;} else {WeaponR = IsWeapon;}
 	}
 }
 
@@ -190,17 +194,16 @@ bool ACharacterV2::ServerTakeItem_Validate(AActor* ItemToTake)
 	return true;
 }
 
-//////////////////////////////////////
-// Item Interactions
 void ACharacterV2::TakeItem_Implementation(AActor* ItemToTake)
 {
 	AWeapon* IsWeapon = Cast<AWeapon>(ItemToTake);
 	if (IsWeapon)
 	{
-		IsWeapon->AttachToComponent(GetMesh(), FAttachmentTransformRules::SnapToTargetIncludingScale, TEXT("WeaponBack"));
-		IsWeapon->ItemTaken();
+		FName Socket = IsWeapon->bIsLeftHand ? FName("WeaponBack2") : FName("WeaponBack");
+		IsWeapon->AttachToComponent(GetMesh(), FAttachmentTransformRules::SnapToTargetIncludingScale, Socket);
 		IsWeapon->OwnerActor = this;
-		WeaponR = IsWeapon;
+		IsWeapon->ItemTaken();
+		if (IsWeapon->bIsLeftHand) { WeaponL = IsWeapon; } else { WeaponR = IsWeapon; }
 	}
 }
 
@@ -236,8 +239,15 @@ void ACharacterV2::ToggleInteractionWidget_Implementation(AActor* Item)
 void ACharacterV2::AttachDetachWeaponR_Implementation(bool bIsAttaching)
 {
 	if (!WeaponR) { return; }
-	FName Socket = bIsAttaching ? FName("Weapon_r") : FName("Weaponback");
+	FName Socket = bIsAttaching ? FName("Weapon_r") : FName("WeaponBack");
 	WeaponR->AttachToComponent(GetMesh(), FAttachmentTransformRules::SnapToTargetIncludingScale, Socket);
+}
+
+void ACharacterV2::AttachDetachWeaponL_Implementation(bool bIsAttaching)
+{
+	if (!WeaponL) { return; }
+	FName Socket = bIsAttaching ? FName("Weapon_l") : FName("WeaponBack2");
+	WeaponL->AttachToComponent(GetMesh(), FAttachmentTransformRules::SnapToTargetIncludingScale, Socket);
 }
 
 /**
