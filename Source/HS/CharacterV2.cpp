@@ -250,6 +250,32 @@ void ACharacterV2::AttachDetachWeaponL_Implementation(bool bIsAttaching)
 	WeaponL->AttachToComponent(GetMesh(), FAttachmentTransformRules::SnapToTargetIncludingScale, Socket);
 }
 
+
+void ACharacterV2::SwitchCombat()
+{
+	AHSPlayerController* PC = Cast<AHSPlayerController>(GetController());
+	if (PC)
+	{
+		bUseControllerRotationYaw = !bUseControllerRotationYaw;
+	}
+	// If not player, then it's an AI
+	else
+	{
+		K2_AISwitchCombat();
+	}
+
+}
+
+void ACharacterV2::AIPerformMeleeAttack()
+{
+	K2_AIPerformMeleeAttack();
+}
+
+void ACharacterV2::AIPerformShieldUp()
+{
+	K2_AIPerformShieldUp();
+}
+
 /**
 * On the Server, Possession happens before BeginPlay.
 * On the Client, BeginPlay happens before Possession.
@@ -393,24 +419,4 @@ void ACharacterV2::OnRep_PlayerState()
 		SetMana(GetMaxMana());
 		SetStamina(GetMaxStamina());
 	}
-}
-
-void ACharacterV2::SwitchCombat()
-{
-	AHSPlayerController* PC = Cast<AHSPlayerController>(GetController());
-	if (PC)
-	{
-		bUseControllerRotationYaw = !bUseControllerRotationYaw;
-	}
-	// If not player, then it's an AI
-	else
-	{
-		K2_AISwitchCombat();
-	}
-
-}
-
-void ACharacterV2::AIPerformMeleeAttack()
-{
-	K2_AIPerformMeleeAttack();
 }

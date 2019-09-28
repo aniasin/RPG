@@ -6,13 +6,6 @@
 #include "Characters/HSCharacterBase.h"
 #include "CharacterV2.generated.h"
 
-UENUM(BlueprintType)
-enum class EStatus : uint8
-{
-	InPeace UMETA(DisplayName = "In Peace"),
-	InCombat UMETA(DisplayName = "In Combat"),
-	InAlert UMETA(DisplayName = "In Alert")
-};
 
 /**
  * A player or AI controlled hero character.
@@ -66,17 +59,17 @@ public:
 
 		void SwitchCombat();
 		void AIPerformMeleeAttack();
+		void AIPerformShieldUp();
 
 		UFUNCTION(BlueprintImplementableEvent, Category = AICombat, meta = (DisplayName = "AISwitchCombat"))
 			void K2_AISwitchCombat();
 		UFUNCTION(BlueprintImplementableEvent, Category = AICombat, meta = (DisplayName = "AIPerformMeleeAttack"))
 			void K2_AIPerformMeleeAttack();
+		UFUNCTION(BlueprintImplementableEvent, Category = AICombat, meta = (DisplayName = "AIPerformShieldUp"))
+			void K2_AIPerformShieldUp();
 
 	////////////////////////////
 	// AI
-	// Player Status ie: Combat, peace, ect.
-		UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "HS Parameters|AI")
-			EStatus Status;
 
 	// How long and how far AI will search for player when sight is lost
 		UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "HS Parameters|AI")

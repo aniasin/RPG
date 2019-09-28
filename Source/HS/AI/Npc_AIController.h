@@ -40,6 +40,8 @@ class HS_API ANpc_AIController : public AAIController
 	bool bAttacking = false;
 	bool bDefending = false;
 
+	float CheckHealth;
+
 	virtual void EndPlay(EEndPlayReason::Type EndPlayReason)override;
 	
 public:
@@ -58,6 +60,8 @@ public:
 	FTimerDelegate AttackTimerDelegate;
 	FTimerHandle SearchTimerHandle;
 	FTimerDelegate SearchTimerDelegate;
+	FTimerHandle DefendTimerHandle;
+	FTimerDelegate DefendTimerDelegate;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = NPC_AI)
 	bool bCanSeeActor = false;
