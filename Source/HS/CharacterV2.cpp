@@ -266,6 +266,19 @@ void ACharacterV2::SwitchCombat()
 
 }
 
+void ACharacterV2::IsShieldUp_Implementation(bool bIsShieldUp)
+{
+	if (!WeaponL) { return; }
+	if (bIsShieldUp)
+	{
+		WeaponL->CapsuleComponent->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
+	}
+	else
+	{
+		WeaponL->CapsuleComponent->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+	}
+}
+
 void ACharacterV2::AIPerformMeleeAttack()
 {
 	K2_AIPerformMeleeAttack();

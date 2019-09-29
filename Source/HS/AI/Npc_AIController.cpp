@@ -81,7 +81,7 @@ ETeamAttitude::Type ANpc_AIController::GetTeamAttitudeTowards(const AActor& Othe
 void ANpc_AIController::SetCombatBehavior()
 {
 	//TODO Logic to set combat behavior which could be: Flee, Retreat, Aggressive, Defensive, Neutral...
-
+	if (!AICharacter) { return; }
 	if (AICharacter->GetHealth() < CheckHealth)
 	{
 		BlackboardComponent->SetValueAsBool("Attack", false);
@@ -97,6 +97,7 @@ void ANpc_AIController::SetCombatBehavior()
 
 void ANpc_AIController::OnTargetPerceptionUpdate(AActor* Actor, FAIStimulus Stimulus)
 {
+	if (!AICharacter) { return; }
 	//Retrieving perceived actors
 	TArray<AActor*> SeenActors;
 	PerceptionComponent->GetCurrentlyPerceivedActors(TSubclassOf<UAISense_Sight>(), SeenActors);
@@ -181,6 +182,7 @@ void ANpc_AIController::EndAlert()
 //Combat
 void ANpc_AIController::AttackTarget()
 {
+	if (!AICharacter) { return; }
 	if (bAttacking)	{return;}
 	bAttacking = true;
 	UE_LOG(LogTemp, Warning, TEXT("%s is Performing Attack!"), *AICharacter->CharacterName.ToString())
@@ -197,6 +199,7 @@ void ANpc_AIController::AttackTarget()
 
 void ANpc_AIController::UpdateAttack()
 {
+	if (!AICharacter) { return; }
 	UE_LOG(LogTemp, Warning, TEXT("%s: End Attack!"), *AICharacter->CharacterName.ToString())
 	bAttacking = false;
 	CheckHealth = AICharacter->GetHealth();
@@ -207,6 +210,7 @@ void ANpc_AIController::UpdateAttack()
 
 void ANpc_AIController::Defend()
 {
+	if (!AICharacter) { return; }
 	if (bDefending)	{return;}
 	bDefending = true;
 	UE_LOG(LogTemp, Warning, TEXT("%s is Performing ShieldUp!"), *AICharacter->CharacterName.ToString())
@@ -222,6 +226,7 @@ void ANpc_AIController::Defend()
 
 void ANpc_AIController::UpdateDefend()
 {
+	if (!AICharacter) { return; }
 	UE_LOG(LogTemp, Warning, TEXT("%s: End ShieldUp!"), *AICharacter->CharacterName.ToString())
 	bDefending = false;
 	CheckHealth = AICharacter->GetHealth();

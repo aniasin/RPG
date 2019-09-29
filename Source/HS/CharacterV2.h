@@ -58,6 +58,8 @@ public:
 			void AttachDetachWeaponL(bool bIsAttaching);
 
 		void SwitchCombat();
+		UFUNCTION(NetMulticast, Unreliable, BlueprintCallable)
+		void IsShieldUp(bool bIsShieldUp);
 		void AIPerformMeleeAttack();
 		void AIPerformShieldUp();
 
@@ -76,6 +78,13 @@ public:
 			float SearchTime;
 		UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "HS Parameters|AI")
 			float SearchRadius = 2000.0f;
+
+		///////////////////////
+// Equipment
+		UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "HS Parameters|Equipment")
+		class AWeapon* WeaponR;
+		UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "HS Parameters|Equipment")
+		class AWeapon* WeaponL;
 
 
 protected:
@@ -145,10 +154,6 @@ private:
 	// AI
 	bool bCanSee;
 
-	///////////////////////
-	// Equipment
-	class AWeapon* WeaponR;
-	class AWeapon* WeaponL;
 	// Interaction
 	AActor* CurrentFocusedItem;
 };
