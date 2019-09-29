@@ -16,8 +16,6 @@ void UBTService_UpdateCombatBehavior::OnBecomeRelevant(UBehaviorTreeComponent& O
 	// Get Blackboard
 	UBlackboardComponent* BlackboardComponent = OwnerComp.GetBlackboardComponent();
 	if (!BlackboardComponent) { return; }
-
-
 }
 
 void UBTService_UpdateCombatBehavior::TickNode(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory, float DeltaSeconds)
@@ -29,7 +27,7 @@ void UBTService_UpdateCombatBehavior::TickNode(UBehaviorTreeComponent& OwnerComp
 
 	ANpc_AIController* FightingController = Cast<ANpc_AIController>(AIController);
 	if (!FightingController) { return; }
-
+	
 	FightingController->SetCombatBehavior();
 }
 

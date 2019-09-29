@@ -19,7 +19,7 @@ EBTNodeResult::Type UBTTaskNode_TakeObject::ExecuteTask(UBehaviorTreeComponent& 
 	}
 
 	//Retrieve object
-	auto OtherObject = BlackboardComponent->GetValueAsObject(TEXT("WeaponQueryed"));
+	auto OtherObject = BlackboardComponent->GetValueAsObject(ObjectToTake.SelectedKeyName);
 	AActor* OtherActor = Cast<AActor>(OtherObject);
 
 	// Call Controlled Character to take object

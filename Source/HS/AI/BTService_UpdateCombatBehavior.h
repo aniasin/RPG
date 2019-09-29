@@ -16,24 +16,6 @@ class HS_API UBTService_UpdateCombatBehavior : public UBTService
 	
 		UBTService_UpdateCombatBehavior(const FObjectInitializer& ObjectInitializer = FObjectInitializer::Get());
 
-	UPROPERTY(EditAnywhere, Category = Blackboard)
-		FBlackboardKeySelector CanSeePlayerKey;
-
-	UPROPERTY(EditAnywhere, Category = Blackboard)
-		FBlackboardKeySelector CurrentPlayerPositionKey;
-
-	UPROPERTY(EditAnywhere, Category = Blackboard)
-		FBlackboardKeySelector LastKnownPositionKey;
-
-	UPROPERTY(EditAnywhere, Category = PlayerClass)
-		TSubclassOf<AActor> PlayerClass;
-
-	UPROPERTY(EditAnywhere, Category = Blackboard)
-		FBlackboardKeySelector LastKnownDirectionKey;
-
-	UPROPERTY(EditAnywhere, Category = Blackboard)
-		FBlackboardKeySelector NextMovelocationKey;
-
 protected:
 	virtual void OnBecomeRelevant(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory)override;
 

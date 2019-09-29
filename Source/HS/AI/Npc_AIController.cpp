@@ -81,8 +81,18 @@ ETeamAttitude::Type ANpc_AIController::GetTeamAttitudeTowards(const AActor& Othe
 void ANpc_AIController::SetCombatBehavior()
 {
 	//TODO Logic to set combat behavior which could be: Flee, Retreat, Aggressive, Defensive, Neutral...
-	UE_LOG(LogTemp, Warning, TEXT("Now Setting Combat Behavior!"))
-		
+
+	if (AICharacter->GetHealth() < CheckHealth)
+	{
+		BlackboardComponent->SetValueAsBool("Attack", false);
+		UE_LOG(LogTemp, Warning, TEXT("Now Setting Combat Behavior: Defend!"))
+	}
+	else
+	{
+		BlackboardComponent->SetValueAsBool("Attack", true);
+		UE_LOG(LogTemp, Warning, TEXT("Now Setting Combat Behavior: Attack!"))
+
+	}
  }
 
 void ANpc_AIController::OnTargetPerceptionUpdate(AActor* Actor, FAIStimulus Stimulus)
@@ -189,7 +199,7 @@ void ANpc_AIController::UpdateAttack()
 {
 	UE_LOG(LogTemp, Warning, TEXT("%s: End Attack!"), *AICharacter->CharacterName.ToString())
 	bAttacking = false;
-
+	CheckHealth = AICharacter->GetHealth();
 	UWorld* World = GetWorld();
 	if (!World) { return; }
 	World->GetTimerManager().ClearTimer(AttackTimerHandle);
@@ -201,7 +211,9 @@ void ANpc_AIController::Defend()
 	bDefending = true;
 	UE_LOG(LogTemp, Warning, TEXT("%s is Performing ShieldUp!"), *AICharacter->CharacterName.ToString())
 
-	AttackTimerDelegate.BindUFunction(this, FName("UpdateDefend"));
+	AICharacter->AIPerformShieldUp();
+
+	DefendTimerDelegate.BindUFunction(this, FName("UpdateDefend"));
 	float CooldownTime = 1.0f;
 	UWorld* World = GetWorld();
 	if (!World) { return; }
@@ -212,7 +224,7 @@ void ANpc_AIController::UpdateDefend()
 {
 	UE_LOG(LogTemp, Warning, TEXT("%s: End ShieldUp!"), *AICharacter->CharacterName.ToString())
 	bDefending = false;
-
+	CheckHealth = AICharacter->GetHealth();
 	UWorld* World = GetWorld();
 	if (!World) { return; }
 	World->GetTimerManager().ClearTimer(DefendTimerHandle);

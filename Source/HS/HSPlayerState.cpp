@@ -8,6 +8,7 @@
 #include "HSPlayerController.h"
 #include "UI/HSFloatingStatusBarWidget.h"
 #include "UI/HSHUDWidget.h"
+#include "AI/Npc_AIController.h"
 
 AHSPlayerState::AHSPlayerState()
 {
