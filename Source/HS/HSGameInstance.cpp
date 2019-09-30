@@ -11,7 +11,9 @@
 #include "MenuSystem/Menu.h"
 #include "MenuSystem/MainMenu.h"
 #include "MenuSystem/GameMenu.h"
+#include "UI/HSGameViewportClient.h"
 #include "Classes/Engine/Console.h"
+#include "Runtime/MoviePlayer/Public/MoviePlayer.h"
 
 UHSGameInstance::UHSGameInstance(const FObjectInitializer& ObjectInitializer)
 {
@@ -26,8 +28,38 @@ UHSGameInstance::UHSGameInstance(const FObjectInitializer& ObjectInitializer)
 
 void UHSGameInstance::Init()
 {
+	Super::Init();
+
+	FCoreUObjectDelegates::PreLoadMap.AddUObject(this, &UHSGameInstance::BeginLoadingScreen);
+	FCoreUObjectDelegates::PostLoadMapWithWorld.AddUObject(this, &UHSGameInstance::EndLoadingScreen);
+
 	UE_LOG(LogTemp, Warning, TEXT("Found Class: %s"), *MainMenuWidget->GetName())
 	UE_LOG(LogTemp, Warning, TEXT("Found Class: %s"), *GameMenuWidget->GetName())
+}
+
+void UHSGameInstance::BeginLoadingScreen(const FString& MapName)
+{
+	if (!IsRunningDedicatedServer())
+	{
+		FLoadingScreenAttributes LoadingScreen;
+		LoadingScreen.bAutoCompleteWhenLoadingCompletes = false;
+		LoadingScreen.WidgetLoadingScreen = FLoadingScreenAttributes::NewTestLoadingScreenWidget();
+
+		GetMoviePlayer()->SetupLoadingScreen(LoadingScreen);
+	}
+}
+
+void UHSGameInstance::EndLoadingScreen(UWorld* InLoadedWorld)
+{
+	const UWorld* World = GetWorld();
+	if (World)
+	{
+		UHSGameViewportClient* GameViewportClient = Cast<UHSGameViewportClient>(World->GetGameViewport());
+		if (GameViewportClient)
+		{
+			GameViewportClient->Fade(2.0f, false);
+		}
+	}
 }
 
 void UHSGameInstance::LoadMainMenu()
@@ -84,11 +116,15 @@ void UHSGameInstance::QuitToLobby()
 	APlayerController* PlayerController = GetFirstLocalPlayerController();
 	if (!ensure(PlayerController)) { return; }
 
+	UWorld* World = GetWorld();
+	if (!ensure(World)) { return; }
+	UHSGameViewportClient* GameViewportClient = Cast<UHSGameViewportClient>(World->GetGameViewport());
+	if (!GameViewportClient) { return; }
+	GameViewportClient->Fade(1.0, true);
+
 	// if Server
 	if (PlayerController->GetCharacter()->HasAuthority())
 	{
-		UWorld* World = GetWorld();
-		if (!ensure(World)) { return; }
 		World->ServerTravel("/Game/Maps/MainMenu");
 		return;
 	}

@@ -20,6 +20,11 @@ public:
 
 	virtual void Init();
 
+	UFUNCTION()
+		virtual void BeginLoadingScreen(const FString& MapName);
+	UFUNCTION()
+		virtual void EndLoadingScreen(UWorld* InLoadedWorld);
+
 	UFUNCTION(BlueprintCallable, Category = "MenuSystem")
 		void LoadMainMenu();
 	UFUNCTION(BlueprintCallable, Category = "MenuSystem")
