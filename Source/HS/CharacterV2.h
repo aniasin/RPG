@@ -8,21 +8,6 @@
 #include "Engine/DataTable.h"
 #include "CharacterV2.generated.h"
 
-USTRUCT(Blueprintable)
-struct FKeyBoardBindingTable : public FTableRowBase
-{
-	GENERATED_USTRUCT_BODY()
-
-		UPROPERTY(BlueprintReadOnly, Category = "KeyBinding")
-		FString Action;
-	UPROPERTY(BlueprintReadOnly, Category = "KeyBinding")
-		FString DefaultInput;
-	UPROPERTY(BlueprintReadOnly, Category = "KeyBinding")
-		FString Input;
-	UPROPERTY(BlueprintReadOnly, Category = "KeyBinding")
-		FString InputAlt;
-};
-
 /**
  * A player or AI controlled hero character.
  */
