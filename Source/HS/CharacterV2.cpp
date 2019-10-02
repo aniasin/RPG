@@ -20,10 +20,16 @@
 #include "Items/Weapon.h"
 #include "EngineUtils.h"
 #include "Classes/Engine/Engine.h"
+#include "CoreUObject/Public/UObject/UObjectGlobals.h"
+#include "GameFramework/InputSettings.h"
+#include "GameFramework/PlayerInput.h"
 
 
 ACharacterV2::ACharacterV2(const class FObjectInitializer& ObjectInitializer) : Super(ObjectInitializer)
 {
+	static ConstructorHelpers::FObjectFinder<UDataTable>InputDataTableBP(TEXT("DataTable'/Game/UI/InputDataTable.InputDataTable'"));
+	KeyboardBindingTable = InputDataTableBP.Object;
+
 	// Don't rotate when the controller rotates. Let that just affect the camera.
 	bUseControllerRotationPitch = false;
 	bUseControllerRotationYaw = false;
@@ -68,6 +74,56 @@ void ACharacterV2::SetupPlayerInputComponent(class UInputComponent* PlayerInputC
 {
 	check(PlayerInputComponent);
 	Super::SetupPlayerInputComponent(PlayerInputComponent);
+
+	const UInputSettings* InputSettings = GetDefault<UInputSettings>();
+	int rowindex = 1;
+	while (true)
+	{
+		FKeyBoardBindingTable* LookUpRow = KeyboardBindingTable->FindRow<FKeyBoardBindingTable>(FName(*FString::FromInt(rowindex)), TEXT("Look Up"));
+		if (LookUpRow)
+		{
+			if (LookUpRow->Action == "Move Forward")
+			{
+				const FInputAxisKeyMapping axismapping(FName("Move Forward"), FKey(FName(*LookUpRow->Input)), 1);
+				((UInputSettings*)InputSettings)->AddAxisMapping(axismapping);
+			}
+			else if (LookUpRow->Action == "Move Backward")
+			{
+				const FInputAxisKeyMapping axismapping(FName("Move Forward"), FKey(FName(*LookUpRow->Input)), -1);
+				((UInputSettings*)InputSettings)->AddAxisMapping(axismapping);
+
+			}
+			else if (LookUpRow->Action == "Move Left")
+			{
+				const FInputAxisKeyMapping axismapping(FName("Move Right"), FKey(FName(*LookUpRow->Input)), -1);
+				((UInputSettings*)InputSettings)->AddAxisMapping(axismapping);
+			}
+			else if (LookUpRow->Action == "Move Right")
+			{
+				const FInputAxisKeyMapping axismapping(FName("Move Right"), FKey(FName(*LookUpRow->Input)), 1);
+				((UInputSettings*)InputSettings)->AddAxisMapping(axismapping);
+			}
+
+			else
+			{
+				const FInputActionKeyMapping actionmapping(FName(*LookUpRow->Action), FKey(FName(*LookUpRow->Input)), false, false, false, false);
+				((UInputSettings*)InputSettings)->AddActionMapping(actionmapping);
+			}
+			rowindex++;
+
+		}
+		else
+		{
+			break;
+		}
+	}
+	const FInputAxisKeyMapping turnaxismapping(FName("Turn"), FKey(FName("MouseX")), 1);
+	((UInputSettings*)InputSettings)->AddAxisMapping(turnaxismapping);
+
+	const FInputAxisKeyMapping lookupaxismapping(FName("LookUp"), FKey(FName("MouseY")), 1);
+	((UInputSettings*)InputSettings)->AddAxisMapping(lookupaxismapping);
+
+	((UInputSettings*)InputSettings)->SaveKeyMappings();
 
 	PlayerInputComponent->BindAxis("MoveForward", this, &ACharacterV2::MoveForward);
 	PlayerInputComponent->BindAxis("MoveRight", this, &ACharacterV2::MoveRight);

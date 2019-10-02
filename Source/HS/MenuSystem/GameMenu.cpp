@@ -18,12 +18,20 @@ bool UGameMenu::Initialize()
 
 	if (!QuitBtn) { return false; }
 	QuitBtn->OnClicked.AddDynamic(this, &UGameMenu::OpenPopupMenu);
+	if (!SettingsBtn) { return false; }
+	SettingsBtn->OnClicked.AddDynamic(this, &UGameMenu::Settings);
 	if (!BackBtn) { return false; }
 	BackBtn->OnClicked.AddDynamic(this, &UGameMenu::Back);
 	if (!QuitConfirmBtn) { return false; }
 	QuitConfirmBtn->OnClicked.AddDynamic(this, &UGameMenu::Quit);
 	if (!BackConfirmBtn) { return false; }
 	BackConfirmBtn->OnClicked.AddDynamic(this, &UGameMenu::Back);
+	if (!SettingsBackBtn) { return false; }
+	SettingsBackBtn->OnClicked.AddDynamic(this, &UGameMenu::Back);
+	if (!SettingsResetBtn) { return false; }
+	SettingsResetBtn->OnClicked.AddDynamic(this, &UGameMenu::Back);
+	if (!SettingsSaveBtn) { return false; }
+	SettingsSaveBtn->OnClicked.AddDynamic(this, &UGameMenu::Back);
 	return true;
 }
 
@@ -43,4 +51,9 @@ void UGameMenu::Back()
 void UGameMenu::OpenPopupMenu()
 {
 	MenuSwitch->SetActiveWidget(PopupMenu);
+}
+
+void UGameMenu::Settings()
+{
+	MenuSwitch->SetActiveWidget(SettingsMenu);
 }

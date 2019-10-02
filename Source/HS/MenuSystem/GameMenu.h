@@ -25,12 +25,22 @@ class HS_API UGameMenu : public UMenu
 	class UButton* BackConfirmBtn;
 	UPROPERTY(meta = (BindWidget))
 	class UButton* QuitConfirmBtn;
+	UPROPERTY(meta = (BindWidget))
+	class UButton* SettingsBtn;
+	UPROPERTY(meta = (BindWidget))
+	class UButton* SettingsBackBtn;
+	UPROPERTY(meta = (BindWidget))
+	class UButton* SettingsResetBtn;
+	UPROPERTY(meta = (BindWidget))
+	class UButton* SettingsSaveBtn;
 
 	UPROPERTY(meta = (BindWidget))
 	class UWidgetSwitcher* MenuSwitch;
 
 	UPROPERTY(meta = (BindWidget))
 	class UWidget* GameMenu;
+	UPROPERTY(meta = (BindWidget))
+	class UWidget* SettingsMenu;
 	UPROPERTY(meta = (BindWidget))
 	class UWidget* PopupMenu;
 
@@ -42,4 +52,6 @@ class HS_API UGameMenu : public UMenu
 public:
 	UFUNCTION()
 	void OpenPopupMenu();
+	UFUNCTION()
+		void Settings();
 };

@@ -4,8 +4,24 @@
 
 #include "CoreMinimal.h"
 #include "Characters/HSCharacterBase.h"
+#include "UObject/ConstructorHelpers.h"
+#include "Engine/DataTable.h"
 #include "CharacterV2.generated.h"
 
+USTRUCT(Blueprintable)
+struct FKeyBoardBindingTable : public FTableRowBase
+{
+	GENERATED_USTRUCT_BODY()
+
+		UPROPERTY(BlueprintReadOnly, Category = "KeyBinding")
+		FString Action;
+	UPROPERTY(BlueprintReadOnly, Category = "KeyBinding")
+		FString DefaultInput;
+	UPROPERTY(BlueprintReadOnly, Category = "KeyBinding")
+		FString Input;
+	UPROPERTY(BlueprintReadOnly, Category = "KeyBinding")
+		FString InputAlt;
+};
 
 /**
  * A player or AI controlled hero character.
@@ -17,6 +33,8 @@ class HS_API ACharacterV2 : public AHSCharacterBase
 
 public:
 	ACharacterV2(const class FObjectInitializer& ObjectInitializer);
+	class UDataTable* KeyboardBindingTable;
+	struct InputData;
 
 	// Called to bind functionality to input
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
