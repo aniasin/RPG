@@ -6,13 +6,8 @@ Using [tranek's GASDocumentation](https://github.com/tranek/GASDocumentation) wo
 
 
 ### Controls
-+ Movement: ZQSD
-
-+ Left Alt: Switch Combat/Peace
-
-+ Space: jump while in peace or Dash while in combat (to be refactored)
-
-+ Escape: Pause menu (To be refactored)
++ **Movement:** Keyboard + Mouse ZQSD or/and Gamepad(both configurable in EscapeMenu)
++ **PauseMenu:** Escape / Gamepad Left Special
 
 ## Features
 
@@ -25,8 +20,7 @@ Using [tranek's GASDocumentation](https://github.com/tranek/GASDocumentation) wo
 + **Main Menu**
 Host, Join(IP), Quit
 
-+ **Pause menu** (To be refactored)
-
++ **Pause menu**
 Settings>>Keybinding 
 Quit.
 Resume.
