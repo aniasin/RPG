@@ -17,25 +17,26 @@ class HS_API UMainMenu : public UMenu
 
 	virtual bool Initialize() override;
 
-	UPROPERTY(meta = (BindWidget))
+public:
+	UPROPERTY(BlueprintReadOnly, meta = (BindWidget))
 	class UButton* HostBtn;
-	UPROPERTY(meta = (BindWidget))
+	UPROPERTY(BlueprintReadOnly, meta = (BindWidget))
 	class UButton* JoinBtn;
-	UPROPERTY(meta = (BindWidget))
+	UPROPERTY(meta = (BlueprintReadOnly, BindWidget))
 	class UButton* BackBtn;
-	UPROPERTY(meta = (BindWidget))
+	UPROPERTY(meta = (BlueprintReadOnly, BindWidget))
 	class UButton* JoinIPBtn;
-	UPROPERTY(meta = (BindWidget))
+	UPROPERTY(meta = (BlueprintReadOnly, BindWidget))
 	class UButton* QuitGameBtn;
 
-	UPROPERTY(meta = (BindWidget))
+	UPROPERTY(BlueprintReadOnly, meta = (BindWidget))
 	class UWidgetSwitcher* MenuSwitch;
 
-	UPROPERTY(meta = (BindWidget))
+	UPROPERTY(BlueprintReadOnly, meta = (BindWidget))
 	class UWidget* MainMenu;
-	UPROPERTY(meta = (BindWidget))
+	UPROPERTY(BlueprintReadOnly, meta = (BindWidget))
 	class UWidget* JoinMenu;
-	UPROPERTY(meta = (BindWidget))
+	UPROPERTY(BlueprintReadOnly, meta = (BindWidget))
 	class UEditableTextBox* IPAddressField;
 
 	UFUNCTION()
