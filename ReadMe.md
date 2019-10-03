@@ -56,7 +56,7 @@ Red potions with negative effect, Green positive.
 
 + **AiSight and Hear**
 
-NPCs detect player entering or exitind sight.
+NPCs detect player entering or exiting sight.
 
 + **BehaviorTree**
 

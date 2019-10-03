@@ -14,18 +14,18 @@ AHSPlayerController::AHSPlayerController()
 	PrimaryActorTick.bCanEverTick = true;
 
 	bIsUsingGamepad = false;
-	bResetGamepadDetectionAfterNoInput = false;
+	bResetGamepadDetectionAfterNoInput = true;
 	GamepadTimeout = 5.f;
 
 	SetGenericTeamId(1);
 }
 
-bool AHSPlayerController::InputAxis(FKey Key, float Delta, float DeltaTime, int32 NumSamples, bool bGamepad)
-{
-	bool ret = Super::InputAxis(Key, Delta, DeltaTime, NumSamples, bGamepad);
-	_UpdateGamepad(bGamepad);
-	return ret;
-}
+// bool AHSPlayerController::InputAxis(FKey Key, float Delta, float DeltaTime, int32 NumSamples, bool bGamepad)
+// {
+// 	bool ret = Super::InputAxis(Key, Delta, DeltaTime, NumSamples, bGamepad);
+// 	_UpdateGamepad(bGamepad);
+// 	return ret;
+// }
 
 bool AHSPlayerController::InputKey(FKey Key, EInputEvent EventType, float AmountDepressed, bool bGamepad)
 {
