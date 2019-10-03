@@ -57,6 +57,15 @@ void ANpc_AIController::OnPossess(APawn* InPawn)
 		RunBehaviorTree(BehaviorTree);
 		BlackboardComponent = GetBlackboardComponent();
 
+		if (AICharacter->bIsCivilian)
+		{
+			BlackboardComponent->SetValueAsObject("IsCivilian", this);
+		}
+		else
+		{
+			BlackboardComponent->ClearValue("IsCivilian");
+		}
+
 		CheckHealth = AICharacter->GetHealth();
 	}
 }

@@ -18,8 +18,6 @@ class HS_API ACharacterV2 : public AHSCharacterBase
 
 public:
 	ACharacterV2(const class FObjectInitializer& ObjectInitializer);
-	class UDataTable* KeyboardBindingTable;
-	struct InputData;
 
 	// Called to bind functionality to input
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
@@ -75,7 +73,8 @@ public:
 
 	////////////////////////////
 	// AI
-
+		UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "HS Parameters|AI")
+			bool bIsCivilian;
 	// How long and how far AI will search for player when sight is lost
 		UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "HS Parameters|AI")
 			float SearchTime;

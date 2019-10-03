@@ -27,9 +27,6 @@
 
 ACharacterV2::ACharacterV2(const class FObjectInitializer& ObjectInitializer) : Super(ObjectInitializer)
 {
-	static ConstructorHelpers::FObjectFinder<UDataTable>InputDataTableBP(TEXT("DataTable'/Game/UI/InputDataTable.InputDataTable'"));
-	KeyboardBindingTable = InputDataTableBP.Object;
-
 	// Don't rotate when the controller rotates. Let that just affect the camera.
 	bUseControllerRotationPitch = false;
 	bUseControllerRotationYaw = false;
