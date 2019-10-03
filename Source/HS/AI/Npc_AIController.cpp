@@ -117,6 +117,8 @@ void ANpc_AIController::OnTargetPerceptionUpdate(AActor* Actor, FAIStimulus Stim
 	LastKnownPlayerPosition = Stimulus.StimulusLocation;
 	bCanSeeActor = Stimulus.WasSuccessfullySensed();	
 
+	if (AICharacter->bIsCivilian) { return; }
+
 	ACharacterV2* Hero = Cast<ACharacterV2>(Actor);
 	// Gain Sight
 	if (bCanSeeActor && Hero)
