@@ -223,18 +223,19 @@ void ACharacterV2::Interaction()
 
 void ACharacterV2::ToggleInteractionWidget_Implementation(AActor* Item)
 {
-	// if no widget it is an AI
+	
 	if (!InteractionWidget)	{return;}
 	if (InteractionWidget->GetVisibility() == ESlateVisibility::Visible)
 	{
-		InteractionWidget->SetVisibility(ESlateVisibility::Hidden);
+		K2_ToggleWidget(false);
 		CurrentFocusedItem = NULL;
 	}
 	else
 	{
-		InteractionWidget->SetVisibility(ESlateVisibility::Visible);
+		K2_ToggleWidget(true);
 		CurrentFocusedItem = Item;
 	}
+
 }
 
 /////////////////////////////////////

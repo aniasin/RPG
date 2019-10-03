@@ -50,6 +50,8 @@ public:
 
 		UFUNCTION(Client, Unreliable)
 			void ToggleInteractionWidget(AActor* Item);
+		UFUNCTION(BlueprintImplementableEvent)
+			void K2_ToggleWidget(bool bVisibility);
 
 	/////////////////////////////////
 	// Combat
@@ -83,10 +85,13 @@ public:
 
 		///////////////////////
 // Equipment
+
 		UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "HS Parameters|Equipment")
 		class AWeapon* WeaponR;
 		UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "HS Parameters|Equipment")
 		class AWeapon* WeaponL;
+		UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "HS Parameters|UI")
+			class UUserWidget* InteractionWidget;
 
 
 protected:
@@ -108,17 +113,14 @@ protected:
 	UPROPERTY(BlueprintReadOnly, VisibleAnywhere, Category = "HS Parameters|Camera")
 		class UCameraComponent* FollowCamera;
 
-	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "HS Parameters|UI")
-		TSubclassOf<class UHSFloatingStatusBarWidget> UIFloatingStatusBarClass;
-
-	UPROPERTY()
+	UPROPERTY(BlueprintReadOnly, EditAnywhere, Category = "HS Parameters|UI")
 		UHSFloatingStatusBarWidget* UIFloatingStatusBar;
+
+	UPROPERTY(BlueprintReadOnly, EditAnywhere, Category = "HS Parameters|UI")
+		TSubclassOf<class UHSFloatingStatusBarWidget> UIFloatingStatusBarClass;
 
 	UPROPERTY(BlueprintReadOnly, VisibleAnywhere, Category = "HS Parameters|UI")
 		class UWidgetComponent* UIFloatingStatusBarComponent;
-
-	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "HS Parameters|UI")
-		class UUserWidget* InteractionWidget;
 
 	FGameplayTag DeadTag;
 
