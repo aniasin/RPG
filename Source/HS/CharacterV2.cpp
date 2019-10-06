@@ -2,6 +2,7 @@
 
 
 #include "CharacterV2.h"
+#include "UnrealNetwork.h"
 #include "Abilities/HSAttributeSetBase.h"
 #include "AI/Npc_AIController.h"
 #include "Camera/CameraComponent.h"
@@ -64,6 +65,16 @@ ACharacterV2::ACharacterV2(const class FObjectInitializer& ObjectInitializer) : 
 	AIControllerClass = ANpc_AIController::StaticClass();
 
 	DeadTag = FGameplayTag::RequestGameplayTag(FName("State.Dead"));
+
+	bReplicates = true;
+}
+
+void ACharacterV2::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
+{
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+
+	DOREPLIFETIME(ACharacterV2, WeaponR);
+	DOREPLIFETIME(ACharacterV2, WeaponL);
 }
 
 // Called to bind functionality to input
@@ -82,6 +93,7 @@ void ACharacterV2::SetupPlayerInputComponent(class UInputComponent* PlayerInputC
 	PlayerInputComponent->BindAxis("TurnRate", this, &ACharacterV2::TurnRate);
 
 	PlayerInputComponent->BindAction("Interaction", IE_Pressed, this, &ACharacterV2::Interaction);
+	PlayerInputComponent->BindAction("Drop", IE_Pressed, this, &ACharacterV2::DropEquipment);
 	PlayerInputComponent->BindAction("SwitchCombat", IE_Pressed, this, &ACharacterV2::SwitchCombat);
 
 	// Bind to AbilitySystemComponent
@@ -119,10 +131,8 @@ void ACharacterV2::PossessedBy(AController* NewController)
 		if (PC)
 		{
 			PC->CreateHUD();
+			InitializeFloatingStatusBar();
 		}
-
-		InitializeFloatingStatusBar();
-
 
 		// Respawn specific things that won't affect first possession.
 
@@ -210,6 +220,48 @@ void ACharacterV2::TakeItem_Implementation(AActor* ItemToTake)
 	}
 }
 
+void ACharacterV2::DropEquipment()
+{
+	if (WeaponL)
+	{
+		if (Role == ROLE_Authority)
+		{
+			DropItem(WeaponL);
+		}
+		else
+		{
+			ServerDropItem(WeaponL);
+		}
+	}
+	if (WeaponR)
+		if (Role == ROLE_Authority)
+		{
+			DropItem(WeaponR);
+		}
+		else
+		{
+			ServerDropItem(WeaponR);
+		}
+}
+
+void ACharacterV2::ServerDropItem_Implementation(AActor* ItemToDrop)
+{
+	AWeapon* Weapon = Cast<AWeapon>(ItemToDrop);
+	Weapon->Destroy();
+}
+
+bool ACharacterV2::ServerDropItem_Validate(AActor* ItemToDrop)
+{
+	return true;
+}
+
+
+void ACharacterV2::DropItem_Implementation(AActor* ItemToDrop)
+{
+	AWeapon* Weapon = Cast<AWeapon>(ItemToDrop);
+	Weapon->Destroy();
+}
+
 void ACharacterV2::Interaction()
 {
 	if (!CurrentFocusedItem) { return; }
@@ -217,8 +269,10 @@ void ACharacterV2::Interaction()
 	{
 		ServerTakeItem(CurrentFocusedItem);
 	}
-	TakeItem(CurrentFocusedItem);
-
+	else
+	{
+		TakeItem(CurrentFocusedItem);
+	}
 }
 
 void ACharacterV2::ToggleInteractionWidget_Implementation(AActor* Item)
@@ -306,7 +360,11 @@ void ACharacterV2::BeginPlay()
 	// Only needed for Heroes placed in world and when the player is the Server.
 	// On respawn, they are set up in PossessedBy.
 	// When the player a client, the floating status bars are all set up in OnRep_PlayerState.
-	InitializeFloatingStatusBar();
+	AHSPlayerController* PC = Cast<AHSPlayerController>(GetController());
+	if (PC)
+	{
+		InitializeFloatingStatusBar();
+	}
 
 	StartingCameraBoomArmLength = CameraBoom->TargetArmLength;
 	StartingCameraBoomLocation = CameraBoom->RelativeLocation;

@@ -33,7 +33,7 @@ public:
 	UPROPERTY(EditAnyWhere, BlueprintReadWrite, Category = "HS Parameters")
 		class UCapsuleComponent* CapsuleComponent;
 	UPROPERTY(EditAnyWhere, BlueprintReadWrite, Category = "HS Parameters")
-		class UWidgetComponent* WidgetComponent;
+		TArray<TSubclassOf<class UHSGameplayAbility>> Abilities;
 
 	UPROPERTY(EditAnyWhere, Category = "HS Parameters")
 		FText ItemName;
@@ -57,6 +57,7 @@ public:
 
 	// Interactions
 	void ItemTaken();
+	void ItemDropped();
 
 protected:
 	// Called when the game starts or when spawned

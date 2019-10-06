@@ -18,6 +18,7 @@ AHSGameMode::AHSGameMode()
 	if (PlayerPawnBPClass.Class != NULL)
 	{
 		DefaultPawnClass = PlayerPawnBPClass.Class;
+		bUseSeamlessTravel = true;
 	}
 }
 

@@ -32,10 +32,6 @@ AWeapon::AWeapon()
 	CapsuleComponent = CreateDefaultSubobject<UCapsuleComponent>("CapsuleComponent");
 	CapsuleComponent->AttachToComponent(Mesh, FAttachmentTransformRules::KeepRelativeTransform);
 
-	WidgetComponent = CreateDefaultSubobject<UWidgetComponent>("WidgetComponent");
-	WidgetComponent->AttachToComponent(Mesh, FAttachmentTransformRules::KeepRelativeTransform);
-
-	WidgetComponent->SetVisibility(false);
 }
 
 // Called when the game starts or when spawned
@@ -90,6 +86,16 @@ void AWeapon::OnOverlapEnd_Implementation(UPrimitiveComponent* Comp, AActor* Oth
 
 void AWeapon::ItemTaken()
 {
+	AHSCharacterBase* CurrentOwner = Cast<AHSCharacterBase>(OwnerActor);
+	CurrentOwner->GrantAbilities(Abilities);
 	SphereComponent->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+	Mesh->SetSimulatePhysics(false);
+	Mesh->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 }
 
+void AWeapon::ItemDropped()
+{
+	UE_LOG(LogTemp, Warning, TEXT("Server Calling Destroy!"))
+	DetachFromActor(FDetachmentTransformRules::KeepWorldTransform);
+	ConditionalBeginDestroy();
+}

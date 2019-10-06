@@ -53,6 +53,9 @@ public:
 	virtual void PlayHitReact_Implementation(FGameplayTag HitDirection, AActor* DamageCauser);
 	virtual bool PlayHitReact_Validate(FGameplayTag HitDirection, AActor* DamageCauser);
 
+	virtual void GrantAbilities(TArray<TSubclassOf<class UHSGameplayAbility>> AbilitiesToGrant);
+	virtual void ResetAbilities();
+
 /**
 * Getters for attributes from GDAttributeSetBase
 **/

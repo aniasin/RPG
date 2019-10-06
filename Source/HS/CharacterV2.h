@@ -45,8 +45,13 @@ public:
 			void TakeItem(AActor* ItemToTake);
 		UFUNCTION(Server, Unreliable, WithValidation)
 			void ServerTakeItem(AActor* ItemToTake);
+		UFUNCTION(NetMulticast, Unreliable)
+			void DropItem(AActor* ItemToDrop);
+		UFUNCTION(Server, Unreliable, WithValidation)
+			void ServerDropItem(AActor* ItemToDrop);
 
 		void Interaction();
+		void DropEquipment();
 
 		UFUNCTION(Client, Unreliable)
 			void ToggleInteractionWidget(AActor* Item);
@@ -86,9 +91,9 @@ public:
 		///////////////////////
 // Equipment
 
-		UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "HS Parameters|Equipment")
+		UPROPERTY(BlueprintReadWrite, EditAnywhere, Replicated, Category = "HS Parameters|Equipment")
 		class AWeapon* WeaponR;
-		UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "HS Parameters|Equipment")
+		UPROPERTY(BlueprintReadWrite, EditAnywhere, Replicated, Category = "HS Parameters|Equipment")
 		class AWeapon* WeaponL;
 		UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "HS Parameters|UI")
 			class UUserWidget* InteractionWidget;
