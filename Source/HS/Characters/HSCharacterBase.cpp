@@ -286,29 +286,6 @@ void AHSCharacterBase::AddCharacterAbilities()
 	AbilitySystemComponent->CharacterAbilitiesGiven = true;
 }
 
-void AHSCharacterBase::GrantAbilities(TArray<TSubclassOf<class UHSGameplayAbility>> AbilitiesToGrant)
-{
-	// Grant abilities, but only on the server	
-	if (Role != ROLE_Authority || !AbilitySystemComponent.IsValid()) {	return;	}
-	for (TSubclassOf<UHSGameplayAbility>& StartupAbility : AbilitiesToGrant)
-	{
-		AbilitySystemComponent->GiveAbility(FGameplayAbilitySpec(StartupAbility, GetAbilityLevel(StartupAbility.GetDefaultObject()->AbilityID), 
-				static_cast<int32>(StartupAbility.GetDefaultObject()->AbilityInputID), this));
-	}
-
-}
-
-void AHSCharacterBase::ResetAbilities()
-{
-	if (Role !=ROLE_Authority)
-	{
-		UE_LOG(LogTemp, Warning, TEXT("RESET ABILITIES: YOU'RE NOT AUTHORIZED!"))
-	}
-	AbilitySystemComponent->CharacterAbilitiesGiven = true;
-	RemoveCharacterAbilities();
-	AddCharacterAbilities();
-}
-
 void AHSCharacterBase::InitializeAttributes()
 {
 	if (!AbilitySystemComponent.IsValid())

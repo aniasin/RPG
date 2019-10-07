@@ -17,7 +17,7 @@ class HS_API AWeapon : public AActor
 
 public:
 	// The owner of this
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = Equipment)
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Replicated, Category = Equipment)
 		AActor* OwnerActor;
 
 	UPROPERTY(EditAnyWhere, BlueprintReadWrite, Category = "HS Parameters")
@@ -33,7 +33,9 @@ public:
 	UPROPERTY(EditAnyWhere, BlueprintReadWrite, Category = "HS Parameters")
 		class UCapsuleComponent* CapsuleComponent;
 	UPROPERTY(EditAnyWhere, BlueprintReadWrite, Category = "HS Parameters")
-		TArray<TSubclassOf<class UHSGameplayAbility>> Abilities;
+		class UAnimMontage* MontageRightHand;
+	UPROPERTY(EditAnyWhere, BlueprintReadWrite, Category = "HS Parameters")
+		class UAnimMontage* MontageLeftHand;
 
 	UPROPERTY(EditAnyWhere, Category = "HS Parameters")
 		FText ItemName;

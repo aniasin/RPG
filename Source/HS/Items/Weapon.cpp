@@ -2,6 +2,7 @@
 
 
 #include "Weapon.h"
+#include "UnrealNetwork.h"
 #include "Components/CapsuleComponent.h"
 #include "Components/StaticMeshComponent.h"
 #include "Components/SphereComponent.h"
@@ -32,6 +33,13 @@ AWeapon::AWeapon()
 	CapsuleComponent = CreateDefaultSubobject<UCapsuleComponent>("CapsuleComponent");
 	CapsuleComponent->AttachToComponent(Mesh, FAttachmentTransformRules::KeepRelativeTransform);
 
+}
+
+void AWeapon::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
+{
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+
+	DOREPLIFETIME(AWeapon, OwnerActor);
 }
 
 // Called when the game starts or when spawned
@@ -87,7 +95,6 @@ void AWeapon::OnOverlapEnd_Implementation(UPrimitiveComponent* Comp, AActor* Oth
 void AWeapon::ItemTaken()
 {
 	AHSCharacterBase* CurrentOwner = Cast<AHSCharacterBase>(OwnerActor);
-	CurrentOwner->GrantAbilities(Abilities);
 	SphereComponent->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 	Mesh->SetSimulatePhysics(false);
 	Mesh->SetCollisionEnabled(ECollisionEnabled::NoCollision);
@@ -95,7 +102,5 @@ void AWeapon::ItemTaken()
 
 void AWeapon::ItemDropped()
 {
-	UE_LOG(LogTemp, Warning, TEXT("Server Calling Destroy!"))
-	DetachFromActor(FDetachmentTransformRules::KeepWorldTransform);
-	ConditionalBeginDestroy();
+
 }

@@ -7,6 +7,7 @@
 #include "AI/Npc_AIController.h"
 #include "Camera/CameraComponent.h"
 #include "Components/CapsuleComponent.h"
+#include "Components/SphereComponent.h"
 #include "Components/DecalComponent.h"
 #include "GameFramework/SpringArmComponent.h"
 #include "HSGameMode.h"
@@ -74,7 +75,9 @@ void ACharacterV2::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLife
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 
 	DOREPLIFETIME(ACharacterV2, WeaponR);
+	DOREPLIFETIME(ACharacterV2, MontageRightHand);
 	DOREPLIFETIME(ACharacterV2, WeaponL);
+	DOREPLIFETIME(ACharacterV2, MontageLeftHand);
 }
 
 // Called to bind functionality to input
@@ -189,6 +192,37 @@ void ACharacterV2::FinishDying()
 
 //////////////////////////////////////
 // Item Interactions
+
+void ACharacterV2::Interaction()
+{
+	if (!CurrentFocusedItem) { return; }
+	if (Role < ROLE_Authority)
+	{
+		ServerTakeItem(CurrentFocusedItem);
+	}
+	else
+	{
+		TakeItem(CurrentFocusedItem);
+	}
+}
+
+void ACharacterV2::ToggleInteractionWidget_Implementation(AActor* Item)
+{
+
+	if (!InteractionWidget) { return; }
+	if (InteractionWidget->GetVisibility() == ESlateVisibility::Visible)
+	{
+		K2_ToggleWidget(false);
+		CurrentFocusedItem = NULL;
+	}
+	else
+	{
+		K2_ToggleWidget(true);
+		CurrentFocusedItem = Item;
+	}
+
+}
+
 void ACharacterV2::ServerTakeItem_Implementation(AActor* ItemToTake)
 {
 	AWeapon* IsWeapon = Cast<AWeapon>(ItemToTake);
@@ -198,7 +232,17 @@ void ACharacterV2::ServerTakeItem_Implementation(AActor* ItemToTake)
 		IsWeapon->AttachToComponent(GetMesh(), FAttachmentTransformRules::SnapToTargetIncludingScale, Socket);
 		IsWeapon->OwnerActor = this;
 		IsWeapon->ItemTaken();
-		if (IsWeapon->bIsLeftHand)	{WeaponL = IsWeapon;} else {WeaponR = IsWeapon;}
+
+		if (IsWeapon->bIsLeftHand)	
+		{
+			WeaponL = IsWeapon;
+			MontageLeftHand = WeaponL->MontageLeftHand;
+		} 
+		else	
+		{
+			WeaponR = IsWeapon;
+			MontageRightHand = WeaponR->MontageRightHand;
+		}
 	}
 }
 
@@ -216,7 +260,17 @@ void ACharacterV2::TakeItem_Implementation(AActor* ItemToTake)
 		IsWeapon->AttachToComponent(GetMesh(), FAttachmentTransformRules::SnapToTargetIncludingScale, Socket);
 		IsWeapon->OwnerActor = this;
 		IsWeapon->ItemTaken();
-		if (IsWeapon->bIsLeftHand) { WeaponL = IsWeapon; } else { WeaponR = IsWeapon; }
+
+		if (IsWeapon->bIsLeftHand)
+		{
+			WeaponL = IsWeapon;
+			MontageLeftHand = WeaponL->MontageLeftHand;
+		}
+		else
+		{
+			WeaponR = IsWeapon;
+			MontageRightHand = WeaponR->MontageRightHand;
+		}
 	}
 }
 
@@ -232,8 +286,11 @@ void ACharacterV2::DropEquipment()
 		{
 			ServerDropItem(WeaponL);
 		}
+		WeaponL = NULL;
+		MontageLeftHand = NULL;
 	}
 	if (WeaponR)
+	{
 		if (Role == ROLE_Authority)
 		{
 			DropItem(WeaponR);
@@ -242,11 +299,15 @@ void ACharacterV2::DropEquipment()
 		{
 			ServerDropItem(WeaponR);
 		}
+		WeaponR = NULL;
+		MontageRightHand = NULL;
+	}
 }
 
 void ACharacterV2::ServerDropItem_Implementation(AActor* ItemToDrop)
 {
 	AWeapon* Weapon = Cast<AWeapon>(ItemToDrop);
+	if (!Weapon) { return; }
 	Weapon->Destroy();
 }
 
@@ -259,37 +320,8 @@ bool ACharacterV2::ServerDropItem_Validate(AActor* ItemToDrop)
 void ACharacterV2::DropItem_Implementation(AActor* ItemToDrop)
 {
 	AWeapon* Weapon = Cast<AWeapon>(ItemToDrop);
+	if (!Weapon) { return; }
 	Weapon->Destroy();
-}
-
-void ACharacterV2::Interaction()
-{
-	if (!CurrentFocusedItem) { return; }
-	if (Role < ROLE_Authority)
-	{
-		ServerTakeItem(CurrentFocusedItem);
-	}
-	else
-	{
-		TakeItem(CurrentFocusedItem);
-	}
-}
-
-void ACharacterV2::ToggleInteractionWidget_Implementation(AActor* Item)
-{
-	
-	if (!InteractionWidget)	{return;}
-	if (InteractionWidget->GetVisibility() == ESlateVisibility::Visible)
-	{
-		K2_ToggleWidget(false);
-		CurrentFocusedItem = NULL;
-	}
-	else
-	{
-		K2_ToggleWidget(true);
-		CurrentFocusedItem = Item;
-	}
-
 }
 
 /////////////////////////////////////

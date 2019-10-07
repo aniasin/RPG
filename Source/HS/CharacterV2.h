@@ -97,6 +97,10 @@ public:
 		class AWeapon* WeaponL;
 		UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "HS Parameters|UI")
 			class UUserWidget* InteractionWidget;
+		UPROPERTY(BlueprintReadWrite, VisibleAnywhere, Replicated, Category = "HS Parameters|Equipment")
+			class UAnimMontage* MontageLeftHand;
+		UPROPERTY(BlueprintReadWrite, VisibleAnywhere, Replicated, Category = "HS Parameters|Equipment")
+			class UAnimMontage* MontageRightHand;
 
 
 protected:
