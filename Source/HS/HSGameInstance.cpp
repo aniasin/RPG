@@ -43,8 +43,10 @@ void UHSGameInstance::BeginLoadingScreen(const FString& MapName)
 	{
 		FLoadingScreenAttributes LoadingScreen;
 		LoadingScreen.bAutoCompleteWhenLoadingCompletes = false;
+		LoadingScreen.MinimumLoadingScreenDisplayTime = .5f;
+		LoadingScreen.bMoviesAreSkippable = true;
 		LoadingScreen.WidgetLoadingScreen = FLoadingScreenAttributes::NewTestLoadingScreenWidget();
-
+		GetMoviePlayer()->WaitForMovieToFinish(true);
 		GetMoviePlayer()->SetupLoadingScreen(LoadingScreen);
 	}
 }
