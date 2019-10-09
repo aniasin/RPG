@@ -17,6 +17,8 @@ Using [tranek's GASDocumentation](https://github.com/tranek/GASDocumentation) wo
 
 ### UI
 
++ **Loading Screen**
+
 + **Main Menu**
 Host, Join(IP), Quit
 
@@ -44,13 +46,13 @@ Dash forward while in combat.
 EffectAmount (Positive/Negative).
 Can be Overtime with duration or instant.
 
-+ **Configurable Weapons**
++ **Weapons**
 
-Damage, SpeedMultiplier, left or right hand.
+Sword, Shield, Great Sword, Bow
 
 + **Dynamic Material**
 
-Red potions with negative effect, Green positive.
+Red potions with negative effect, Green positive.(To be erefactored)
 
 ### AI
 
