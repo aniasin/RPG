@@ -2,9 +2,11 @@
 
 
 #include "CharacterV2.h"
+#include "HS.h"
 #include "UnrealNetwork.h"
 #include "Abilities/HSAttributeSetBase.h"
 #include "AI/Npc_AIController.h"
+#include "GameFramework/Pawn.h"
 #include "Camera/CameraComponent.h"
 #include "Components/CapsuleComponent.h"
 #include "Components/SphereComponent.h"
@@ -25,10 +27,13 @@
 #include "CoreUObject/Public/UObject/UObjectGlobals.h"
 #include "GameFramework/InputSettings.h"
 #include "GameFramework/PlayerInput.h"
+#include "Components/InputComponent.h"
+#include "HSCharacterMovementComponent.h"
 
 
 ACharacterV2::ACharacterV2(const class FObjectInitializer& ObjectInitializer) : Super(ObjectInitializer)
 {
+	PrimaryActorTick.bCanEverTick = true;
 	// Don't rotate when the controller rotates. Let that just affect the camera.
 	bUseControllerRotationPitch = false;
 	bUseControllerRotationYaw = false;
@@ -68,6 +73,7 @@ ACharacterV2::ACharacterV2(const class FObjectInitializer& ObjectInitializer) : 
 	DeadTag = FGameplayTag::RequestGameplayTag(FName("State.Dead"));
 
 	bReplicates = true;
+	bReplicateMovement = true;
 }
 
 void ACharacterV2::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
@@ -81,7 +87,7 @@ void ACharacterV2::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLife
 }
 
 // Called to bind functionality to input
-void ACharacterV2::SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent)
+void ACharacterV2::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 {
 	check(PlayerInputComponent);
 	Super::SetupPlayerInputComponent(PlayerInputComponent);
@@ -346,7 +352,7 @@ void ACharacterV2::SwitchCombat()
 	AHSPlayerController* PC = Cast<AHSPlayerController>(GetController());
 	if (PC)
 	{
-		bUseControllerRotationYaw = !bUseControllerRotationYaw;
+		bIsInCombat = !bIsInCombat;
 	}
 	// If not player, then it's an AI
 	else
@@ -379,6 +385,29 @@ void ACharacterV2::AIPerformShieldUp()
 	K2_AIPerformShieldUp();
 }
 
+void ACharacterV2::MultiCast_UpdateCharacterRotation_Implementation(FRotator Rotation)
+{
+	SetActorRotation(Rotation);
+}
+
+bool ACharacterV2::MultiCast_UpdateCharacterRotation_Validate(FRotator Rotation)
+{
+	return true;
+}
+
+void ACharacterV2::Server_UpdateCharacterRotation_Implementation(FRotator Rotation)
+{
+	if (!IsLocallyControlled())
+	{
+		MultiCast_UpdateCharacterRotation(Rotation);
+	}
+}
+
+bool ACharacterV2::Server_UpdateCharacterRotation_Validate(FRotator Rotation)
+{
+	return true;
+}
+
 /**
 * On the Server, Possession happens before BeginPlay.
 * On the Client, BeginPlay happens before Possession.
@@ -402,6 +431,30 @@ void ACharacterV2::BeginPlay()
 	StartingCameraBoomLocation = CameraBoom->RelativeLocation;
 }
 
+void ACharacterV2::Tick(float DeltaSeconds)
+{
+	Super::Tick(DeltaSeconds);
+	if (bIsInCombat)
+	{
+		if (ROLE_Authority)
+		{
+			CurrentRotation = GetActorRotation();
+			Server_UpdateCharacterRotation(CurrentRotation);
+		}
+		if (!IsLocallyControlled())
+		{
+			SetActorRotation(CurrentRotation);
+		}
+		bUseControllerRotationYaw = true;
+	}
+	else
+	{
+		bUseControllerRotationYaw = false;
+	}
+}
+
+////////////////////////////
+// Movement
 void ACharacterV2::LookUp(float Value)
 {
 	if (IsAlive())
@@ -416,6 +469,15 @@ void ACharacterV2::LookUpRate(float Value)
 	{
 		// calculate delta for this frame from the rate information
 		AddControllerPitchInput(Value * BaseLookUpRate * GetWorld()->GetDeltaSeconds());
+	}
+}
+
+void ACharacterV2::Turn(float Value)
+{
+	if (IsAlive())
+	{
+		// calculate delta for this frame from the rate information
+		AddControllerYawInput(Value * BaseTurnRate * GetWorld()->GetDeltaSeconds());
 	}
 }
 
