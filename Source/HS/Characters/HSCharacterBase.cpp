@@ -251,7 +251,7 @@ void AHSCharacterBase::Die()
 
 	if (DeathMontage)
 	{
-		PlayAnimMontage(DeathMontage);
+		/*PlayAnimMontage(DeathMontage);*/
 	}
 	else
 	{
