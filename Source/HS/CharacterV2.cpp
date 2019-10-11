@@ -91,6 +91,7 @@ void ACharacterV2::SetupPlayerInputComponent(UInputComponent* PlayerInputCompone
 {
 	check(PlayerInputComponent);
 	Super::SetupPlayerInputComponent(PlayerInputComponent);
+	if (!PlayerInputComponent) { return; }
 
 	PlayerInputComponent->BindAxis("MoveForward", this, &ACharacterV2::MoveForward);
 	PlayerInputComponent->BindAxis("MoveRight", this, &ACharacterV2::MoveRight);
@@ -107,7 +108,7 @@ void ACharacterV2::SetupPlayerInputComponent(UInputComponent* PlayerInputCompone
 
 	// Bind to AbilitySystemComponent
 	AbilitySystemComponent->BindAbilityActivationToInputComponent(PlayerInputComponent, FGameplayAbilityInputBinds(FString("ConfirmTarget"),
-		FString("CancelTarget"), FString("EGDAbilityInputID"), static_cast<int32>(EGDAbilityInputID::Confirm), static_cast<int32>(EGDAbilityInputID::Cancel)));
+	FString("CancelTarget"), FString("EGDAbilityInputID"), static_cast<int32>(EGDAbilityInputID::Confirm), static_cast<int32>(EGDAbilityInputID::Cancel)));
 }
 
 //Server Only
