@@ -32,7 +32,6 @@ AWeapon::AWeapon()
 
 	CapsuleComponent = CreateDefaultSubobject<UCapsuleComponent>("CapsuleComponent");
 	CapsuleComponent->AttachToComponent(Mesh, FAttachmentTransformRules::KeepRelativeTransform);
-
 }
 
 void AWeapon::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
