@@ -82,7 +82,7 @@ public:
 
 	void SetCombatBehavior();
 
-	FVector GetRandomSearchLocation(float Radius);
+	FVector GetRandomSearchLocation(FVector Origin, float Radius);
 
 protected:
 	void OnPossess(APawn* InPawn);

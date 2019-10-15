@@ -18,6 +18,7 @@
 #include "BehaviorTree/BehaviorTree.h"
 #include "GenericTeamAgentInterface.h"
 #include "BehaviorTree/BlackboardComponent.h"
+#include "Math/Vector.h"
 
 ANpc_AIController::ANpc_AIController()
 {
@@ -146,8 +147,8 @@ void ANpc_AIController::OnTargetPerceptionUpdate(AActor* Actor, FAIStimulus Stim
 		// remember player's position and direction and a random one, set BB accordingly
 		BlackboardComponent->SetValueAsVector("LastKnownPlayerPos", LastKnownPlayerPosition);
 		LastKnownPlayerDirection = SeenPlayers[0]->GetVelocity().GetUnsafeNormal();
-		BlackboardComponent->SetValueAsVector("NextSearchLocation", LastKnownPlayerDirection * AICharacter->SearchRadius);
-		BlackboardComponent->SetValueAsVector("RandomSearchLocation", GetRandomSearchLocation(AICharacter->SearchRadius));
+		BlackboardComponent->SetValueAsVector("NextSearchLocation", GetRandomSearchLocation(LastKnownPlayerDirection, AICharacter->SearchRadius));
+		BlackboardComponent->SetValueAsVector("RandomSearchLocation", GetRandomSearchLocation(AICharacter->GetActorLocation(), AICharacter->SearchRadius));
 		// Remove this player from SeenActors
 		SeenPlayers.RemoveSingle(Hero);
 		UE_LOG(LogTemp, Warning, TEXT("%s: Loose Sight with %s!"), *AICharacter->CharacterName.ToString(), *Actor->GetName())
@@ -247,9 +248,8 @@ void ANpc_AIController::UpdateDefend()
 }
 
 
-FVector ANpc_AIController::GetRandomSearchLocation(float Radius)
+FVector ANpc_AIController::GetRandomSearchLocation(FVector Origin, float Radius)
 {
-	FVector Origin = AICharacter->GetActorLocation();
 	UWorld* World = GEngine->GetWorld();
 	if ensure(!World) { return Origin; }
 
