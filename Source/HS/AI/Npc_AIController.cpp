@@ -66,7 +66,6 @@ void ANpc_AIController::OnPossess(APawn* InPawn)
 		{
 			BlackboardComponent->ClearValue("IsCivilian");
 		}
-
 		CheckHealth = AICharacter->GetHealth();
 	}
 }
@@ -95,14 +94,15 @@ void ANpc_AIController::SetCombatBehavior()
 	if (AICharacter->GetHealth() < CheckHealth)
 	{
 		BlackboardComponent->SetValueAsBool("Attack", false);
-		UE_LOG(LogTemp, Warning, TEXT("Now Setting Combat Behavior: Defend!"))
+		UE_LOG(LogTemp, Error, TEXT("%s Is Now Setting Combat Behavior: Defend!"), *AICharacter->CharacterName.ToString())
 	}
 	else
 	{
 		BlackboardComponent->SetValueAsBool("Attack", true);
-		UE_LOG(LogTemp, Warning, TEXT("Now Setting Combat Behavior: Attack!"))
+		UE_LOG(LogTemp, Error, TEXT("% Is Now Setting Combat Behavior: Attack!"), *AICharacter->CharacterName.ToString())
 
 	}
+	CheckHealth = AICharacter->GetHealth();
  }
 
 void ANpc_AIController::OnTargetPerceptionUpdate(AActor* Actor, FAIStimulus Stimulus)
