@@ -102,8 +102,21 @@ void ANpc_AIController::SetCombatBehavior()
 		UE_LOG(LogTemp, Error, TEXT("% Is Now Setting Combat Behavior: Attack!"), *AICharacter->CharacterName.ToString())
 
 	}
-	CheckHealth = AICharacter->GetHealth();
+	bCanChangeCombatBehavior = false;
+	UWorld* World = GetWorld();
+	if (!World || !AICharacter) { return; }
+	World->GetTimerManager().SetTimer(ResetCanChangeCombatBehaviorHandle, this, &ANpc_AIController::ResetCanChangeCombatBehavior, 2.0f, false);
  }
+
+
+void ANpc_AIController::ResetCanChangeCombatBehavior()
+{
+	CheckHealth = AICharacter->GetHealth();
+	bCanChangeCombatBehavior = true;
+	UWorld* World = GetWorld();
+	if (!World) { return; }
+	World->GetTimerManager().ClearTimer(ResetCanChangeCombatBehaviorHandle);
+}
 
 void ANpc_AIController::OnTargetPerceptionUpdate(AActor* Actor, FAIStimulus Stimulus)
 {

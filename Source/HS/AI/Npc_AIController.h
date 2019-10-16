@@ -37,6 +37,7 @@ class HS_API ANpc_AIController : public AAIController
 		void OnTargetPerceptionUpdate(AActor* Actor, FAIStimulus Stimulus);
 
 	// Combat
+	void ResetCanChangeCombatBehavior();
 	bool bAttacking = false;
 	bool bDefending = false;
 
@@ -50,12 +51,16 @@ public:
 	void AttackTarget();
 	void Defend();
 
+	bool bCanChangeCombatBehavior = true;
+
 	UFUNCTION()
 	void UpdateAttack();
 	UFUNCTION()
 		void UpdateDefend();
 
 	/* Handle to manage timer */
+	FTimerHandle ResetCanChangeCombatBehaviorHandle;
+	FTimerDelegate ResetCanChangeCombatBehaviorDelegate;
 	FTimerHandle AttackTimerHandle;
 	FTimerDelegate AttackTimerDelegate;
 	FTimerHandle SearchTimerHandle;

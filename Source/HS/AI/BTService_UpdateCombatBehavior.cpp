@@ -26,8 +26,9 @@ void UBTService_UpdateCombatBehavior::TickNode(UBehaviorTreeComponent& OwnerComp
 	if (!BlackboardComp || !AIController) { return; }
 
 	ANpc_AIController* FightingController = Cast<ANpc_AIController>(AIController);
-	if (!FightingController) { return; }
+	if (!FightingController || !FightingController->bCanChangeCombatBehavior) { return; }
 	
 	FightingController->SetCombatBehavior();
+	FightingController->bCanChangeCombatBehavior = false;
 }
 
