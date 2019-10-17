@@ -36,6 +36,8 @@ public:
 		class UAnimMontage* MontageRightHand;
 	UPROPERTY(EditAnyWhere, BlueprintReadWrite, Category = "HS Parameters")
 		class UAnimMontage* MontageLeftHand;
+	UPROPERTY(EditAnyWhere, BlueprintReadWrite, Category = "HS Parameters")
+		class UAnimMontage* MontageHit;
 
 	UPROPERTY(EditAnyWhere, Category = "HS Parameters")
 		FText ItemName;

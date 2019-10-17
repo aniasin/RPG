@@ -243,7 +243,7 @@ void ANpc_AIController::Defend()
 	AICharacter->AIPerformShieldUp();
 
 	DefendTimerDelegate.BindUFunction(this, FName("UpdateDefend"));
-	float CooldownTime = 1.0f;
+	float CooldownTime = .5f;
 	UWorld* World = GetWorld();
 	if (!World) { return; }
 	World->GetTimerManager().SetTimer(DefendTimerHandle, DefendTimerDelegate, CooldownTime, false);
