@@ -2,6 +2,7 @@
 
 
 #include "HSGA_Jump.h"
+#include "AbilitySystemComponent.h"
 #include "Characters/HSCharacterBase.h"
 #include "HS.h"
 
@@ -10,6 +11,7 @@ UHSGA_Jump::UHSGA_Jump()
 	AbilityInputID = EGDAbilityInputID::Jump;
 	InstancingPolicy = EGameplayAbilityInstancingPolicy::NonInstanced;
 	AbilityTags.AddTag(FGameplayTag::RequestGameplayTag(FName("Ability.Jump")));
+	ActivationBlockedTags.AddTag(FGameplayTag::RequestGameplayTag(FName("State.AimDownSights")));
 }
 
 void UHSGA_Jump::ActivateAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo, const FGameplayEventData* TriggerEventData)
@@ -20,7 +22,6 @@ void UHSGA_Jump::ActivateAbility(const FGameplayAbilitySpecHandle Handle, const 
 		{
 			EndAbility(CurrentSpecHandle, CurrentActorInfo, CurrentActivationInfo, true, true);
 		}
-
 		ACharacter* Character = CastChecked<ACharacter>(ActorInfo->AvatarActor.Get());
 		Character->Jump();
 	}
