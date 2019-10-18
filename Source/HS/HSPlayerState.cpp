@@ -305,7 +305,17 @@ void AHSPlayerState::StaminaChanged(const FOnAttributeChangeData& Data)
 	float Stamina = Data.NewValue;
 
 	// Update the HUD
-	// Handled in the UI itself using the AsyncTaskAttributeChanged node as an example how to do it in Blueprint
+	// Can be Handled in the UI itself using the AsyncTaskAttributeChanged node
+	// Update floating status bar
+	ACharacterV2* Hero = Cast<ACharacterV2>(GetPawn());
+	if (Hero)
+	{
+		UHSFloatingStatusBarWidget* HeroFloatingStatusBar = Hero->GetFloatingStatusBar();
+		if (HeroFloatingStatusBar)
+		{
+			HeroFloatingStatusBar->SetStaminaPercentage(Stamina /GetMaxStamina());
+		}
+	}
 }
 
 void AHSPlayerState::MaxStaminaChanged(const FOnAttributeChangeData& Data)

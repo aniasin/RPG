@@ -21,5 +21,8 @@ public:
 		void SetManaPercentage(float ManaPercentage);
 
 	UFUNCTION(BlueprintImplementableEvent, BlueprintCallable)
+		void SetStaminaPercentage(float StaminaPercentage);
+
+	UFUNCTION(BlueprintImplementableEvent, BlueprintCallable)
 		void SetCharacterName(const FText& NewName);
 };

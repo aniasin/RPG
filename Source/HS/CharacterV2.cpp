@@ -360,7 +360,6 @@ void ACharacterV2::SwitchCombat()
 	{
 		K2_AISwitchCombat();
 	}
-
 }
 
 void ACharacterV2::IsShieldUp_Implementation(bool bIsShieldUp)
@@ -542,6 +541,7 @@ void ACharacterV2::InitializeFloatingStatusBar()
 				// Setup the floating status bar
 				UIFloatingStatusBar->SetHealthPercentage(GetHealth() / GetMaxHealth());
 				UIFloatingStatusBar->SetManaPercentage(GetMana() / GetMaxMana());
+				UIFloatingStatusBar->SetStaminaPercentage(GetStamina() / GetMaxStamina());
 			}
 		}
 	}

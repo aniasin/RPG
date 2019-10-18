@@ -35,9 +35,9 @@ Rough system... lot to tweak.
 MoveForward to climb(see setup).
 Jump to climb ledges (while hanging).
 
-+ **Dash Ability** (To be Refactored)
++ **Dash Ability**
 
-Dash forward while in combat.
+Dash instead of Jump while in combat.
 
 ### ITEMS
 
