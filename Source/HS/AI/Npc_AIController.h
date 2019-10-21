@@ -37,7 +37,6 @@ class HS_API ANpc_AIController : public AAIController
 		void OnTargetPerceptionUpdate(AActor* Actor, FAIStimulus Stimulus);
 
 	// Combat
-	void ResetCanChangeCombatBehavior();
 	bool bAttacking = false;
 	bool bDefending = false;
 
@@ -50,8 +49,6 @@ public:
 
 	void AttackTarget();
 	void Defend();
-
-	bool bCanChangeCombatBehavior = true;
 
 	UFUNCTION()
 	void UpdateAttack();
