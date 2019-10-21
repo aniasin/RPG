@@ -55,6 +55,7 @@ void ANpc_AIController::OnPossess(APawn* InPawn)
 	AICharacter = Cast<ACharacterV2>(InPawn);
 	if (AICharacter && BehaviorTree)
 	{
+		AICharacter->GetCharacterMovement()->RotationRate.Yaw = 250.0f;
 		RunBehaviorTree(BehaviorTree);
 		BlackboardComponent = GetBlackboardComponent();
 
@@ -188,6 +189,7 @@ void ANpc_AIController::StartAlert()
 {
 	if (!AICharacter || !BlackboardComponent) { return; }
 	BlackboardComponent->SetValueAsBool("InAlert", true);
+	AICharacter->GetCharacterMovement()->RotationRate.Yaw = 540.0f;
 
 	UE_LOG(LogTemp, Warning, TEXT("%s: Alert..."), *AICharacter->CharacterName.ToString())
 }
@@ -199,6 +201,7 @@ void ANpc_AIController::EndAlert()
 	if (!World) { return; }
 	World->GetTimerManager().ClearTimer(SearchTimerHandle);
 	BlackboardComponent->SetValueAsBool("InAlert", false);
+	AICharacter->GetCharacterMovement()->RotationRate.Yaw = 250.0f;
 
 	UE_LOG(LogTemp, Warning, TEXT("%s: End Searching..."), *AICharacter->CharacterName.ToString())
 	AICharacter->SwitchCombat();
