@@ -32,9 +32,19 @@ public:
 		class USphereComponent* SphereComponent;
 	UPROPERTY(EditAnyWhere, BlueprintReadWrite, Category = "HS Parameters")
 		class UCapsuleComponent* CapsuleComponent;
-	UPROPERTY(EditAnyWhere, BlueprintReadWrite, Category = "HS Parameters")
+	UPROPERTY(EditAnyWhere, BlueprintReadWrite, Category = "HS Parameters|RightHand")
 		class UAnimMontage* MontageRightHand;
-	UPROPERTY(EditAnyWhere, BlueprintReadWrite, Category = "HS Parameters")
+	UPROPERTY(EditAnyWhere, BlueprintReadWrite, Category = "HS Parameters|RightHand")
+		class UAnimMontage* MontageRightHand01;
+	UPROPERTY(EditAnyWhere, BlueprintReadWrite, Category = "HS Parameters|RightHand")
+		class UAnimMontage* MontageRightHand02;
+	UPROPERTY(EditAnyWhere, BlueprintReadWrite, Category = "HS Parameters|RightHand")
+		class UAnimMontage* MontageRightHand03;
+	UPROPERTY(EditAnyWhere, BlueprintReadWrite, Category = "HS Parameters|RightHand")
+		class UAnimMontage* MontageRightHand04;
+	UPROPERTY(EditAnyWhere, BlueprintReadWrite, Category = "HS Parameters|RightHand")
+		class UAnimMontage* MontageRightHand05;
+	UPROPERTY(EditAnyWhere, BlueprintReadWrite, Category = "HS Parameters|LeftHand")
 		class UAnimMontage* MontageLeftHand;
 	UPROPERTY(EditAnyWhere, BlueprintReadWrite, Category = "HS Parameters")
 		class UAnimMontage* MontageHit;
