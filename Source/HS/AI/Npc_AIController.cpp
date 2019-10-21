@@ -218,7 +218,7 @@ void ANpc_AIController::AttackTarget()
  	AICharacter->AIPerformMeleeAttack();
 
  	AttackTimerDelegate.BindUFunction(this, FName("UpdateAttack"));
- 	float CooldownTime = 1.0f;
+ 	float CooldownTime = .75f;
 	UWorld* World = GetWorld();
 	if (!World) { return; }
 	World->GetTimerManager().SetTimer(AttackTimerHandle, AttackTimerDelegate, CooldownTime, false);
