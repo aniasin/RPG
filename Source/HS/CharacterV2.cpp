@@ -385,6 +385,11 @@ void ACharacterV2::AIPerformShieldUp()
 	K2_AIPerformShieldUp();
 }
 
+void ACharacterV2::AIPerformDash()
+{
+	K2_AIPerformDash();
+}
+
 void ACharacterV2::MultiCast_UpdateCharacterRotation_Implementation(FRotator Rotation)
 {
 	SetActorRotation(Rotation);

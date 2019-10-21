@@ -53,11 +53,14 @@ public:
 	UFUNCTION()
 	void UpdateAttack();
 	UFUNCTION()
-		void UpdateDefend();
+	void UpdateDefend();
+	UFUNCTION()
+	void ResetCombatBehavior();
+	bool bCanChangeCombatBehavior = true;
 
 	/* Handle to manage timer */
-	FTimerHandle ResetCanChangeCombatBehaviorHandle;
-	FTimerDelegate ResetCanChangeCombatBehaviorDelegate;
+	FTimerHandle ResetCombatTimerHandle;
+	FTimerDelegate ResetCombatTimerDelegate;
 	FTimerHandle AttackTimerHandle;
 	FTimerDelegate AttackTimerDelegate;
 	FTimerHandle SearchTimerHandle;

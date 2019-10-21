@@ -70,6 +70,7 @@ public:
 		void IsShieldUp(bool bIsShieldUp);
 		void AIPerformMeleeAttack();
 		void AIPerformShieldUp();
+		void AIPerformDash();
 
 		UFUNCTION(BlueprintImplementableEvent, Category = AICombat, meta = (DisplayName = "AISwitchCombat"))
 			void K2_AISwitchCombat();
@@ -77,6 +78,8 @@ public:
 			void K2_AIPerformMeleeAttack();
 		UFUNCTION(BlueprintImplementableEvent, Category = AICombat, meta = (DisplayName = "AIPerformShieldUp"))
 			void K2_AIPerformShieldUp();
+		UFUNCTION(BlueprintImplementableEvent, Category = AICombat, meta = (DisplayName = "AIPerformDash"))
+			void K2_AIPerformDash();
 
 	// Rotation Replication
 		UFUNCTION(Server, Unreliable, WithValidation)

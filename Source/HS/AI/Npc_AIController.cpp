@@ -180,19 +180,31 @@ void ANpc_AIController::EndAlert()
 void ANpc_AIController::SetCombatBehavior()
 {
 	//TODO Logic to set combat behavior which could be: Flee, Retreat, Aggressive, Defensive, Neutral...
-	if (!AICharacter) { return; }
+	if (!AICharacter || !bCanChangeCombatBehavior) { return; }
 	if (AICharacter->GetHealth() < CheckHealth)
 	{
 		BlackboardComponent->SetValueAsBool("Attack", false);
-		UE_LOG(LogTemp, Error, TEXT("%s Is Now Setting Combat Behavior: Defend!"), *AICharacter->CharacterName.ToString())
+		AICharacter->AIPerformDash();
+		UE_LOG(LogTemp, Warning, TEXT("%s Is Now Setting Combat Behavior: Defend!"), *AICharacter->CharacterName.ToString())
 	}
 	else
 	{
 		BlackboardComponent->SetValueAsBool("Attack", true);
-		UE_LOG(LogTemp, Error, TEXT("% Is Now Setting Combat Behavior: Attack!"), *AICharacter->CharacterName.ToString())
-
+		UE_LOG(LogTemp, Warning, TEXT("% Is Now Setting Combat Behavior: Attack!"), *AICharacter->CharacterName.ToString())
 	}
+
+	ResetCombatTimerDelegate.BindUFunction(this, FName("ResetCombatBehavior"));
+	float CooldownTime = .6f;
+	UWorld* World = GetWorld();
+	if (!World) { return; }
+	World->GetTimerManager().SetTimer(ResetCombatTimerHandle, ResetCombatTimerDelegate, CooldownTime, false);
+}
+
+void ANpc_AIController::ResetCombatBehavior()
+{
 	CheckHealth = AICharacter->GetHealth();
+	Defend();
+	bCanChangeCombatBehavior = true;
 }
 
 void ANpc_AIController::AttackTarget()
@@ -200,7 +212,6 @@ void ANpc_AIController::AttackTarget()
 	if (!AICharacter) { return; }
 	if (bAttacking)	{return;}
 	bAttacking = true;
-	UE_LOG(LogTemp, Warning, TEXT("%s is Performing Attack!"), *AICharacter->CharacterName.ToString())
 
  	AICharacter->AIPerformMeleeAttack();
 	SetCombatBehavior();
@@ -216,7 +227,6 @@ void ANpc_AIController::AttackTarget()
 void ANpc_AIController::UpdateAttack()
 {
 	if (!AICharacter) { return; }
-	UE_LOG(LogTemp, Warning, TEXT("%s: End Attack!"), *AICharacter->CharacterName.ToString())
 	bAttacking = false;
 
 	UWorld* World = GetWorld();
@@ -229,7 +239,6 @@ void ANpc_AIController::Defend()
 	if (!AICharacter) { return; }
 	if (bDefending)	{return;}
 	bDefending = true;
-	UE_LOG(LogTemp, Warning, TEXT("%s is Performing ShieldUp!"), *AICharacter->CharacterName.ToString())
 
 	AICharacter->AIPerformShieldUp();
 	SetCombatBehavior();
@@ -244,14 +253,12 @@ void ANpc_AIController::Defend()
 void ANpc_AIController::UpdateDefend()
 {
 	if (!AICharacter) { return; }
-	UE_LOG(LogTemp, Warning, TEXT("%s: End ShieldUp!"), *AICharacter->CharacterName.ToString())
 	bDefending = false;
 
 	UWorld* World = GetWorld();
 	if (!World) { return; }
 	World->GetTimerManager().ClearTimer(DefendTimerHandle);
 }
-
 
 FVector ANpc_AIController::GetRandomSearchLocation(FVector Origin, float Radius)
 {
