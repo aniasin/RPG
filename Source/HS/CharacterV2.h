@@ -99,9 +99,8 @@ public:
 		UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "HS Parameters|AI")
 			float SearchRadius = 2000.0f;
 
-		///////////////////////
-// Equipment
-
+	///////////////////////////
+	// Equipment
 		UPROPERTY(BlueprintReadWrite, EditAnywhere, Replicated, Category = "HS Parameters|Equipment")
 		class AWeapon* WeaponR;
 		UPROPERTY(BlueprintReadWrite, EditAnywhere, Replicated, Category = "HS Parameters|Equipment")
@@ -112,6 +111,11 @@ public:
 			class UAnimMontage* MontageLeftHand;
 		UPROPERTY(BlueprintReadWrite, VisibleAnywhere, Replicated, Category = "HS Parameters|Equipment")
 			class UAnimMontage* MontageRightHand;
+		UPROPERTY(BlueprintReadWrite, VisibleAnywhere, Replicated, Category = "HS Parameters|Equipment")
+			class UAnimMontage* MontagePickUp;
+
+		FTimerHandle PickupTimerHandle;
+		FTimerDelegate PickupTimerDelegate;
 
 		float GetWeaponSpeed();
 

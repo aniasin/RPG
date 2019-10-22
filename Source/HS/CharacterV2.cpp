@@ -29,6 +29,7 @@
 #include "GameFramework/PlayerInput.h"
 #include "Components/InputComponent.h"
 #include "HSCharacterMovementComponent.h"
+#include "Engine/World.h"
 
 
 ACharacterV2::ACharacterV2(const class FObjectInitializer& ObjectInitializer) : Super(ObjectInitializer)
@@ -196,13 +197,13 @@ void ACharacterV2::FinishDying()
 	Super::FinishDying();
 }
 
-
 //////////////////////////////////////
 // Item Interactions
 
 void ACharacterV2::Interaction()
 {
 	if (!CurrentFocusedItem) { return; }
+
 	if (Role < ROLE_Authority)
 	{
 		ServerTakeItem(CurrentFocusedItem);
@@ -235,6 +236,8 @@ void ACharacterV2::ServerTakeItem_Implementation(AActor* ItemToTake)
 	AWeapon* IsWeapon = Cast<AWeapon>(ItemToTake);
 	if (IsWeapon)
 	{
+		if (MontagePickUp) { PlayAnimMontage(MontagePickUp); }
+
 		FName Socket = IsWeapon->bIsLeftHand ? FName("WeaponBack2") : FName("WeaponBack");
 		IsWeapon->AttachToComponent(GetMesh(), FAttachmentTransformRules::SnapToTargetIncludingScale, Socket);
 		IsWeapon->OwnerActor = this;
@@ -263,6 +266,8 @@ void ACharacterV2::TakeItem_Implementation(AActor* ItemToTake)
 	AWeapon* IsWeapon = Cast<AWeapon>(ItemToTake);
 	if (IsWeapon)
 	{
+		if (MontagePickUp)	{ PlayAnimMontage(MontagePickUp); }
+
 		FName Socket = IsWeapon->bIsLeftHand ? FName("WeaponBack2") : FName("WeaponBack");
 		IsWeapon->AttachToComponent(GetMesh(), FAttachmentTransformRules::SnapToTargetIncludingScale, Socket);
 		IsWeapon->OwnerActor = this;
@@ -365,6 +370,14 @@ void ACharacterV2::SwitchCombat()
 	else
 	{
 		K2_AISwitchCombat();
+	}
+	if (WeaponL->MontageSwitch)	
+	{
+		PlayAnimMontage(WeaponL->MontageSwitch);
+	}
+	else if (WeaponR->MontageSwitch)
+	{
+		PlayAnimMontage(WeaponR->MontageSwitch);
 	}
 }
 
