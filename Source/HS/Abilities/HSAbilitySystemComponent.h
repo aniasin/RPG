@@ -22,6 +22,6 @@ public:
 
 	FReceivedDamageDelegate ReceivedDamage;
 
-	// Called from GDDamageExecCalculation. Broadcasts on ReceivedDamage whenever this ASC receives damage.
+	// Called from HSDamageExecCalculation. Broadcasts on ReceivedDamage whenever this ASC receives damage.
 	virtual void ReceiveDamage(UHSAbilitySystemComponent* SourceASC, float UnmitigatedDamage, float MitigatedDamage);
 };

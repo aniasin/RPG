@@ -217,7 +217,7 @@ void ANpc_AIController::AttackTarget()
 	SetCombatBehavior();
 
  	AttackTimerDelegate.BindUFunction(this, FName("UpdateAttack"));
- 	float CooldownTime = .75f;
+ 	float CooldownTime = AICharacter->GetWeaponSpeed();
 	UWorld* World = GetWorld();
 	if (!World) { return; }
 	World->GetTimerManager().SetTimer(AttackTimerHandle, AttackTimerDelegate, CooldownTime, false);

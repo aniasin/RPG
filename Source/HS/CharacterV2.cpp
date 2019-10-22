@@ -331,6 +331,12 @@ void ACharacterV2::DropItem_Implementation(AActor* ItemToDrop)
 	Weapon->Destroy();
 }
 
+float ACharacterV2::GetWeaponSpeed()
+{
+	if (!WeaponR) { return 0; }
+	return WeaponR->SpeedMultiplier;
+}
+
 /////////////////////////////////////
 // Combat
 void ACharacterV2::AttachDetachWeaponR_Implementation(bool bIsAttaching)

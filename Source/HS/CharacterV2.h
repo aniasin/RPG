@@ -113,6 +113,8 @@ public:
 		UPROPERTY(BlueprintReadWrite, VisibleAnywhere, Replicated, Category = "HS Parameters|Equipment")
 			class UAnimMontage* MontageRightHand;
 
+		float GetWeaponSpeed();
+
 
 protected:
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "HS Parameters|Camera")
