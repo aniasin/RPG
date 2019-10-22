@@ -205,6 +205,10 @@ void ANpc_AIController::ResetCombatBehavior()
 	CheckHealth = AICharacter->GetHealth();
 	Defend();
 	bCanChangeCombatBehavior = true;
+
+	UWorld* World = GetWorld();
+	if (!World) { return; }
+	World->GetTimerManager().ClearTimer(ResetCombatTimerHandle);
 }
 
 void ANpc_AIController::AttackTarget()

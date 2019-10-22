@@ -58,6 +58,11 @@ public:
 		UFUNCTION(BlueprintImplementableEvent)
 			void K2_ToggleWidget(bool bVisibility);
 
+		UFUNCTION(NetMulticast, Unreliable)
+			void MulticastPlayMontage(class UAnimMontage* Montage, float PlayRate, FName SectionName);
+		UFUNCTION(Server, Unreliable)
+			void ServerPlayMontage(class UAnimMontage* Montage, float PlayRate, FName SectionName);
+
 	/////////////////////////////////
 	// Combat
 		UFUNCTION(NetMulticast, Unreliable, BlueprintCallable)
@@ -114,8 +119,11 @@ public:
 		UPROPERTY(BlueprintReadWrite, VisibleAnywhere, Replicated, Category = "HS Parameters|Equipment")
 			class UAnimMontage* MontagePickUp;
 
-		FTimerHandle PickupTimerHandle;
-		FTimerDelegate PickupTimerDelegate;
+		UFUNCTION()
+		void TakeWeapon(AWeapon* Weapon);
+		
+		FTimerDelegate MontageLengthTimerDelegate;
+		FTimerHandle MontageLengthTimerHandle;
 
 		float GetWeaponSpeed();
 

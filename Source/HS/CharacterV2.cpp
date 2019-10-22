@@ -85,6 +85,7 @@ void ACharacterV2::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLife
 	DOREPLIFETIME(ACharacterV2, MontageRightHand);
 	DOREPLIFETIME(ACharacterV2, WeaponL);
 	DOREPLIFETIME(ACharacterV2, MontageLeftHand);
+	DOREPLIFETIME(ACharacterV2, MontagePickUp);
 }
 
 // Called to bind functionality to input
@@ -204,7 +205,7 @@ void ACharacterV2::Interaction()
 {
 	if (!CurrentFocusedItem) { return; }
 
-	if (Role < ROLE_Authority)
+	if (Role != ROLE_Authority)
 	{
 		ServerTakeItem(CurrentFocusedItem);
 	}
@@ -236,22 +237,15 @@ void ACharacterV2::ServerTakeItem_Implementation(AActor* ItemToTake)
 	AWeapon* IsWeapon = Cast<AWeapon>(ItemToTake);
 	if (IsWeapon)
 	{
-		if (MontagePickUp) { PlayAnimMontage(MontagePickUp); }
-
-		FName Socket = IsWeapon->bIsLeftHand ? FName("WeaponBack2") : FName("WeaponBack");
-		IsWeapon->AttachToComponent(GetMesh(), FAttachmentTransformRules::SnapToTargetIncludingScale, Socket);
-		IsWeapon->OwnerActor = this;
-		IsWeapon->ItemTaken();
-
-		if (IsWeapon->bIsLeftHand)	
+		if (MontagePickUp)
 		{
-			WeaponL = IsWeapon;
-			MontageLeftHand = WeaponL->MontageLeftHand;
-		} 
-		else	
-		{
-			WeaponR = IsWeapon;
-			MontageRightHand = WeaponR->MontageRightHand;
+			MulticastPlayMontage(MontagePickUp, 1, "0");
+			float MontageLength = MontagePickUp->GetSectionLength(0);
+			MontageLengthTimerDelegate.BindUFunction(this, FName("TakeWeapon"), IsWeapon);
+			UWorld* World = GetWorld();
+			if (!World) { return; }
+			World->GetTimerManager().SetTimer(MontageLengthTimerHandle, MontageLengthTimerDelegate, MontageLength, false);
+			AttributeSetBase->MoveSpeed = 0;
 		}
 	}
 }
@@ -266,22 +260,15 @@ void ACharacterV2::TakeItem_Implementation(AActor* ItemToTake)
 	AWeapon* IsWeapon = Cast<AWeapon>(ItemToTake);
 	if (IsWeapon)
 	{
-		if (MontagePickUp)	{ PlayAnimMontage(MontagePickUp); }
-
-		FName Socket = IsWeapon->bIsLeftHand ? FName("WeaponBack2") : FName("WeaponBack");
-		IsWeapon->AttachToComponent(GetMesh(), FAttachmentTransformRules::SnapToTargetIncludingScale, Socket);
-		IsWeapon->OwnerActor = this;
-		IsWeapon->ItemTaken();
-
-		if (IsWeapon->bIsLeftHand)
+		if (MontagePickUp)
 		{
-			WeaponL = IsWeapon;
-			MontageLeftHand = WeaponL->MontageLeftHand;
-		}
-		else
-		{
-			WeaponR = IsWeapon;
-			MontageRightHand = WeaponR->MontageRightHand;
+			ServerPlayMontage(MontagePickUp, 1, "0");
+			float MontageLength = MontagePickUp->GetSectionLength(0);
+			MontageLengthTimerDelegate.BindUFunction(this, FName("TakeWeapon"), IsWeapon);
+			UWorld* World = GetWorld();
+			if (!World) { return; }
+			World->GetTimerManager().SetTimer(MontageLengthTimerHandle, MontageLengthTimerDelegate, MontageLength, false);
+			AttributeSetBase->MoveSpeed = 0;
 		}
 	}
 }
@@ -342,6 +329,41 @@ float ACharacterV2::GetWeaponSpeed()
 	return WeaponR->SpeedMultiplier;
 }
 
+void ACharacterV2::TakeWeapon(AWeapon* Weapon)
+{
+	AttributeSetBase->MoveSpeed = 600;
+	FName Socket = Weapon->bIsLeftHand ? FName("WeaponBack2") : FName("WeaponBack");
+	Weapon->AttachToComponent(GetMesh(), FAttachmentTransformRules::SnapToTargetIncludingScale, Socket);
+	Weapon->OwnerActor = this;
+	Weapon->ItemTaken();
+
+	if (Weapon->bIsLeftHand)
+	{
+		WeaponL = Weapon;
+		MontageLeftHand = WeaponL->MontageLeftHand;
+	}
+	else
+	{
+		WeaponR = Weapon;
+		MontageRightHand = WeaponR->MontageRightHand;
+	}
+	UWorld* World = GetWorld();
+	if (!World) { return; }
+	World->GetTimerManager().ClearTimer(MontageLengthTimerHandle);
+}
+
+void ACharacterV2::MulticastPlayMontage_Implementation(class UAnimMontage* Montage, float PlayRate, FName SectionName)
+{
+	PlayAnimMontage(Montage, PlayRate, SectionName);
+}
+
+void ACharacterV2::ServerPlayMontage_Implementation(class UAnimMontage* Montage, float PlayRate, FName SectionName)
+{
+	MulticastPlayMontage(Montage, PlayRate, SectionName);
+}
+
+
+
 /////////////////////////////////////
 // Combat
 void ACharacterV2::AttachDetachWeaponR_Implementation(bool bIsAttaching)
@@ -371,13 +393,27 @@ void ACharacterV2::SwitchCombat()
 	{
 		K2_AISwitchCombat();
 	}
-	if (WeaponL->MontageSwitch)	
+	if (WeaponR)	
 	{
-		PlayAnimMontage(WeaponL->MontageSwitch);
+		if (Role == ROLE_Authority)
+		{
+			MulticastPlayMontage(WeaponR->MontageSwitch, 1, "0");
+		}
+		else
+		{
+			ServerPlayMontage(WeaponR->MontageSwitch, 1, "0");
+		}
 	}
-	else if (WeaponR->MontageSwitch)
+	else if (WeaponL)
 	{
-		PlayAnimMontage(WeaponR->MontageSwitch);
+		if (Role == ROLE_Authority)
+		{
+			MulticastPlayMontage(WeaponL->MontageSwitch, 1, "0");
+		}
+		else
+		{
+			ServerPlayMontage(WeaponL->MontageSwitch, 1, "0");
+		}
 	}
 }
 
