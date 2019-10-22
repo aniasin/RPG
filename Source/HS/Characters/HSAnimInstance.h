@@ -18,4 +18,7 @@ public:
 	APawn* OwningPawn;
 	virtual void NativeInitializeAnimation() override;
 	virtual void NativeUpdateAnimation(float DeltaTimeX) override;
+
+	UFUNCTION(BlueprintCallable, Category = "AnimNotify")
+		void Notify_SwitchWeapon();
 };

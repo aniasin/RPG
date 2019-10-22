@@ -22,3 +22,8 @@ void UHSAnimInstance::NativeUpdateAnimation(float DeltaTimeX)
 	//Always Check Pointers
 	if (!OwningPawn) { return;}
 }
+
+void UHSAnimInstance::Notify_SwitchWeapon()
+{
+	UE_LOG(LogTemp, Warning, TEXT("NOTIFY SWITCHWEAPON!"))
+}
