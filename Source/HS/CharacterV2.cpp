@@ -30,6 +30,7 @@
 #include "Components/InputComponent.h"
 #include "HSCharacterMovementComponent.h"
 #include "Engine/World.h"
+#include "Animation/AnimInstance.h"
 
 
 ACharacterV2::ACharacterV2(const class FObjectInitializer& ObjectInitializer) : Super(ObjectInitializer)
@@ -325,7 +326,7 @@ void ACharacterV2::DropItem_Implementation(AActor* ItemToDrop)
 
 float ACharacterV2::GetWeaponSpeed()
 {
-	if (!WeaponR) { return 0; }
+	if (!WeaponR) { return 0.75f; }
 	return WeaponR->SpeedMultiplier;
 }
 
@@ -369,6 +370,11 @@ void ACharacterV2::ServerPlayMontage_Implementation(class UAnimMontage* Montage,
 void ACharacterV2::AttachDetachWeaponR_Implementation(bool bIsAttaching)
 {
 	if (!WeaponR) { return; }
+	UAnimInstance* AnimIntance = GetMesh()->GetAnimInstance();
+	if (AnimIntance)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("Found AnimIntance!"))
+	}
 	FName Socket = bIsAttaching ? FName("Weapon_r") : FName("WeaponBack");
 	WeaponR->AttachToComponent(GetMesh(), FAttachmentTransformRules::SnapToTargetIncludingScale, Socket);
 }
