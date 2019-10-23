@@ -1,6 +1,7 @@
 # RPG
 UE4.23 Powered.
 Using [tranek's GASDocumentation](https://github.com/tranek/GASDocumentation) wonderfull sample.
+Last Packaged Build: [10-18-2019](https://drive.google.com/open?id=1wcwdqTeEzCA4OQhCb-Ur9XYWQhIihlfW)
 
 ### SetUp
 

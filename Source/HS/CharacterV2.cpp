@@ -86,7 +86,6 @@ void ACharacterV2::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLife
 	DOREPLIFETIME(ACharacterV2, MontageRightHand);
 	DOREPLIFETIME(ACharacterV2, WeaponL);
 	DOREPLIFETIME(ACharacterV2, MontageLeftHand);
-	DOREPLIFETIME(ACharacterV2, MontagePickUp);
 }
 
 // Called to bind functionality to input
@@ -370,11 +369,6 @@ void ACharacterV2::ServerPlayMontage_Implementation(class UAnimMontage* Montage,
 void ACharacterV2::AttachDetachWeaponR_Implementation(bool bIsAttaching)
 {
 	if (!WeaponR) { return; }
-	UAnimInstance* AnimIntance = GetMesh()->GetAnimInstance();
-	if (AnimIntance)
-	{
-		UE_LOG(LogTemp, Warning, TEXT("Found AnimIntance!"))
-	}
 	FName Socket = bIsAttaching ? FName("Weapon_r") : FName("WeaponBack");
 	WeaponR->AttachToComponent(GetMesh(), FAttachmentTransformRules::SnapToTargetIncludingScale, Socket);
 }
@@ -398,28 +392,6 @@ void ACharacterV2::SwitchCombat()
 	else
 	{
 		K2_AISwitchCombat();
-	}
-	if (WeaponR)	
-	{
-		if (Role == ROLE_Authority)
-		{
-			MulticastPlayMontage(WeaponR->MontageSwitch, 1, "0");
-		}
-		else
-		{
-			ServerPlayMontage(WeaponR->MontageSwitch, 1, "0");
-		}
-	}
-	else if (WeaponL)
-	{
-		if (Role == ROLE_Authority)
-		{
-			MulticastPlayMontage(WeaponL->MontageSwitch, 1, "0");
-		}
-		else
-		{
-			ServerPlayMontage(WeaponL->MontageSwitch, 1, "0");
-		}
 	}
 }
 
