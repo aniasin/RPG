@@ -1,10 +1,12 @@
 # RPG
 UE4.23 Powered.
 Using [tranek's GASDocumentation](https://github.com/tranek/GASDocumentation) wonderfull sample.
+
+Using [Advanced Cel Shader Lite](https://www.unrealengine.com/marketplace/en-US/slug/ce2cda95e5f54180b2cf7df24566bdf7)
+
 Last Packaged Build: [10-18-2019](https://drive.google.com/open?id=1wcwdqTeEzCA4OQhCb-Ur9XYWQhIihlfW)
 
 ### SetUp
-
 
 ### Controls
 + **Movement:** Keyboard + Mouse ZQSD or/and Gamepad(both configurable in EscapeMenu)
