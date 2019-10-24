@@ -58,17 +58,17 @@ public:
 		UFUNCTION(BlueprintImplementableEvent)
 			void K2_ToggleWidget(bool bVisibility);
 
-		UFUNCTION(NetMulticast, Unreliable)
+		UFUNCTION(NetMulticast, Unreliable, BlueprintCallable)
 			void MulticastPlayMontage(class UAnimMontage* Montage, float PlayRate, FName SectionName);
-		UFUNCTION(Server, Unreliable)
+		UFUNCTION(Server, Unreliable, BlueprintCallable)
 			void ServerPlayMontage(class UAnimMontage* Montage, float PlayRate, FName SectionName);
 
 	/////////////////////////////////
 	// Combat
-		UFUNCTION(NetMulticast, Unreliable, BlueprintCallable)
+		UFUNCTION(NetMulticast, Reliable, BlueprintCallable)
 		void AttachDetachWeaponR(bool bIsAttaching);
-		UFUNCTION(NetMulticast, Unreliable, BlueprintCallable)
-			void AttachDetachWeaponL(bool bIsAttaching);
+		UFUNCTION(NetMulticast, Reliable, BlueprintCallable)
+		void AttachDetachWeaponL(bool bIsAttaching);
 
 		void SwitchCombat();
 		UFUNCTION(NetMulticast, Unreliable, BlueprintCallable)

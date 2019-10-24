@@ -192,9 +192,11 @@ void ANpc_AIController::SetCombatBehavior()
 		BlackboardComponent->SetValueAsBool("Attack", true);
 		UE_LOG(LogTemp, Warning, TEXT("% Is Now Setting Combat Behavior: Attack!"), *AICharacter->CharacterName.ToString())
 	}
+	CheckHealth = AICharacter->GetHealth();
+	bCanChangeCombatBehavior = false;
 
 	ResetCombatTimerDelegate.BindUFunction(this, FName("ResetCombatBehavior"));
-	float CooldownTime = .6f;
+	float CooldownTime = 3.0f;
 	UWorld* World = GetWorld();
 	if (!World) { return; }
 	World->GetTimerManager().SetTimer(ResetCombatTimerHandle, ResetCombatTimerDelegate, CooldownTime, false);
@@ -202,8 +204,6 @@ void ANpc_AIController::SetCombatBehavior()
 
 void ANpc_AIController::ResetCombatBehavior()
 {
-	CheckHealth = AICharacter->GetHealth();
-	Defend();
 	bCanChangeCombatBehavior = true;
 
 	UWorld* World = GetWorld();
@@ -218,7 +218,6 @@ void ANpc_AIController::AttackTarget()
 	bAttacking = true;
 
  	AICharacter->AIPerformMeleeAttack();
-	SetCombatBehavior();
 
  	AttackTimerDelegate.BindUFunction(this, FName("UpdateAttack"));
  	float CooldownTime = AICharacter->GetWeaponSpeed();
@@ -232,6 +231,7 @@ void ANpc_AIController::UpdateAttack()
 {
 	if (!AICharacter) { return; }
 	bAttacking = false;
+	SetCombatBehavior();
 
 	UWorld* World = GetWorld();
 	if (!World) { return; }
@@ -245,10 +245,9 @@ void ANpc_AIController::Defend()
 	bDefending = true;
 
 	AICharacter->AIPerformShieldUp();
-	SetCombatBehavior();
 
 	DefendTimerDelegate.BindUFunction(this, FName("UpdateDefend"));
-	float CooldownTime = .75f;
+	float CooldownTime = AICharacter->GetWeaponSpeed();
 	UWorld* World = GetWorld();
 	if (!World) { return; }
 	World->GetTimerManager().SetTimer(DefendTimerHandle, DefendTimerDelegate, CooldownTime, false);
@@ -258,6 +257,7 @@ void ANpc_AIController::UpdateDefend()
 {
 	if (!AICharacter) { return; }
 	bDefending = false;
+	SetCombatBehavior();
 
 	UWorld* World = GetWorld();
 	if (!World) { return; }
