@@ -66,6 +66,16 @@ void ANpc_AIController::OnPossess(APawn* InPawn)
 		else
 		{
 			BlackboardComponent->ClearValue("IsCivilian");
+			if (AICharacter->bIsTwoHander)
+			{
+				// if AI is Two Hander, fill his current left weapon, so he doesn't search for it
+				BlackboardComponent->SetValueAsObject("CurrentWeaponL", this);
+			}
+			if (AICharacter->bIsArcher)
+			{
+				// if AI is Two Hander, fill his current right weapon, so he doesn't search for it
+				BlackboardComponent->SetValueAsObject("CurrentWeaponR", this);
+			}
 		}
 		CheckHealth = AICharacter->GetHealth();
 	}
@@ -213,11 +223,16 @@ void ANpc_AIController::ResetCombatBehavior()
 
 void ANpc_AIController::AttackTarget()
 {
-	if (!AICharacter) { return; }
-	if (bAttacking)	{return;}
+	if (!AICharacter || bAttacking) { return; }
 	bAttacking = true;
-
- 	AICharacter->AIPerformMeleeAttack();
+	if (AICharacter->bIsArcher)
+	{
+		AICharacter->AIPerformShieldUp();
+	}
+	else
+	{
+		AICharacter->AIPerformMeleeAttack();
+	}
 
  	AttackTimerDelegate.BindUFunction(this, FName("UpdateAttack"));
  	float CooldownTime = AICharacter->GetWeaponSpeed();
@@ -243,8 +258,14 @@ void ANpc_AIController::Defend()
 	if (!AICharacter) { return; }
 	if (bDefending)	{return;}
 	bDefending = true;
-
-	AICharacter->AIPerformShieldUp();
+	if (AICharacter->bIsArcher)
+	{
+		AICharacter->AIPerformDash();
+	}
+	else
+	{
+		AICharacter->AIPerformShieldUp();
+	}
 
 	DefendTimerDelegate.BindUFunction(this, FName("UpdateDefend"));
 	float CooldownTime = AICharacter->GetWeaponSpeed();

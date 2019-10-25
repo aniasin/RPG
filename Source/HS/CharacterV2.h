@@ -98,6 +98,10 @@ public:
 	// AI
 		UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "HS Parameters|AI")
 			bool bIsCivilian;
+		UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "HS Parameters|AI")
+			bool bIsArcher;
+		UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "HS Parameters|AI")
+			bool bIsTwoHander;
 	// How long and how far AI will search for player when sight is lost
 		UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "HS Parameters|AI")
 			float SearchTime;
