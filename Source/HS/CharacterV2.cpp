@@ -393,15 +393,6 @@ void ACharacterV2::SwitchCombat()
 	{
 		K2_AISwitchCombat();
 	}
-	if (!WeaponR) { return; }
-	if (bIsInCombat)
-	{
-		WeaponR->CapsuleComponent->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
-	}
-	else
-	{
-		WeaponR->CapsuleComponent->SetCollisionEnabled(ECollisionEnabled::NoCollision);
-	}
 }
 
 void ACharacterV2::IsShieldUp_Implementation(bool bIsShieldUp)
