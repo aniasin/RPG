@@ -5,7 +5,7 @@ Using [tranek's GASDocumentation](https://github.com/tranek/GASDocumentation) wo
 
 Using [Advanced Cel Shader Lite](https://www.unrealengine.com/marketplace/en-US/slug/ce2cda95e5f54180b2cf7df24566bdf7)
 
-Last Packaged Build: [25-18-2019](https://drive.google.com/file/d/1ohicoPSTgnDjxo98mpEnIjdweJyF92CO/view?usp=sharing)
+Last Packaged Build: [10-25-2019](https://drive.google.com/file/d/1ohicoPSTgnDjxo98mpEnIjdweJyF92CO/view?usp=sharing)
 
 ### SetUp
 
