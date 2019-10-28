@@ -332,6 +332,18 @@ void AHSCharacterBase::AddStartupEffects()
 	AbilitySystemComponent->StartupEffectsApplied = true;
 }
 
+void AHSCharacterBase::ToggleMovement(bool bCanMove)
+{
+	if (!bCanMove)
+	{
+		GetCharacterMovement()->DisableMovement();
+	}
+	else
+	{
+		GetCharacterMovement()->SetMovementMode(MOVE_Walking);
+	}
+}
+
 void AHSCharacterBase::SetHealth(float Health)
 {
 	if (AttributeSetBase.IsValid())

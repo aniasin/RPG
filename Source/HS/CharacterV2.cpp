@@ -245,8 +245,14 @@ void ACharacterV2::ServerTakeItem_Implementation(AActor* ItemToTake)
 			UWorld* World = GetWorld();
 			if (!World) { return; }
 			World->GetTimerManager().SetTimer(MontageLengthTimerHandle, MontageLengthTimerDelegate, MontageLength, false);
-			AttributeSetBase->MoveSpeed = 0;
+			ToggleMovement(false);
 		}
+	}
+	ACharacterV2* IsCharacter = Cast<ACharacterV2>(ItemToTake);
+	if (IsCharacter)
+	{
+		IsCharacter->BeginDialogue();
+		IsCharacter->ToggleMovement(false);
 	}
 }
 
@@ -260,7 +266,7 @@ void ACharacterV2::TakeItem_Implementation(AActor* ItemToTake)
 	AWeapon* IsWeapon = Cast<AWeapon>(ItemToTake);
 	if (IsWeapon)
 	{
-		if (MontagePickUp)
+		if (MontagePickUp && AttributeSetBase != nullptr)
 		{
 			ServerPlayMontage(MontagePickUp, 1, "0");
 			float MontageLength = MontagePickUp->GetSectionLength(0);
@@ -268,8 +274,14 @@ void ACharacterV2::TakeItem_Implementation(AActor* ItemToTake)
 			UWorld* World = GetWorld();
 			if (!World) { return; }
 			World->GetTimerManager().SetTimer(MontageLengthTimerHandle, MontageLengthTimerDelegate, MontageLength, false);
-			AttributeSetBase->MoveSpeed = 0;
+			ToggleMovement(false);
 		}
+	}
+	ACharacterV2* IsCharacter = Cast<ACharacterV2>(ItemToTake);
+	if (IsCharacter)
+	{
+		IsCharacter->BeginDialogue();
+		IsCharacter->ToggleMovement(false);
 	}
 }
 
@@ -350,6 +362,7 @@ void ACharacterV2::TakeWeapon(AWeapon* Weapon)
 	UWorld* World = GetWorld();
 	if (!World) { return; }
 	World->GetTimerManager().ClearTimer(MontageLengthTimerHandle);
+	ToggleMovement(true);
 }
 
 void ACharacterV2::MulticastPlayMontage_Implementation(class UAnimMontage* Montage, float PlayRate, FName SectionName)

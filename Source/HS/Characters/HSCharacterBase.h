@@ -53,6 +53,9 @@ public:
 	virtual void PlayHitReact_Implementation(FGameplayTag HitDirection, AActor* DamageCauser);
 	virtual bool PlayHitReact_Validate(FGameplayTag HitDirection, AActor* DamageCauser);
 
+	// set movement on/off
+	virtual void ToggleMovement(bool bCanMove);
+
 /**
 * Getters for attributes from GDAttributeSetBase
 **/
@@ -135,7 +138,6 @@ public:
 		virtual void InitializeAttributes();
 
 		virtual void AddStartupEffects();
-
 
 		/**
 		* Setters for Attributes. Only use these in special cases like Respawning, otherwise use a GE to change Attributes.

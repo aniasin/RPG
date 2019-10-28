@@ -40,6 +40,13 @@ public:
 	virtual void FinishDying() override;
 
 	////////////////////////////
+	// Dialogue
+	UFUNCTION(BlueprintImplementableEvent, Category = "Dialogue")
+		void BeginDialogue();
+	UFUNCTION(BlueprintImplementableEvent, Category = "Dialogue")
+		void EndDialogue();
+
+	////////////////////////////
 	// Item interaction
 		UFUNCTION(NetMulticast, Unreliable)
 			void TakeItem(AActor* ItemToTake);
