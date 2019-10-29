@@ -24,7 +24,7 @@ EBTNodeResult::Type UBTTaskNode_TakeObject::ExecuteTask(UBehaviorTreeComponent& 
 
 	// Call Controlled Character to take object
 	ACharacterV2* NPC = Cast<ACharacterV2>(ControlledCharacter);
- 	NPC->TakeItem(OtherActor);
+ 	NPC->InteractionValidate(OtherActor);
 
 	//clear EnvQuery targetObject so it can run again
 	BlackboardComponent->ClearValue(ObjectToTake.SelectedKeyName);

@@ -49,9 +49,9 @@ public:
 	////////////////////////////
 	// Item interaction
 		UFUNCTION(NetMulticast, Unreliable)
-			void TakeItem(AActor* ItemToTake);
+			void InteractionValidate(AActor* ActorToInteract);
 		UFUNCTION(Server, Unreliable, WithValidation)
-			void ServerTakeItem(AActor* ItemToTake);
+			void ServerInteractionValidate(AActor* ActorToInteract);
 		UFUNCTION(NetMulticast, Unreliable)
 			void DropItem(AActor* ItemToDrop);
 		UFUNCTION(Server, Unreliable, WithValidation)

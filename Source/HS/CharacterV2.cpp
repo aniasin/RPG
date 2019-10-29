@@ -207,11 +207,11 @@ void ACharacterV2::Interaction()
 
 	if (Role != ROLE_Authority)
 	{
-		ServerTakeItem(CurrentFocusedItem);
+		ServerInteractionValidate(CurrentFocusedItem);
 	}
 	else
 	{
-		TakeItem(CurrentFocusedItem);
+		InteractionValidate(CurrentFocusedItem);
 	}
 }
 
@@ -232,9 +232,9 @@ void ACharacterV2::ToggleInteractionWidget_Implementation(AActor* Item)
 
 }
 
-void ACharacterV2::ServerTakeItem_Implementation(AActor* ItemToTake)
+void ACharacterV2::ServerInteractionValidate_Implementation(AActor* ActorToInteract)
 {
-	AWeapon* IsWeapon = Cast<AWeapon>(ItemToTake);
+	AWeapon* IsWeapon = Cast<AWeapon>(ActorToInteract);
 	if (IsWeapon)
 	{
 		if (MontagePickUp)
@@ -248,7 +248,7 @@ void ACharacterV2::ServerTakeItem_Implementation(AActor* ItemToTake)
 			ToggleMovement(false);
 		}
 	}
-	ACharacterV2* IsCharacter = Cast<ACharacterV2>(ItemToTake);
+	ACharacterV2* IsCharacter = Cast<ACharacterV2>(ActorToInteract);
 	if (IsCharacter)
 	{
 		IsCharacter->BeginDialogue();
@@ -256,14 +256,14 @@ void ACharacterV2::ServerTakeItem_Implementation(AActor* ItemToTake)
 	}
 }
 
-bool ACharacterV2::ServerTakeItem_Validate(AActor* ItemToTake)
+bool ACharacterV2::ServerInteractionValidate_Validate(AActor* ActorToInteract)
 {
 	return true;
 }
 
-void ACharacterV2::TakeItem_Implementation(AActor* ItemToTake)
+void ACharacterV2::InteractionValidate_Implementation(AActor* ActorToInteract)
 {
-	AWeapon* IsWeapon = Cast<AWeapon>(ItemToTake);
+	AWeapon* IsWeapon = Cast<AWeapon>(ActorToInteract);
 	if (IsWeapon)
 	{
 		if (MontagePickUp && AttributeSetBase != nullptr)
@@ -277,7 +277,7 @@ void ACharacterV2::TakeItem_Implementation(AActor* ItemToTake)
 			ToggleMovement(false);
 		}
 	}
-	ACharacterV2* IsCharacter = Cast<ACharacterV2>(ItemToTake);
+	ACharacterV2* IsCharacter = Cast<ACharacterV2>(ActorToInteract);
 	if (IsCharacter)
 	{
 		IsCharacter->BeginDialogue();
