@@ -46,6 +46,8 @@ void UDialogueComponent::OnOverlapDialogueBegin_Implementation(UPrimitiveCompone
 {
 	if (OwnerActor->HasAuthority())
 	{
+		if (OwnerActor->GetCurrentFocusedActor() != nullptr) { return; }
+		OwnerActor->SetCurrentFocusedActor(OtherActor);
 		ACharacterV2* OverlapingCharacter = Cast<ACharacterV2>(OtherActor);
 		if (OverlapingCharacter == GetOwner() || !OverlapingCharacter || !OwnerActor) { return; }
 		UE_LOG(LogTemp, Warning, TEXT("DIALOGUE: Overlap Begin! : %s"), *OtherActor->GetName())
@@ -58,12 +60,14 @@ void UDialogueComponent::OnOverlapDialogueEnd_Implementation(UPrimitiveComponent
 {
 	if (OwnerActor->HasAuthority())
 	{
+		if (OwnerActor->GetCurrentFocusedActor() != OtherActor) { return; }
 		ACharacterV2* OverlapingCharacter = Cast<ACharacterV2>(OtherActor);
 		if (OverlapingCharacter == GetOwner() || !OverlapingCharacter || !OwnerActor) { return; }
 		UE_LOG(LogTemp, Warning, TEXT("DIALOGUE: Overlap End! : %s"), *OtherActor->GetName())
 
 		OverlapingCharacter->ToggleInteractionWidget(OwnerActor);
 		OwnerActor->EndDialogue();
+		OwnerActor->SetCurrentFocusedActor(nullptr);
 		OwnerActor->ToggleMovement(true);
 	}
 

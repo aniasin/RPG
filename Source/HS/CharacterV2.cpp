@@ -203,15 +203,15 @@ void ACharacterV2::FinishDying()
 
 void ACharacterV2::Interaction()
 {
-	if (!CurrentFocusedItem) { return; }
+	if (!CurrentFocusedActor) { return; }
 
 	if (Role != ROLE_Authority)
 	{
-		ServerInteractionValidate(CurrentFocusedItem);
+		ServerInteractionValidate(CurrentFocusedActor);
 	}
 	else
 	{
-		InteractionValidate(CurrentFocusedItem);
+		InteractionValidate(CurrentFocusedActor);
 	}
 }
 
@@ -222,12 +222,12 @@ void ACharacterV2::ToggleInteractionWidget_Implementation(AActor* Item)
 	if (InteractionWidget->GetVisibility() == ESlateVisibility::Visible)
 	{
 		K2_ToggleWidget(false);
-		CurrentFocusedItem = NULL;
+		CurrentFocusedActor = NULL;
 	}
 	else
 	{
 		K2_ToggleWidget(true);
-		CurrentFocusedItem = Item;
+		CurrentFocusedActor = Item;
 	}
 
 }
@@ -251,7 +251,7 @@ void ACharacterV2::ServerInteractionValidate_Implementation(AActor* ActorToInter
 	ACharacterV2* IsCharacter = Cast<ACharacterV2>(ActorToInteract);
 	if (IsCharacter)
 	{
-		IsCharacter->BeginDialogue();
+		IsCharacter->BeginDialogue(CurrentFocusedActor);
 		IsCharacter->ToggleMovement(false);
 	}
 }
@@ -280,9 +280,31 @@ void ACharacterV2::InteractionValidate_Implementation(AActor* ActorToInteract)
 	ACharacterV2* IsCharacter = Cast<ACharacterV2>(ActorToInteract);
 	if (IsCharacter)
 	{
-		IsCharacter->BeginDialogue();
+		IsCharacter->BeginDialogue(CurrentFocusedActor);
 		IsCharacter->ToggleMovement(false);
 	}
+}
+
+void ACharacterV2::BeginDialogue_Implementation(AActor* PlayerID)
+{
+	SetCurrentFocusedActor(PlayerID);
+}
+
+
+
+void ACharacterV2::EndDialogue_Implementation()
+{
+	SetCurrentFocusedActor(nullptr);
+}
+
+AActor* ACharacterV2::GetCurrentFocusedActor()
+{
+	return CurrentFocusedActor;
+}
+
+void ACharacterV2::SetCurrentFocusedActor(AActor* ActorToFocus)
+{
+	CurrentFocusedActor = ActorToFocus;
 }
 
 void ACharacterV2::DropEquipment()

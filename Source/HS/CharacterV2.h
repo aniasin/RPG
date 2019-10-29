@@ -41,10 +41,14 @@ public:
 
 	////////////////////////////
 	// Dialogue
-	UFUNCTION(BlueprintImplementableEvent, Category = "Dialogue")
-		void BeginDialogue();
-	UFUNCTION(BlueprintImplementableEvent, Category = "Dialogue")
+	UFUNCTION(BlueprintNativeEvent, Category = "Dialogue")
+		void BeginDialogue(AActor* PlayerID);
+	UFUNCTION(BlueprintNativeEvent, Category = "Dialogue")
 		void EndDialogue();
+
+	AActor* GetCurrentFocusedActor();
+	void SetCurrentFocusedActor(AActor* ActorToFocus);
+
 
 	////////////////////////////
 	// Item interaction
@@ -203,9 +207,10 @@ private:
 	//////////////////////
 	// AI
 	bool bCanSee;
+	bool bIsSpeaking;
 
 	// Interaction
-	AActor* CurrentFocusedItem;
+	AActor* CurrentFocusedActor;
 
 	// Combat
 	bool bIsInCombat = false;
