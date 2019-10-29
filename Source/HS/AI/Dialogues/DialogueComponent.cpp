@@ -25,12 +25,13 @@ void UDialogueComponent::BeginPlay()
 {
 	Super::BeginPlay();
 
+	OwnerActor = Cast<ACharacterV2>(GetOwner());
+	if (!OwnerActor->bIsCivilian) { return; } // For now, only civilians can speak
+
 	DialogueTrigger->AttachToComponent(GetOwner()->GetRootComponent(), FAttachmentTransformRules::KeepRelativeTransform);
 
 	DialogueTrigger->OnComponentBeginOverlap.AddDynamic(this, &UDialogueComponent::OnOverlapDialogueBegin);
 	DialogueTrigger->OnComponentEndOverlap.AddDynamic(this, &UDialogueComponent::OnOverlapDialogueEnd);
-
-	OwnerActor = Cast<ACharacterV2>(GetOwner());
 }
 
 
@@ -47,9 +48,10 @@ void UDialogueComponent::OnOverlapDialogueBegin_Implementation(UPrimitiveCompone
 	if (OwnerActor->HasAuthority())
 	{
 		if (OwnerActor->GetCurrentFocusedActor() != nullptr) { return; }
-		OwnerActor->SetCurrentFocusedActor(OtherActor);
+
 		ACharacterV2* OverlapingCharacter = Cast<ACharacterV2>(OtherActor);
 		if (OverlapingCharacter == GetOwner() || !OverlapingCharacter || !OwnerActor) { return; }
+		OwnerActor->SetCurrentFocusedActor(OtherActor);
 		UE_LOG(LogTemp, Warning, TEXT("DIALOGUE: Overlap Begin! : %s"), *OtherActor->GetName())
 		
 		OverlapingCharacter->ToggleInteractionWidget(OwnerActor);

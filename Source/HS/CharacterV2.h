@@ -204,6 +204,7 @@ protected:
 	virtual void OnRep_PlayerState() override;
 
 private:
+	class UInputComponent* InputComponent;
 	//////////////////////
 	// AI
 	bool bCanSee;

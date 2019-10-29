@@ -108,9 +108,7 @@ void ACharacterV2::SetupPlayerInputComponent(UInputComponent* PlayerInputCompone
 	PlayerInputComponent->BindAction("Drop", IE_Pressed, this, &ACharacterV2::DropEquipment);
 	PlayerInputComponent->BindAction("SwitchCombat", IE_Pressed, this, &ACharacterV2::SwitchCombat);
 
-	// Bind to AbilitySystemComponent
-	AbilitySystemComponent->BindAbilityActivationToInputComponent(PlayerInputComponent, FGameplayAbilityInputBinds(FString("ConfirmTarget"),
-	FString("CancelTarget"), FString("EGDAbilityInputID"), static_cast<int32>(EGDAbilityInputID::Confirm), static_cast<int32>(EGDAbilityInputID::Cancel)));
+	InputComponent = PlayerInputComponent;
 }
 
 //Server Only
@@ -497,6 +495,10 @@ void ACharacterV2::BeginPlay()
 	AHSPlayerController* PC = Cast<AHSPlayerController>(GetController());
 	if (PC)
 	{
+		// Bind to AbilitySystemComponent
+		if (!InputComponent) { return; }
+		AbilitySystemComponent->BindAbilityActivationToInputComponent(InputComponent, FGameplayAbilityInputBinds(FString("ConfirmTarget"),
+			FString("CancelTarget"), FString("EGDAbilityInputID"), static_cast<int32>(EGDAbilityInputID::Confirm), static_cast<int32>(EGDAbilityInputID::Cancel)));
 		InitializeFloatingStatusBar();
 	}
 
