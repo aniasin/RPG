@@ -46,6 +46,7 @@ public:
 	UFUNCTION(BlueprintNativeEvent, Category = "Dialogue")
 		void EndDialogue();
 
+	UFUNCTION(BlueprintCallable, Category = "Interaction")
 	AActor* GetCurrentFocusedActor();
 	void SetCurrentFocusedActor(AActor* ActorToFocus);
 

@@ -72,5 +72,4 @@ void UDialogueComponent::OnOverlapDialogueEnd_Implementation(UPrimitiveComponent
 		OwnerActor->SetCurrentFocusedActor(nullptr);
 		OwnerActor->ToggleMovement(true);
 	}
-
 }

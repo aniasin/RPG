@@ -249,8 +249,8 @@ void ACharacterV2::ServerInteractionValidate_Implementation(AActor* ActorToInter
 	ACharacterV2* IsCharacter = Cast<ACharacterV2>(ActorToInteract);
 	if (IsCharacter)
 	{
-		IsCharacter->BeginDialogue(CurrentFocusedActor);
 		IsCharacter->ToggleMovement(false);
+		IsCharacter->BeginDialogue(CurrentFocusedActor);
 	}
 }
 
@@ -278,8 +278,8 @@ void ACharacterV2::InteractionValidate_Implementation(AActor* ActorToInteract)
 	ACharacterV2* IsCharacter = Cast<ACharacterV2>(ActorToInteract);
 	if (IsCharacter)
 	{
-		IsCharacter->BeginDialogue(CurrentFocusedActor);
 		IsCharacter->ToggleMovement(false);
+		IsCharacter->BeginDialogue(CurrentFocusedActor);
 	}
 }
 
