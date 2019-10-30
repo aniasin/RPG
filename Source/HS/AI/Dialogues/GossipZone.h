@@ -18,8 +18,6 @@ public:
 
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Dialogues")
 		class USphereComponent* SphereComponent;
-	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Dialogues")
-		TArray<struct FDialogues_Struct>Dialogues;
 
 	UFUNCTION(BlueprintNativeEvent, Category = Collision)
 		void OnOverlapDialogueBegin(UPrimitiveComponent* Comp, AActor* OtherActor, UPrimitiveComponent* OtherComp,

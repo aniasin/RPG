@@ -17,6 +17,12 @@ struct FDialogues_Struct
 		int32 Priority;
 		UPROPERTY(BlueprintReadWrite)
 		FString Sentence;
+		UPROPERTY(BlueprintReadWrite)
+		FVector Site;
+		UPROPERTY(BlueprintReadWrite)
+		FString SiteName;
+		UPROPERTY(BlueprintReadWrite)
+		bool bPointAt;
 };
 
 
@@ -31,6 +37,8 @@ public:
 
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Dialogues")
 		TArray<FDialogues_Struct> DialogArray;
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Dialogues")
+		class UAnimMontage* PointAtMontage;
 
 protected:
 	// Called when the game starts
