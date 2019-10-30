@@ -32,6 +32,8 @@ void UDialogueComponent::BeginPlay()
 
 	DialogueTrigger->OnComponentBeginOverlap.AddDynamic(this, &UDialogueComponent::OnOverlapDialogueBegin);
 	DialogueTrigger->OnComponentEndOverlap.AddDynamic(this, &UDialogueComponent::OnOverlapDialogueEnd);
+
+
 }
 
 
@@ -47,14 +49,18 @@ void UDialogueComponent::OnOverlapDialogueBegin_Implementation(UPrimitiveCompone
 {
 	if (OwnerActor->HasAuthority())
 	{
-		if (OwnerActor->GetCurrentFocusedActor() != nullptr) { return; }
+		if (OwnerActor->GetCurrentFocusedActor() != nullptr) { return; } // NPC has already something focused
 
+		// Overlaping Character
 		ACharacterV2* OverlapingCharacter = Cast<ACharacterV2>(OtherActor);
 		if (OverlapingCharacter == GetOwner() || !OverlapingCharacter || !OwnerActor) { return; }
 		OwnerActor->SetCurrentFocusedActor(OtherActor);
 		UE_LOG(LogTemp, Warning, TEXT("DIALOGUE: Overlap Begin! : %s"), *OtherActor->GetName())
 		
 		OverlapingCharacter->ToggleInteractionWidget(OwnerActor);
+
+		// Overlaping Gossip
+
 	}
 }
 

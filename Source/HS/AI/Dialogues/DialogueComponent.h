@@ -4,7 +4,20 @@
 
 #include "CoreMinimal.h"
 #include "Components/ActorComponent.h"
+#include "Internationalization/Text.h"
 #include "DialogueComponent.generated.h"
+
+
+USTRUCT(BlueprintType)
+struct FDialogues_Struct
+{
+	GENERATED_BODY()
+
+		UPROPERTY(BlueprintReadWrite)
+		int32 Priority;
+		UPROPERTY(BlueprintReadWrite)
+		FString Sentence;
+};
 
 
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
@@ -15,6 +28,9 @@ class HS_API UDialogueComponent : public UActorComponent
 public:	
 	// Sets default values for this component's properties
 	UDialogueComponent();
+
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Dialogues")
+		TArray<FDialogues_Struct> DialogArray;
 
 protected:
 	// Called when the game starts
