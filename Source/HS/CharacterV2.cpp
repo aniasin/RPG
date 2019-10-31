@@ -283,9 +283,9 @@ void ACharacterV2::InteractionValidate_Implementation(AActor* ActorToInteract)
 	}
 }
 
-void ACharacterV2::BeginDialogue_Implementation(AActor* PlayerID)
+void ACharacterV2::BeginDialogue_Implementation(AActor* ActorToSpeakTo)
 {
-	SetCurrentFocusedActor(PlayerID);
+	SetCurrentFocusedActor(ActorToSpeakTo);
 }
 
 

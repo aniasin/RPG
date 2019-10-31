@@ -39,6 +39,10 @@ public:
 	// Sets default values for this component's properties
 	UDialogueComponent();
 
+	// Handle how long NPC talks to each others
+	FTimerHandle ConversationTimerHandle;
+	FTimerDelegate ConversationTimerDelegate;
+
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Dialogues")
 		TArray<FDialogues_Struct> DialogArray;
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Dialogues")
@@ -50,6 +54,9 @@ protected:
 
 	UPROPERTY(BlueprintReadOnly, VisibleAnywhere, Category = "Dialogues")
 		class USphereComponent* DialogueTrigger;
+
+	UFUNCTION()
+		void EndNPCDialogue();
 
 public:	
 	// Called every frame

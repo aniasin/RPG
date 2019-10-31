@@ -6,6 +6,7 @@
 #include "Engine/EngineTypes.h"
 #include "Components/SphereComponent.h"
 #include "Components/WidgetComponent.h"
+#include "Engine/World.h"
 #include "CharacterV2.h"
 
 // Sets default values for this component's properties
@@ -23,17 +24,15 @@ UDialogueComponent::UDialogueComponent()
 // Called when the game starts
 void UDialogueComponent::BeginPlay()
 {
-	Super::BeginPlay();
-
 	OwnerActor = Cast<ACharacterV2>(GetOwner());
-	if (!OwnerActor->bIsCivilian) { return; } // For now, only civilians can speak
+	if (!OwnerActor->bIsCivilian || !DialogueTrigger) { return; } // For now, only civilians can speak
 
-	DialogueTrigger->AttachToComponent(GetOwner()->GetRootComponent(), FAttachmentTransformRules::KeepRelativeTransform);
+	DialogueTrigger->AttachToComponent(GetOwner()->GetRootComponent(), FAttachmentTransformRules::SnapToTargetIncludingScale);
 
 	DialogueTrigger->OnComponentBeginOverlap.AddDynamic(this, &UDialogueComponent::OnOverlapDialogueBegin);
 	DialogueTrigger->OnComponentEndOverlap.AddDynamic(this, &UDialogueComponent::OnOverlapDialogueEnd);
 
-
+	Super::BeginPlay();
 }
 
 
@@ -59,9 +58,28 @@ void UDialogueComponent::OnOverlapDialogueBegin_Implementation(UPrimitiveCompone
 		
 		OverlapingCharacter->ToggleInteractionWidget(OwnerActor);
 
-		// Overlaping Gossip
+		// Overlaping NPC
+		if (!OverlapingCharacter->InteractionWidget && OverlapingCharacter->bIsCivilian)
+		{
+			OverlapingCharacter->ToggleMovement(false);
+			OverlapingCharacter->BeginDialogue(OwnerActor);
+
+			UWorld* World = GetWorld();
+			if (!World || !OverlapingCharacter) { return; }
+			ConversationTimerDelegate.BindUFunction(this, FName("EndNPCDialogue"));
+			World->GetTimerManager().SetTimer(ConversationTimerHandle, ConversationTimerDelegate, 10, false);
+		}
 
 	}
+}
+
+void UDialogueComponent::EndNPCDialogue()
+{
+	OwnerActor->ToggleMovement(true);
+	
+	UWorld* World = GetWorld();
+	if (!World) { return; }
+	World->GetTimerManager().ClearTimer(ConversationTimerHandle);
 }
 
 void UDialogueComponent::OnOverlapDialogueEnd_Implementation(UPrimitiveComponent* Comp, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex)

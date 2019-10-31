@@ -42,7 +42,7 @@ public:
 	////////////////////////////
 	// Dialogue
 	UFUNCTION(BlueprintNativeEvent, Category = "Dialogue")
-		void BeginDialogue(AActor* PlayerID);
+		void BeginDialogue(AActor* ActorToSpeakTo);
 	UFUNCTION(BlueprintNativeEvent, Category = "Dialogue")
 		void EndDialogue();
 
