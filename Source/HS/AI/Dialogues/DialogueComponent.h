@@ -16,6 +16,10 @@ struct FDialogues_Struct
 		UPROPERTY(BlueprintReadWrite)
 		int32 Priority;
 		UPROPERTY(BlueprintReadWrite)
+		float Time;
+		UPROPERTY(BlueprintReadWrite)
+		float DurationInMemory;
+		UPROPERTY(BlueprintReadWrite)
 		FString Sentence;
 		UPROPERTY(BlueprintReadWrite)
 		FVector Site;
