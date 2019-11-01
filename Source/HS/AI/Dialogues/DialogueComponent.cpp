@@ -33,6 +33,8 @@ void UDialogueComponent::BeginPlay()
 	DialogueTrigger->OnComponentEndOverlap.AddDynamic(this, &UDialogueComponent::OnOverlapDialogueEnd);
 
 	Super::BeginPlay();
+
+	DialogArray.Add(FDialogues_Struct());
 }
 
 
@@ -69,8 +71,16 @@ void UDialogueComponent::OnOverlapDialogueBegin_Implementation(UPrimitiveCompone
 			ConversationTimerDelegate.BindUFunction(this, FName("EndNPCDialogue"));
 			World->GetTimerManager().SetTimer(ConversationTimerHandle, ConversationTimerDelegate, 10, false);
 		}
-
 	}
+}
+
+FDialogues_Struct UDialogueComponent::ChooseDialogue()
+{
+// 	for (int32 i = 0; i <= DialogArray.Num(); i++)
+// 	{
+// 		return DialogArray[i].Sentence;
+// 	}
+	return DialogArray[0];
 }
 
 void UDialogueComponent::EndNPCDialogue()

@@ -14,19 +14,19 @@ struct FDialogues_Struct
 	GENERATED_BODY()
 
 		UPROPERTY(BlueprintReadWrite)
-		int32 Priority;
+		int32 Priority = 0;
 		UPROPERTY(BlueprintReadWrite)
-		float Time;
+		float Time = 0.0f;
 		UPROPERTY(BlueprintReadWrite)
-		float DurationInMemory;
+		float DurationInMemory = 0.0f;
 		UPROPERTY(BlueprintReadWrite)
-		FString Sentence;
+		FText Sentence = FText::FromString("Howdee!");
 		UPROPERTY(BlueprintReadWrite)
-		FVector Site;
+		FVector Site = FVector(0);
 		UPROPERTY(BlueprintReadWrite)
-		FString SiteName;
+		FString SiteName = FString("Home");
 		UPROPERTY(BlueprintReadWrite)
-		bool bPointAt;
+		bool bPointAt = false;
 };
 
 
@@ -61,6 +61,9 @@ protected:
 public:	
 	// Called every frame
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
+
+	UFUNCTION(BlueprintCallable, Category = "Dialogues")
+		FDialogues_Struct ChooseDialogue();
 
 	UFUNCTION(BlueprintNativeEvent, Category = Collision)
 		void OnOverlapDialogueBegin(UPrimitiveComponent* Comp, AActor* OtherActor, UPrimitiveComponent* OtherComp,
