@@ -7,6 +7,7 @@
 #include "Components/SphereComponent.h"
 #include "Components/WidgetComponent.h"
 #include "Engine/World.h"
+#include "Components/SphereComponent.h"
 #include "CharacterV2.h"
 
 // Sets default values for this component's properties
@@ -16,25 +17,33 @@ UDialogueComponent::UDialogueComponent()
 	// off to improve performance if you don't need them.
 	PrimaryComponentTick.bCanEverTick = false;
 	bReplicates = true;
+}
 
-	DialogueTrigger = CreateDefaultSubobject<USphereComponent>(FName("DialogueTrigger"));
-	DialogueTrigger->SetSphereRadius(100, true);
+FDialogues_Struct UDialogueComponent::MakeDialogueStruct(int32 Priority, float Time, float DurationInMemory, 
+	FText Sentence, FVector Site, FString SiteName, bool bPointAt)
+{
+	DefaultDialogue.Priority = Priority;
+	DefaultDialogue.Time = Time;
+	DefaultDialogue.DurationInMemory = DurationInMemory;
+	DefaultDialogue.Sentence = Sentence;
+	DefaultDialogue.Site = Site;
+	DefaultDialogue.SiteName = SiteName;
+	DefaultDialogue.bPointAt = bPointAt;
+
+	return DefaultDialogue;
 }
 
 // Called when the game starts
 void UDialogueComponent::BeginPlay()
 {
 	OwnerActor = Cast<ACharacterV2>(GetOwner());
-	if (!OwnerActor->bIsCivilian || !DialogueTrigger) { return; } // For now, only civilians can speak
-
-	DialogueTrigger->AttachToComponent(GetOwner()->GetRootComponent(), FAttachmentTransformRules::SnapToTargetIncludingScale);
-
-	DialogueTrigger->OnComponentBeginOverlap.AddDynamic(this, &UDialogueComponent::OnOverlapDialogueBegin);
-	DialogueTrigger->OnComponentEndOverlap.AddDynamic(this, &UDialogueComponent::OnOverlapDialogueEnd);
 
 	Super::BeginPlay();
 
-	DialogArray.Add(FDialogues_Struct());
+	// Default NPC dialog wich will be at index 0
+	FVector HomeLocation = OwnerActor->GetActorLocation();
+	DefaultDialogue = MakeDialogueStruct(-1, 0, 0, FText::FromString(DefaultDialogueSentence), HomeLocation, FString("My place."), false);
+	DialogArray.Add(DefaultDialogue);
 }
 
 
@@ -52,19 +61,20 @@ void UDialogueComponent::OnOverlapDialogueBegin_Implementation(UPrimitiveCompone
 	{
 		if (OwnerActor->GetCurrentFocusedActor() != nullptr) { return; } // NPC has already something focused
 
-		// Overlaping Character
-		ACharacterV2* OverlapingCharacter = Cast<ACharacterV2>(OtherActor);
-		if (OverlapingCharacter == GetOwner() || !OverlapingCharacter || !OwnerActor) { return; }
-		OwnerActor->SetCurrentFocusedActor(OtherActor);
-		UE_LOG(LogTemp, Warning, TEXT("DIALOGUE: Overlap Begin! : %s"), *OtherActor->GetName())
-		
-		OverlapingCharacter->ToggleInteractionWidget(OwnerActor);
-
-		// Overlaping NPC
-		if (!OverlapingCharacter->InteractionWidget && OverlapingCharacter->bIsCivilian)
+		if (OwnerActor->bIsCivilian) // Only civilians speak for now...
 		{
-			OverlapingCharacter->ToggleMovement(false);
-			OverlapingCharacter->BeginDialogue(OwnerActor);
+			ACharacterV2* OverlapingCharacter = Cast<ACharacterV2>(OtherActor);
+			if (OverlapingCharacter == GetOwner() || !OverlapingCharacter || !OwnerActor) { return; }
+			OwnerActor->SetCurrentFocusedActor(OtherActor);
+		
+			if (!OverlapingCharacter->InteractionWidget) // Overlaping character is not Player
+			{
+				OwnerActor->BeginDialogue(OverlapingCharacter);
+			}
+			else
+			{
+				OverlapingCharacter->ToggleInteractionWidget(OwnerActor); // Press Interaction to speak
+			}
 
 			UWorld* World = GetWorld();
 			if (!World || !OverlapingCharacter) { return; }
@@ -74,15 +84,6 @@ void UDialogueComponent::OnOverlapDialogueBegin_Implementation(UPrimitiveCompone
 	}
 }
 
-FDialogues_Struct UDialogueComponent::ChooseDialogue()
-{
-// 	for (int32 i = 0; i <= DialogArray.Num(); i++)
-// 	{
-// 		return DialogArray[i].Sentence;
-// 	}
-	return DialogArray[0];
-}
-
 void UDialogueComponent::EndNPCDialogue()
 {
 	OwnerActor->ToggleMovement(true);
@@ -90,6 +91,15 @@ void UDialogueComponent::EndNPCDialogue()
 	UWorld* World = GetWorld();
 	if (!World) { return; }
 	World->GetTimerManager().ClearTimer(ConversationTimerHandle);
+}
+
+FDialogues_Struct UDialogueComponent::ChooseDialogue()
+{
+	// 	for (int32 i = 0; i <= DialogArray.Num(); i++)
+	// 	{
+	// 		return DialogArray[i].Sentence;
+	// 	}
+	return DialogArray[0];
 }
 
 void UDialogueComponent::OnOverlapDialogueEnd_Implementation(UPrimitiveComponent* Comp, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex)

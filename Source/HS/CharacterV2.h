@@ -41,12 +41,17 @@ public:
 
 	////////////////////////////
 	// Dialogue
-	UFUNCTION(BlueprintNativeEvent, Category = "Dialogue")
+	UPROPERTY(BlueprintReadOnly, VisibleAnywhere, Category = "HS Parameters|Dialogues")
+		class USphereComponent* DialogueTrigger;
+	UPROPERTY(BlueprintReadOnly, VisibleAnywhere, Category = "HS Parameters|Dialogues")
+		class UDialogueComponent* DialogueComponent;
+
+	UFUNCTION(BlueprintNativeEvent, Category = "HS Parameters|Dialogue")
 		void BeginDialogue(AActor* ActorToSpeakTo);
-	UFUNCTION(BlueprintNativeEvent, Category = "Dialogue")
+	UFUNCTION(BlueprintNativeEvent, Category = "HS Parameters|Dialogue")
 		void EndDialogue();
 
-	UFUNCTION(BlueprintCallable, Category = "Interaction")
+	UFUNCTION(BlueprintCallable, Category = "HS Parameters|Interaction")
 	AActor* GetCurrentFocusedActor();
 	void SetCurrentFocusedActor(AActor* ActorToFocus);
 

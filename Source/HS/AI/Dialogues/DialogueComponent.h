@@ -43,16 +43,23 @@ public:
 	FTimerHandle ConversationTimerHandle;
 	FTimerDelegate ConversationTimerDelegate;
 
-	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Dialogues")
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "HS Parameters|Dialogues")
 		TArray<FDialogues_Struct> DialogArray;
-	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Dialogues")
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "HS Parameters|Dialogues")
 		class UAnimMontage* PointAtMontage;
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "HS Parameters|Dialogues")
+		FString DefaultDialogueSentence;
+		FDialogues_Struct DefaultDialogue;
+
+
+	FDialogues_Struct MakeDialogueStruct(int32 Priority, float Time, float DurationInMemory, 
+		FText Sentence, FVector Site, FString SiteName, bool bPointAt);
 
 protected:
 	// Called when the game starts
 	virtual void BeginPlay() override;
 
-	UPROPERTY(BlueprintReadOnly, VisibleAnywhere, Category = "Dialogues")
+	UPROPERTY(BlueprintReadOnly, VisibleAnywhere, Category = "HS Parameters|Dialogues")
 		class USphereComponent* DialogueTrigger;
 
 	UFUNCTION()

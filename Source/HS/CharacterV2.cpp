@@ -31,6 +31,7 @@
 #include "HSCharacterMovementComponent.h"
 #include "Engine/World.h"
 #include "Animation/AnimInstance.h"
+#include "AI/Dialogues/DialogueComponent.h"
 
 
 ACharacterV2::ACharacterV2(const class FObjectInitializer& ObjectInitializer) : Super(ObjectInitializer)
@@ -57,6 +58,12 @@ ACharacterV2::ACharacterV2(const class FObjectInitializer& ObjectInitializer) : 
 	GetMesh()->VisibilityBasedAnimTickOption = EVisibilityBasedAnimTickOption::AlwaysTickPoseAndRefreshBones;
 	GetMesh()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 	GetMesh()->SetCollisionProfileName(FName("NoCollision"));
+
+	DialogueComponent = CreateDefaultSubobject<UDialogueComponent>(FName("DialogueComponent"));
+
+	DialogueTrigger = CreateDefaultSubobject<USphereComponent>(FName("DialogueTrigger"));
+	DialogueTrigger->SetupAttachment(RootComponent);
+	DialogueTrigger->SetSphereRadius(120, true);
 
 	UIFloatingStatusBarComponent = CreateDefaultSubobject<UWidgetComponent>(FName("UIFloatingStatusBarComponent"));
 	UIFloatingStatusBarComponent->SetupAttachment(RootComponent);
@@ -197,7 +204,7 @@ void ACharacterV2::FinishDying()
 }
 
 //////////////////////////////////////
-// Item Interactions
+// Interactions
 
 void ACharacterV2::Interaction()
 {
@@ -227,7 +234,6 @@ void ACharacterV2::ToggleInteractionWidget_Implementation(AActor* Item)
 		K2_ToggleWidget(true);
 		CurrentFocusedActor = Item;
 	}
-
 }
 
 void ACharacterV2::ServerInteractionValidate_Implementation(AActor* ActorToInteract)
@@ -261,6 +267,7 @@ bool ACharacterV2::ServerInteractionValidate_Validate(AActor* ActorToInteract)
 
 void ACharacterV2::InteractionValidate_Implementation(AActor* ActorToInteract)
 {
+	// Weapons
 	AWeapon* IsWeapon = Cast<AWeapon>(ActorToInteract);
 	if (IsWeapon)
 	{
@@ -275,6 +282,7 @@ void ACharacterV2::InteractionValidate_Implementation(AActor* ActorToInteract)
 			ToggleMovement(false);
 		}
 	}
+	// Characters
 	ACharacterV2* IsCharacter = Cast<ACharacterV2>(ActorToInteract);
 	if (IsCharacter)
 	{
@@ -285,10 +293,9 @@ void ACharacterV2::InteractionValidate_Implementation(AActor* ActorToInteract)
 
 void ACharacterV2::BeginDialogue_Implementation(AActor* ActorToSpeakTo)
 {
+	ToggleMovement(false);
 	SetCurrentFocusedActor(ActorToSpeakTo);
 }
-
-
 
 void ACharacterV2::EndDialogue_Implementation()
 {
@@ -500,7 +507,10 @@ void ACharacterV2::BeginPlay()
 		AbilitySystemComponent->BindAbilityActivationToInputComponent(InputComponent, FGameplayAbilityInputBinds(FString("ConfirmTarget"),
 			FString("CancelTarget"), FString("EGDAbilityInputID"), static_cast<int32>(EGDAbilityInputID::Confirm), static_cast<int32>(EGDAbilityInputID::Cancel)));
 		InitializeFloatingStatusBar();
+
 	}
+	DialogueTrigger->OnComponentBeginOverlap.AddDynamic(DialogueComponent, &UDialogueComponent::OnOverlapDialogueBegin);
+	DialogueTrigger->OnComponentEndOverlap.AddDynamic(DialogueComponent, &UDialogueComponent::OnOverlapDialogueEnd);
 
 	StartingCameraBoomArmLength = CameraBoom->TargetArmLength;
 	StartingCameraBoomLocation = CameraBoom->RelativeLocation;
@@ -648,12 +658,9 @@ void ACharacterV2::OnRep_PlayerState()
 		if (PC)
 		{
 			PC->CreateHUD();
+			// Simulated on proxies don't have their PlayerStates yet when BeginPlay is called so we call it again here
+			InitializeFloatingStatusBar();
 		}
-
-		// Simulated on proxies don't have their PlayerStates yet when BeginPlay is called so we call it again here
-		InitializeFloatingStatusBar();
-
-
 		// Respawn specific things that won't affect first possession.
 
 		// Forcibly set the DeadTag count to 0
