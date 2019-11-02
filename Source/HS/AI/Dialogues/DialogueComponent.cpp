@@ -49,17 +49,20 @@ void UDialogueComponent::BeginPlay()
 
 	Super::BeginPlay();
 
-	// Default NPC dialog which will be at index 0
 	FVector HomeLocation = OwnerActor->GetActorLocation();
 	TArray<ACharacterV2*>Mark;
-	FDialogues_Struct ONE = MakeDialogueStruct(0, 0, 0, FText::FromString("ONE"), HomeLocation, FString("My place."), false, Mark);
+	// Default NPC dialog which will be at index 0
+	FDialogues_Struct ONE = MakeDialogueStruct(0, 1, 0, FText::FromString("Hello! \nEverything is quiet \naround here."), 
+		HomeLocation, FString("My place."), false, Mark);
 	DialogArray.Add(ONE);
-	FDialogues_Struct TWO = MakeDialogueStruct(0, 0, 0, FText::FromString("TWO"), HomeLocation, FString("My place."), false, Mark);
-	DialogArray.Add(TWO);
-	FDialogues_Struct THREE = MakeDialogueStruct(0, 0, 0, FText::FromString("THREE"), HomeLocation, FString("My place."), false, Mark);
-	DialogArray.Add(THREE);
 }
 
+void UDialogueComponent::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
+{
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+
+	DOREPLIFETIME(UDialogueComponent, DialogArray);
+}
 
 // Called every frame
 void UDialogueComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
@@ -110,10 +113,8 @@ void UDialogueComponent::EndNPCDialogue()
 
 FDialogues_Struct UDialogueComponent::ChooseDialogue()
 {
-	if (DialogArray.Num() <= 0)  // If no more option than default
-	{
-		return DialogArray[0];
-	}
+	if (DialogArray.Num() <= 0) { return DialogArray[0]; } // If no more option than default
+
 	// We got some alternative
 	// Make an array to store the possible sentences
 	TArray<FDialogues_Struct>PossibleSentences;	
@@ -126,15 +127,23 @@ FDialogues_Struct UDialogueComponent::ChooseDialogue()
 		{
 			PossibleSentences.Add(DialogArray[i]);
 		}
+		else
+		{
+			UE_LOG(LogTemp, Warning, TEXT("DIALOG: Found something I already told you!"))
+		}
 	}
 
 	// Sort by Priority 0 = top priority
 	PossibleSentences.Sort();
 	// Mark this sentence as already told to this speaker
-	int32 IndexToMark = DialogArray.Find(PossibleSentences[0]);
-	MarkCharacter(IndexToMark);
-	// return the first and best choice
-	return PossibleSentences[0];
+	if (int32 IndexToMark = DialogArray.Find(PossibleSentences[0]))
+	{
+		MarkCharacter(IndexToMark);
+		// return the first and best choice
+		return DialogArray[IndexToMark];
+	}
+	// still there? return the default
+	return DialogArray[0];
 }
 
 void UDialogueComponent::OnOverlapDialogueEnd_Implementation(UPrimitiveComponent* Comp, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex)

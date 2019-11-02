@@ -503,7 +503,7 @@ void ACharacterV2::BeginPlay()
 	if (PC)
 	{
 		// Bind to AbilitySystemComponent
-		if (!InputComponent) { return; }
+		if ensure(AbilitySystemComponent != nullptr) { return; }
 		AbilitySystemComponent->BindAbilityActivationToInputComponent(InputComponent, FGameplayAbilityInputBinds(FString("ConfirmTarget"),
 			FString("CancelTarget"), FString("EGDAbilityInputID"), static_cast<int32>(EGDAbilityInputID::Confirm), static_cast<int32>(EGDAbilityInputID::Cancel)));
 		InitializeFloatingStatusBar();

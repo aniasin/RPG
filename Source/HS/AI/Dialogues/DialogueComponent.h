@@ -5,6 +5,7 @@
 #include "CoreMinimal.h"
 #include "Components/ActorComponent.h"
 #include "Internationalization/Text.h"
+#include "GameFramework/OnlineReplStructs.h"
 #include "DialogueComponent.generated.h"
 
 
@@ -28,7 +29,7 @@ struct FDialogues_Struct
 		UPROPERTY(BlueprintReadWrite)
 		bool bPointAt = false;
 		UPROPERTY(BlueprintReadWrite)
-		TArray<ACharacterV2*> MarkedCharacters;
+		TArray<class ACharacterV2*> MarkedCharacters;
 
 		// support for TArray.Sort() -- we sort on Priority
 		FORCEINLINE bool operator<(const FDialogues_Struct& V) const
@@ -40,7 +41,6 @@ struct FDialogues_Struct
 		FORCEINLINE bool operator==(const FDialogues_Struct& Other) const
 		{
 			if (Time != Other.Time) return false;
-			if (Site != Other.Site) return false;
 			return true;
 		}
 };
@@ -59,7 +59,7 @@ public:
 	FTimerHandle ConversationTimerHandle;
 	FTimerDelegate ConversationTimerDelegate;
 
-	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "HS Parameters|Dialogues")
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Replicated, Category = "HS Parameters|Dialogues")
 		TArray<FDialogues_Struct> DialogArray;
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "HS Parameters|Dialogues")
 		class UAnimMontage* PointAtMontage;
