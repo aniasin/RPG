@@ -86,6 +86,8 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Dialogues")
 		FDialogues_Struct ChooseDialogue();
 
+	void PassInfoToSpeaker(FDialogues_Struct InfoToPass, AActor* OtherSpeaker);
+
 	UFUNCTION(BlueprintNativeEvent, Category = Collision)
 		void OnOverlapDialogueBegin(UPrimitiveComponent* Comp, AActor* OtherActor, UPrimitiveComponent* OtherComp,
 			int32 OtherBodyIndex, bool bFromSweep, const FHitResult& HitResult);
@@ -95,6 +97,7 @@ public:
 
 private:
 	class ACharacterV2* OwnerActor;
+	bool bCurrentSpeakerIsPlayer;
 
 	void MarkCharacter(int32 IndexToMark);
 };

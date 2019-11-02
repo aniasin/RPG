@@ -86,11 +86,13 @@ void UDialogueComponent::OnOverlapDialogueBegin_Implementation(UPrimitiveCompone
 		
 			if (!OverlapingCharacter->InteractionWidget) // Overlaping character is not Player
 			{
+				bCurrentSpeakerIsPlayer = false;
 				OwnerActor->ToggleMovement(false);
 				OwnerActor->BeginDialogue(OverlapingCharacter);
 			}
 			else
 			{
+				bCurrentSpeakerIsPlayer = true;
 				OverlapingCharacter->ToggleInteractionWidget(OwnerActor); // Press Interaction to speak
 			}
 
@@ -139,11 +141,25 @@ FDialogues_Struct UDialogueComponent::ChooseDialogue()
 	if (int32 IndexToMark = DialogArray.Find(PossibleSentences[0]))
 	{
 		MarkCharacter(IndexToMark);
+		// if the Info to tell is priority -1 (important) pass it to the other NPC
+		if (DialogArray[IndexToMark].Priority < 0 && !bCurrentSpeakerIsPlayer)
+		{
+			PassInfoToSpeaker(DialogArray[IndexToMark], OwnerActor->GetCurrentFocusedActor());
+		}
 		// return the first and best choice
 		return DialogArray[IndexToMark];
 	}
 	// still there? return the default
 	return DialogArray[0];
+}
+
+
+
+void UDialogueComponent::PassInfoToSpeaker(FDialogues_Struct InfoToPass, AActor* OtherSpeaker)
+{
+	ACharacterV2* OtherCharacter = Cast<ACharacterV2>(OtherSpeaker);
+	if (!OtherCharacter) { return; }
+	OtherCharacter->DialogueComponent->DialogArray.Add(InfoToPass);
 }
 
 void UDialogueComponent::OnOverlapDialogueEnd_Implementation(UPrimitiveComponent* Comp, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex)
