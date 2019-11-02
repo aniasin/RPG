@@ -12,7 +12,7 @@ USTRUCT(BlueprintType)
 struct FDialogues_Struct
 {
 	GENERATED_BODY()
-
+		// 0 = top priority
 		UPROPERTY(BlueprintReadWrite)
 		int32 Priority = 0;
 		UPROPERTY(BlueprintReadWrite)
@@ -20,13 +20,29 @@ struct FDialogues_Struct
 		UPROPERTY(BlueprintReadWrite)
 		float DurationInMemory = 0.0f;
 		UPROPERTY(BlueprintReadWrite)
-		FText Sentence = FText::FromString("Howdee!");
+		FText Sentence = FText::FromString("Hail!");
 		UPROPERTY(BlueprintReadWrite)
 		FVector Site = FVector(0);
 		UPROPERTY(BlueprintReadWrite)
 		FString SiteName = FString("Home");
 		UPROPERTY(BlueprintReadWrite)
 		bool bPointAt = false;
+		UPROPERTY(BlueprintReadWrite)
+		TArray<ACharacterV2*> MarkedCharacters;
+
+		// support for TArray.Sort() -- we sort on Priority
+		FORCEINLINE bool operator<(const FDialogues_Struct& V) const
+		{
+			return Priority < V.Priority;
+		}
+
+		// support for TArray.Find()
+		FORCEINLINE bool operator==(const FDialogues_Struct& Other) const
+		{
+			if (Time != Other.Time) return false;
+			if (Site != Other.Site) return false;
+			return true;
+		}
 };
 
 
@@ -49,11 +65,9 @@ public:
 		class UAnimMontage* PointAtMontage;
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "HS Parameters|Dialogues")
 		FString DefaultDialogueSentence;
-		FDialogues_Struct DefaultDialogue;
-
 
 	FDialogues_Struct MakeDialogueStruct(int32 Priority, float Time, float DurationInMemory, 
-		FText Sentence, FVector Site, FString SiteName, bool bPointAt);
+		FText Sentence, FVector Site, FString SiteName, bool bPointAt, TArray<ACharacterV2*> MarkedCharacters);
 
 protected:
 	// Called when the game starts
@@ -81,4 +95,6 @@ public:
 
 private:
 	class ACharacterV2* OwnerActor;
+
+	void MarkCharacter(int32 IndexToMark);
 };

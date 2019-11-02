@@ -20,8 +20,9 @@ UDialogueComponent::UDialogueComponent()
 }
 
 FDialogues_Struct UDialogueComponent::MakeDialogueStruct(int32 Priority, float Time, float DurationInMemory, 
-	FText Sentence, FVector Site, FString SiteName, bool bPointAt)
+	FText Sentence, FVector Site, FString SiteName, bool bPointAt, TArray<ACharacterV2*> MarkedCharacters)
 {
+	FDialogues_Struct DefaultDialogue;
 	DefaultDialogue.Priority = Priority;
 	DefaultDialogue.Time = Time;
 	DefaultDialogue.DurationInMemory = DurationInMemory;
@@ -29,8 +30,16 @@ FDialogues_Struct UDialogueComponent::MakeDialogueStruct(int32 Priority, float T
 	DefaultDialogue.Site = Site;
 	DefaultDialogue.SiteName = SiteName;
 	DefaultDialogue.bPointAt = bPointAt;
+	DefaultDialogue.MarkedCharacters = MarkedCharacters;
 
 	return DefaultDialogue;
+}
+
+void UDialogueComponent::MarkCharacter(int32 IndexToMark)
+{
+	// add currently focused actor to the array of people who already heard that from me
+	ACharacterV2* CharacterToAdd = Cast<ACharacterV2>(OwnerActor->GetCurrentFocusedActor());
+	DialogArray[IndexToMark].MarkedCharacters.Add(CharacterToAdd);
 }
 
 // Called when the game starts
@@ -40,10 +49,15 @@ void UDialogueComponent::BeginPlay()
 
 	Super::BeginPlay();
 
-	// Default NPC dialog wich will be at index 0
+	// Default NPC dialog which will be at index 0
 	FVector HomeLocation = OwnerActor->GetActorLocation();
-	DefaultDialogue = MakeDialogueStruct(-1, 0, 0, FText::FromString(DefaultDialogueSentence), HomeLocation, FString("My place."), false);
-	DialogArray.Add(DefaultDialogue);
+	TArray<ACharacterV2*>Mark;
+	FDialogues_Struct ONE = MakeDialogueStruct(0, 0, 0, FText::FromString("ONE"), HomeLocation, FString("My place."), false, Mark);
+	DialogArray.Add(ONE);
+	FDialogues_Struct TWO = MakeDialogueStruct(0, 0, 0, FText::FromString("TWO"), HomeLocation, FString("My place."), false, Mark);
+	DialogArray.Add(TWO);
+	FDialogues_Struct THREE = MakeDialogueStruct(0, 0, 0, FText::FromString("THREE"), HomeLocation, FString("My place."), false, Mark);
+	DialogArray.Add(THREE);
 }
 
 
@@ -69,6 +83,7 @@ void UDialogueComponent::OnOverlapDialogueBegin_Implementation(UPrimitiveCompone
 		
 			if (!OverlapingCharacter->InteractionWidget) // Overlaping character is not Player
 			{
+				OwnerActor->ToggleMovement(false);
 				OwnerActor->BeginDialogue(OverlapingCharacter);
 			}
 			else
@@ -95,11 +110,31 @@ void UDialogueComponent::EndNPCDialogue()
 
 FDialogues_Struct UDialogueComponent::ChooseDialogue()
 {
-	// 	for (int32 i = 0; i <= DialogArray.Num(); i++)
-	// 	{
-	// 		return DialogArray[i].Sentence;
-	// 	}
-	return DialogArray[0];
+	if (DialogArray.Num() <= 0)  // If no more option than default
+	{
+		return DialogArray[0];
+	}
+	// We got some alternative
+	// Make an array to store the possible sentences
+	TArray<FDialogues_Struct>PossibleSentences;	
+
+	for (int32 i = 0; i < DialogArray.Num(); i++)
+	{
+		// Grab only the ones we never told to the current speaker
+		ACharacterV2* CharacterToCompare = Cast<ACharacterV2>(OwnerActor->GetCurrentFocusedActor());
+		if (!DialogArray[i].MarkedCharacters.Contains(CharacterToCompare))
+		{
+			PossibleSentences.Add(DialogArray[i]);
+		}
+	}
+
+	// Sort by Priority 0 = top priority
+	PossibleSentences.Sort();
+	// Mark this sentence as already told to this speaker
+	int32 IndexToMark = DialogArray.Find(PossibleSentences[0]);
+	MarkCharacter(IndexToMark);
+	// return the first and best choice
+	return PossibleSentences[0];
 }
 
 void UDialogueComponent::OnOverlapDialogueEnd_Implementation(UPrimitiveComponent* Comp, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex)
