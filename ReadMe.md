@@ -18,6 +18,9 @@ Last Packaged Build: [2019-11-1](https://drive.google.com/file/d/1K2HB5MCvXifJeS
 ### MULTIPLAYER
 
 ### DIALOG SYSTEM
+Dynamic system that allow npc to share informations(rough).
+
+
 
 ### COMBAT
 

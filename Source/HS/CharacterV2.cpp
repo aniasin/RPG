@@ -116,6 +116,11 @@ void ACharacterV2::SetupPlayerInputComponent(UInputComponent* PlayerInputCompone
 	PlayerInputComponent->BindAction("SwitchCombat", IE_Pressed, this, &ACharacterV2::SwitchCombat);
 
 	InputComponent = PlayerInputComponent;
+	// Bind to AbilitySystemComponent
+	if (AbilitySystemComponent == nullptr) { return; }
+	AbilitySystemComponent->BindAbilityActivationToInputComponent(InputComponent, FGameplayAbilityInputBinds(FString("ConfirmTarget"),
+		FString("CancelTarget"), FString("EGDAbilityInputID"), 
+		static_cast<int32>(EGDAbilityInputID::Confirm), static_cast<int32>(EGDAbilityInputID::Cancel)));
 }
 
 //Server Only
@@ -502,12 +507,7 @@ void ACharacterV2::BeginPlay()
 	AHSPlayerController* PC = Cast<AHSPlayerController>(GetController());
 	if (PC)
 	{
-		// Bind to AbilitySystemComponent
-		if ensure(AbilitySystemComponent != nullptr) { return; }
-		AbilitySystemComponent->BindAbilityActivationToInputComponent(InputComponent, FGameplayAbilityInputBinds(FString("ConfirmTarget"),
-			FString("CancelTarget"), FString("EGDAbilityInputID"), static_cast<int32>(EGDAbilityInputID::Confirm), static_cast<int32>(EGDAbilityInputID::Cancel)));
 		InitializeFloatingStatusBar();
-
 	}
 	DialogueTrigger->OnComponentBeginOverlap.AddDynamic(DialogueComponent, &UDialogueComponent::OnOverlapDialogueBegin);
 	DialogueTrigger->OnComponentEndOverlap.AddDynamic(DialogueComponent, &UDialogueComponent::OnOverlapDialogueEnd);
