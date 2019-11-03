@@ -117,9 +117,8 @@ void ACharacterV2::SetupPlayerInputComponent(UInputComponent* PlayerInputCompone
 
 	InputComponent = PlayerInputComponent;
 	// Bind to AbilitySystemComponent
-	if (AbilitySystemComponent == nullptr) { return; }
 	AbilitySystemComponent->BindAbilityActivationToInputComponent(InputComponent, FGameplayAbilityInputBinds(FString("ConfirmTarget"),
-		FString("CancelTarget"), FString("EGDAbilityInputID"), 
+		FString("CancelTarget"), FString("EGDAbilityInputID"),
 		static_cast<int32>(EGDAbilityInputID::Confirm), static_cast<int32>(EGDAbilityInputID::Cancel)));
 }
 
@@ -507,6 +506,10 @@ void ACharacterV2::BeginPlay()
 	AHSPlayerController* PC = Cast<AHSPlayerController>(GetController());
 	if (PC)
 	{
+		// Bind to AbilitySystemComponent
+		AbilitySystemComponent->BindAbilityActivationToInputComponent(InputComponent, FGameplayAbilityInputBinds(FString("ConfirmTarget"),
+			FString("CancelTarget"), FString("EGDAbilityInputID"),
+			static_cast<int32>(EGDAbilityInputID::Confirm), static_cast<int32>(EGDAbilityInputID::Cancel)));
 		InitializeFloatingStatusBar();
 	}
 	DialogueTrigger->OnComponentBeginOverlap.AddDynamic(DialogueComponent, &UDialogueComponent::OnOverlapDialogueBegin);
@@ -607,7 +610,7 @@ void ACharacterV2::MoveRight(float Value)
 void ACharacterV2::InitializeFloatingStatusBar()
 {
 	// Only create once
-	if (UIFloatingStatusBar || !AbilitySystemComponent.IsValid())
+	if (UIFloatingStatusBar || !AbilitySystemComponent)
 	{
 		return;
 	}

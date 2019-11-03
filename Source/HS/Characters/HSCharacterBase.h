@@ -103,7 +103,8 @@ public:
 		// Just make sure you test if the pointer is valid before using.
 		// I opted for TWeakObjectPtrs because I didn't want a shared hard reference here and I didn't want an extra function call of getting
 		// the ASC/AttributeSet from the PlayerState or child classes every time I referenced them in this base class.
-		TWeakObjectPtr<class UHSAbilitySystemComponent> AbilitySystemComponent;
+/*		TWeakObjectPtr<class UHSAbilitySystemComponent> AbilitySystemComponent;*/
+		class UHSAbilitySystemComponent* AbilitySystemComponent;
 		TWeakObjectPtr<class UHSAttributeSetBase> AttributeSetBase;
 		FGameplayTag HitDirectionFrontTag;
 		FGameplayTag HitDirectionBackTag;
