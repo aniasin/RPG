@@ -221,4 +221,7 @@ private:
 
 	// Combat
 	bool bIsInCombat = false;
+
+	// Init
+	bool bASCWasNotFound;
 };

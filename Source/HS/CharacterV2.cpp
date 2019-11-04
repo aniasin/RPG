@@ -117,6 +117,7 @@ void ACharacterV2::SetupPlayerInputComponent(UInputComponent* PlayerInputCompone
 
 	InputComponent = PlayerInputComponent;
 	// Bind to AbilitySystemComponent
+	if (!AbilitySystemComponent.IsValid()) { bASCWasNotFound = true; return; }
 	AbilitySystemComponent->BindAbilityActivationToInputComponent(InputComponent, FGameplayAbilityInputBinds(FString("ConfirmTarget"),
 		FString("CancelTarget"), FString("EGDAbilityInputID"),
 		static_cast<int32>(EGDAbilityInputID::Confirm), static_cast<int32>(EGDAbilityInputID::Cancel)));
@@ -507,6 +508,13 @@ void ACharacterV2::BeginPlay()
 	AHSPlayerController* PC = Cast<AHSPlayerController>(GetController());
 	if (PC)
 	{
+		if (AbilitySystemComponent.IsValid() && bASCWasNotFound)
+		{
+			AbilitySystemComponent->BindAbilityActivationToInputComponent(InputComponent, FGameplayAbilityInputBinds(FString("ConfirmTarget"),
+				FString("CancelTarget"), FString("EGDAbilityInputID"),
+				static_cast<int32>(EGDAbilityInputID::Confirm), static_cast<int32>(EGDAbilityInputID::Cancel)));
+			bASCWasNotFound = false;
+		}
 		InitializeFloatingStatusBar();
 	}
 	DialogueTrigger->OnComponentBeginOverlap.AddDynamic(DialogueComponent, &UDialogueComponent::OnOverlapDialogueBegin);
