@@ -22,7 +22,7 @@ struct FDialogues_Struct
 		// How long speaker will keep this info as relevant
 		UPROPERTY(BlueprintReadWrite)
 		float DurationInMemory = 0.0f;
-		// witness / ie: I've seen or I heard -- 0 = witness, the more th value the farest the speakeer is from th original
+		// witness / ie: I've seen or I heard -- 0 = witness, the more th value the farthest the speaker is from th original
 		UPROPERTY(BlueprintReadWrite)
 		int32 WitnessLevel = 0;
 		// the actual sentence

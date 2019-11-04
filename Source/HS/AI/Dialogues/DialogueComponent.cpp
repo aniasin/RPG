@@ -19,6 +19,13 @@ UDialogueComponent::UDialogueComponent()
 	bReplicates = true;
 }
 
+void UDialogueComponent::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
+{
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+
+	DOREPLIFETIME(UDialogueComponent, DialogArray);
+}
+
 FDialogues_Struct UDialogueComponent::MakeDialogueStruct(int32 Priority, float Time, float DurationInMemory, int32 WitnessLevel,
 	FText Sentence, FVector Site, FString SiteName, bool bPointAt, TArray<ACharacterV2*> MarkedCharacters)
 {
@@ -40,7 +47,7 @@ void UDialogueComponent::MarkCharacter(int32 IndexToMark)
 {
 	// add currently focused actor to the array of people who already heard that from me
 	ACharacterV2* CharacterToAdd = Cast<ACharacterV2>(OwnerActor->GetCurrentFocusedActor());
-	DialogArray[IndexToMark].MarkedCharacters.Add(CharacterToAdd);
+	DialogArray[IndexToMark].MarkedCharacters.AddUnique(CharacterToAdd);
 }
 
 // Called when the game starts
@@ -56,13 +63,6 @@ void UDialogueComponent::BeginPlay()
 	FDialogues_Struct ONE = MakeDialogueStruct(0, 1, 0,  0, FText::FromString("Everything is quiet \naround here."), 
 		HomeLocation, FString("My place."), false, Mark);
 	DialogArray.Add(ONE);
-}
-
-void UDialogueComponent::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
-{
-	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
-
-	DOREPLIFETIME(UDialogueComponent, DialogArray);
 }
 
 // Called every frame
@@ -84,7 +84,7 @@ void UDialogueComponent::OnOverlapDialogueBegin_Implementation(UPrimitiveCompone
 			ACharacterV2* OverlapingCharacter = Cast<ACharacterV2>(OtherActor);
 			if (OverlapingCharacter == GetOwner() || !OverlapingCharacter || !OwnerActor) { return; }
 			OwnerActor->SetCurrentFocusedActor(OtherActor);
-		
+
 			if (!OverlapingCharacter->InteractionWidget) // Overlaping character is not Player
 			{
 				bCurrentSpeakerIsPlayer = false;
