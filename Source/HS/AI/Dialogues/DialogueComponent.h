@@ -13,21 +13,31 @@ USTRUCT(BlueprintType)
 struct FDialogues_Struct
 {
 	GENERATED_BODY()
-		// 0 = top priority
+		// less the value, more is priority
 		UPROPERTY(BlueprintReadWrite)
 		int32 Priority = 0;
+		// Game time when this info passed to the speaker
 		UPROPERTY(BlueprintReadWrite)
 		float Time = 0.0f;
+		// How long speaker will keep this info as relevant
 		UPROPERTY(BlueprintReadWrite)
 		float DurationInMemory = 0.0f;
+		// witness / ie: I've seen or I heard -- 0 = witness, the more th value the farest the speakeer is from th original
+		UPROPERTY(BlueprintReadWrite)
+		int32 WitnessLevel = 0;
+		// the actual sentence
 		UPROPERTY(BlueprintReadWrite)
 		FText Sentence = FText::FromString("Hail!");
+		// Where this info is related to
 		UPROPERTY(BlueprintReadWrite)
 		FVector Site = FVector(0);
+		// The name of th site where the info comes from
 		UPROPERTY(BlueprintReadWrite)
 		FString SiteName = FString("Home");
+		// Should the speaker point at site location
 		UPROPERTY(BlueprintReadWrite)
 		bool bPointAt = false;
+		// All the people this speaker has already told about this particular info
 		UPROPERTY(BlueprintReadWrite)
 		TArray<class ACharacterV2*> MarkedCharacters;
 
@@ -37,7 +47,7 @@ struct FDialogues_Struct
 			return Priority < V.Priority;
 		}
 
-		// support for TArray.Find()
+		// support for TArray.Find() -- 
 		FORCEINLINE bool operator==(const FDialogues_Struct& Other) const
 		{
 			if (Time != Other.Time) return false;
@@ -66,7 +76,7 @@ public:
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "HS Parameters|Dialogues")
 		FString DefaultDialogueSentence;
 
-	FDialogues_Struct MakeDialogueStruct(int32 Priority, float Time, float DurationInMemory, 
+	FDialogues_Struct MakeDialogueStruct(int32 Priority, float Time, float DurationInMemory, int32 WitnessLevel,
 		FText Sentence, FVector Site, FString SiteName, bool bPointAt, TArray<ACharacterV2*> MarkedCharacters);
 
 protected:

@@ -19,13 +19,14 @@ UDialogueComponent::UDialogueComponent()
 	bReplicates = true;
 }
 
-FDialogues_Struct UDialogueComponent::MakeDialogueStruct(int32 Priority, float Time, float DurationInMemory, 
+FDialogues_Struct UDialogueComponent::MakeDialogueStruct(int32 Priority, float Time, float DurationInMemory, int32 WitnessLevel,
 	FText Sentence, FVector Site, FString SiteName, bool bPointAt, TArray<ACharacterV2*> MarkedCharacters)
 {
 	FDialogues_Struct DefaultDialogue;
 	DefaultDialogue.Priority = Priority;
 	DefaultDialogue.Time = Time;
 	DefaultDialogue.DurationInMemory = DurationInMemory;
+	DefaultDialogue.WitnessLevel = WitnessLevel;
 	DefaultDialogue.Sentence = Sentence;
 	DefaultDialogue.Site = Site;
 	DefaultDialogue.SiteName = SiteName;
@@ -52,7 +53,7 @@ void UDialogueComponent::BeginPlay()
 	FVector HomeLocation = OwnerActor->GetActorLocation();
 	TArray<ACharacterV2*>Mark;
 	// Default NPC dialog which will be at index 0
-	FDialogues_Struct ONE = MakeDialogueStruct(0, 1, 0, FText::FromString("Hello! \nEverything is quiet \naround here."), 
+	FDialogues_Struct ONE = MakeDialogueStruct(0, 1, 0,  0, FText::FromString("Everything is quiet \naround here."), 
 		HomeLocation, FString("My place."), false, Mark);
 	DialogArray.Add(ONE);
 }
@@ -159,7 +160,20 @@ void UDialogueComponent::PassInfoToSpeaker(FDialogues_Struct InfoToPass, AActor*
 {
 	ACharacterV2* OtherCharacter = Cast<ACharacterV2>(OtherSpeaker);
 	if (!OtherCharacter) { return; }
-	OtherCharacter->DialogueComponent->DialogArray.Add(InfoToPass);
+
+	TArray<ACharacterV2*> Characters;
+	// Info to pass has to be less precise than from original witness
+	FDialogues_Struct TranformedInfoToPass = MakeDialogueStruct(InfoToPass.Priority,
+		OwnerActor->GetWorld()->GetTimeSeconds(),
+		InfoToPass.DurationInMemory,
+		InfoToPass.WitnessLevel + 1,
+		InfoToPass.Sentence,
+		InfoToPass.Site,
+		InfoToPass.SiteName,
+		InfoToPass.bPointAt,
+		Characters);
+
+	OtherCharacter->DialogueComponent->DialogArray.Add(TranformedInfoToPass);
 }
 
 void UDialogueComponent::OnOverlapDialogueEnd_Implementation(UPrimitiveComponent* Comp, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex)
