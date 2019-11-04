@@ -16,7 +16,7 @@ AHSCharacterBase::AHSCharacterBase(const class FObjectInitializer& ObjectInitial
  	// Set this character to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = false;
 
-	AbilitySystemComponent = CreateDefaultSubobject<UHSAbilitySystemComponent>(FName("AbilitySytemComponent"));
+/*	AbilitySystemComponent = CreateDefaultSubobject<UHSAbilitySystemComponent>(FName("AbilitySytemComponent"));*/
 
 	GetCapsuleComponent()->SetCollisionResponseToChannel(ECollisionChannel::ECC_Visibility, ECollisionResponse::ECR_Overlap);
 
@@ -33,7 +33,7 @@ AHSCharacterBase::AHSCharacterBase(const class FObjectInitializer& ObjectInitial
 
 UAbilitySystemComponent* AHSCharacterBase::GetAbilitySystemComponent() const
 {
-	return AbilitySystemComponent;
+	return AbilitySystemComponent.Get();
 }
 
 bool AHSCharacterBase::IsAlive() const
@@ -48,7 +48,7 @@ int32 AHSCharacterBase::GetAbilityLevel(EGDAbilityInputID AbilityID) const
 
 void AHSCharacterBase::RemoveCharacterAbilities()
 {
-	if (Role != ROLE_Authority || !AbilitySystemComponent || !AbilitySystemComponent->CharacterAbilitiesGiven)
+	if (Role != ROLE_Authority || !AbilitySystemComponent.IsValid() || !AbilitySystemComponent->CharacterAbilitiesGiven)
 	{
 		return;
 	}
@@ -240,7 +240,7 @@ void AHSCharacterBase::Die()
 
 	OnCharacterDied.Broadcast(this);
 
-	if (AbilitySystemComponent)
+	if (AbilitySystemComponent.IsValid())
 	{
 		AbilitySystemComponent->CancelAllAbilities();
 
@@ -274,7 +274,7 @@ void AHSCharacterBase::BeginPlay()
 void AHSCharacterBase::AddCharacterAbilities()
 {
 	// Grant abilities, but only on the server	
-	if (Role != ROLE_Authority || !AbilitySystemComponent || AbilitySystemComponent->CharacterAbilitiesGiven)
+	if (Role != ROLE_Authority || !AbilitySystemComponent.IsValid() || AbilitySystemComponent->CharacterAbilitiesGiven)
 	{
 		return;
 	}
@@ -290,7 +290,7 @@ void AHSCharacterBase::AddCharacterAbilities()
 
 void AHSCharacterBase::InitializeAttributes()
 {
-	if (!AbilitySystemComponent)
+	if (!AbilitySystemComponent.IsValid())
 	{
 		return;
 	}
@@ -308,13 +308,13 @@ void AHSCharacterBase::InitializeAttributes()
 	FGameplayEffectSpecHandle NewHandle = AbilitySystemComponent->MakeOutgoingSpec(DefaultAttributes, GetCharacterLevel(), EffectContext);
 	if (NewHandle.IsValid())
 	{
-		FActiveGameplayEffectHandle ActiveGEHandle = AbilitySystemComponent->ApplyGameplayEffectSpecToTarget(*NewHandle.Data.Get(), AbilitySystemComponent);
+		FActiveGameplayEffectHandle ActiveGEHandle = AbilitySystemComponent->ApplyGameplayEffectSpecToTarget(*NewHandle.Data.Get(), AbilitySystemComponent.Get());
 	}
 }
 
 void AHSCharacterBase::AddStartupEffects()
 {
-	if (Role != ROLE_Authority || !AbilitySystemComponent || AbilitySystemComponent->StartupEffectsApplied)
+	if (Role != ROLE_Authority || !AbilitySystemComponent.IsValid() || AbilitySystemComponent->StartupEffectsApplied)
 	{
 		return;
 	}
@@ -327,7 +327,7 @@ void AHSCharacterBase::AddStartupEffects()
 		FGameplayEffectSpecHandle NewHandle = AbilitySystemComponent->MakeOutgoingSpec(GameplayEffect, GetCharacterLevel(), EffectContext);
 		if (NewHandle.IsValid())
 		{
-			FActiveGameplayEffectHandle ActiveGEHandle = AbilitySystemComponent->ApplyGameplayEffectSpecToTarget(*NewHandle.Data.Get(), AbilitySystemComponent);
+			FActiveGameplayEffectHandle ActiveGEHandle = AbilitySystemComponent->ApplyGameplayEffectSpecToTarget(*NewHandle.Data.Get(), AbilitySystemComponent.Get());
 		}
 	}
 
