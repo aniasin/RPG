@@ -93,8 +93,10 @@ void UDialogueComponent::OnOverlapDialogueBegin_Implementation(UPrimitiveCompone
 			}
 			else
 			{
+
 				bCurrentSpeakerIsPlayer = true;
 				OverlapingCharacter->ToggleInteractionWidget(OwnerActor); // Press Interaction to speak
+
 			}
 
 			UWorld* World = GetWorld();
@@ -116,7 +118,7 @@ void UDialogueComponent::EndNPCDialogue()
 
 FDialogues_Struct UDialogueComponent::ChooseDialogue()
 {
-	if (DialogArray.Num() <= 0) { return DialogArray[0]; } // If no more option than default
+	if (DialogArray.Num() <= 1) { return DialogArray[0]; } // If no more option than default
 
 	// We got some alternative
 	// Make an array to store the possible sentences
@@ -128,7 +130,7 @@ FDialogues_Struct UDialogueComponent::ChooseDialogue()
 		ACharacterV2* CharacterToCompare = Cast<ACharacterV2>(OwnerActor->GetCurrentFocusedActor());
 		if (!DialogArray[i].MarkedCharacters.Contains(CharacterToCompare))
 		{
-			PossibleSentences.Add(DialogArray[i]);
+			PossibleSentences.AddUnique(DialogArray[i]);
 		}
 		else
 		{
@@ -150,6 +152,7 @@ FDialogues_Struct UDialogueComponent::ChooseDialogue()
 		// return the first and best choice
 		return DialogArray[IndexToMark];
 	}
+	
 	// still there? return the default
 	return DialogArray[0];
 }
@@ -163,17 +166,19 @@ void UDialogueComponent::PassInfoToSpeaker(FDialogues_Struct InfoToPass, AActor*
 
 	TArray<ACharacterV2*> Characters;
 	// Info to pass has to be less precise than from original witness
-	FDialogues_Struct TranformedInfoToPass = MakeDialogueStruct(InfoToPass.Priority,
-		OwnerActor->GetWorld()->GetTimeSeconds(),
+	FDialogues_Struct TranformedInfoToPass = MakeDialogueStruct(
+		InfoToPass.Priority,
+		InfoToPass.Time,
 		InfoToPass.DurationInMemory,
-		InfoToPass.WitnessLevel + 1,
+		1,								// Witness level
 		InfoToPass.Sentence,
 		InfoToPass.Site,
 		InfoToPass.SiteName,
 		InfoToPass.bPointAt,
 		Characters);
 
-	OtherCharacter->DialogueComponent->DialogArray.Add(TranformedInfoToPass);
+/*	OtherCharacter->DialogueComponent->DialogArray.AddUnique(TranformedInfoToPass);*/
+	OwnerActor->SpawnGossipZone(TranformedInfoToPass);
 }
 
 void UDialogueComponent::OnOverlapDialogueEnd_Implementation(UPrimitiveComponent* Comp, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex)

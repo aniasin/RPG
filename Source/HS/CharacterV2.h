@@ -6,6 +6,7 @@
 #include "Characters/HSCharacterBase.h"
 #include "UObject/ConstructorHelpers.h"
 #include "Engine/DataTable.h"
+#include "AI/Dialogues/DialogueComponent.h"
 #include "CharacterV2.generated.h"
 
 /**
@@ -50,6 +51,8 @@ public:
 		void BeginDialogue(AActor* ActorToSpeakTo);
 	UFUNCTION(BlueprintNativeEvent, Category = "HS Parameters|Dialogue")
 		void EndDialogue();
+	UFUNCTION(BlueprintNativeEvent, Category = "Dialogues")
+		void SpawnGossipZone(struct FDialogues_Struct InfoToPass);
 
 	UFUNCTION(BlueprintCallable, Category = "HS Parameters|Interaction")
 	AActor* GetCurrentFocusedActor();

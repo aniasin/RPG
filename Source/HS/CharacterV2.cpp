@@ -31,6 +31,7 @@
 #include "HSCharacterMovementComponent.h"
 #include "Engine/World.h"
 #include "Animation/AnimInstance.h"
+#include "AI/Dialogues/GossipZone.h"
 #include "AI/Dialogues/DialogueComponent.h"
 
 
@@ -261,8 +262,8 @@ void ACharacterV2::ServerInteractionValidate_Implementation(AActor* ActorToInter
 	ACharacterV2* IsCharacter = Cast<ACharacterV2>(ActorToInteract);
 	if (IsCharacter)
 	{
-		IsCharacter->ToggleMovement(false);
-		IsCharacter->BeginDialogue(CurrentFocusedActor);
+			IsCharacter->ToggleMovement(false);
+			IsCharacter->BeginDialogue(CurrentFocusedActor);
 	}
 }
 
@@ -306,6 +307,11 @@ void ACharacterV2::BeginDialogue_Implementation(AActor* ActorToSpeakTo)
 void ACharacterV2::EndDialogue_Implementation()
 {
 	SetCurrentFocusedActor(nullptr);
+}
+
+void ACharacterV2::SpawnGossipZone_Implementation(FDialogues_Struct InfoTopass)
+{
+
 }
 
 AActor* ACharacterV2::GetCurrentFocusedActor()
@@ -529,14 +535,10 @@ void ACharacterV2::Tick(float DeltaSeconds)
 	Super::Tick(DeltaSeconds);
 	if (bIsInCombat)
 	{
-		if (ROLE_Authority)
+		if (ROLE_Authority && InteractionWidget) // players only
 		{
 			CurrentRotation = GetActorRotation();
 			Server_UpdateCharacterRotation(CurrentRotation);
-		}
-		if (!IsLocallyControlled())
-		{
-			SetActorRotation(CurrentRotation);
 		}
 		bUseControllerRotationYaw = true;
 	}

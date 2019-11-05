@@ -50,7 +50,7 @@ struct FDialogues_Struct
 		// support for TArray.Find() -- 
 		FORCEINLINE bool operator==(const FDialogues_Struct& Other) const
 		{
-			if (Time != Other.Time) return false;
+			if (Site != Other.Site) return false;
 			return true;
 		}
 };

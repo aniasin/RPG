@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
+#include "AI/Dialogues/DialogueComponent.h"
 #include "GossipZone.generated.h"
 
 UCLASS()
@@ -14,6 +15,9 @@ class HS_API AGossipZone : public AActor
 public:	
 	// Sets default values for this actor's properties
 	AGossipZone();
+
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Dialogues")
+	struct FDialogues_Struct DialogueInfo;
 
 
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Dialogues")
